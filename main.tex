@@ -1,0 +1,165 @@
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{import}
+
+\usepackage{geometry}
+\usepackage{pslatex}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{tikz}
+\usepackage{setspace}
+\usepackage{amssymb}
+
+\geometry{ margin = 1.0in }
+
+%\pagestyle{fancy}
+%\lhead{{\bf Lecture 41}}
+%\chead{{\bf CMPSC 465 Fall 2020}}
+%\rhead{{\bf Mingfu Shao}}
+
+\usepackage{fancyhdr}
+%\setlength{\headheight}{15pt}
+
+\pagestyle{fancy}
+%\renewcommand{\chaptermark}[1]{ \markboth{#1}{} }
+\renewcommand{\sectionmark}[1]{ \markright{#1} }
+
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[RE]{{ \nouppercase{\leftmark}} }
+\fancyhead[LO]{{ \nouppercase{\thesection:~\rightmark}} }
+
+\renewcommand{\thesection}{Lecture~\arabic{section}}
+
+%\fancypagestyle{plain}{ %
+%  \fancyhf{} % remove everything
+%  \renewcommand{\headrulewidth}{0pt} % remove lines as well
+%  \renewcommand{\footrulewidth}{0pt}
+
+\fancypagestyle{firststyle}
+{
+	\fancyhf{}
+	\fancyhead[LE,RO]{\thepage}
+	\fancyhead[RE]{{ \nouppercase{\leftmark}} }
+	\fancyhead[LO]{{ \nouppercase{\rightmark}} }
+
+   %\fancyhf{}
+   %\lhead{{\bf Lecture Notes for Algorithms}}
+   %\rhead{{\bf Mingfu Shao}}
+}
+
+
+\setlength\parindent{0em}
+\setlength\parskip{8pt}
+%\setlength{\fboxsep}{6pt}
+
+\usepackage{amsthm}
+\newtheoremstyle{mytheorem}
+  {\parskip} % Space above
+  {0em} % Space below
+  {} % Body font
+  {} % Indent amount
+  {\bfseries} % Theorem head font
+  {.} % Punctuation after theorem head
+  {.5em} % Space after theorem head
+  {} % Theorem head spec (can be left empty, meaning `normal')
+
+\theoremstyle{mytheorem}
+\newtheorem{definition}{Definition}
+\newtheorem{property}{Property}
+\newtheorem{claim}{Claim}
+\newtheorem{fact}{Fact}
+\newtheorem{corollary}{Corollary}
+
+% for algorithms
+\newcommand{\aaa}[1]{\hspace{0.65cm}\parbox[t]{15.3cm}{#1}}
+\newcommand{\aab}[1]{\hspace{1.15cm}\parbox[t]{15.0cm}{#1}}
+\newcommand{\aac}[1]{\hspace{1.65cm}\parbox[t]{15.0cm}{#1}}
+\newcommand{\aad}[1]{\hspace{2.15cm}\parbox[t]{15.0cm}{#1}}
+\newcommand{\aae}[1]{\hspace{2.65cm}\parbox[t]{15.0cm}{#1}}
+\newcommand{\aaf}[1]{\hspace{3.15cm}\parbox[t]{15.0cm}{#1}}
+\newcommand{\aaA}[2]{\hspace{0.5cm} {\tikz[overlay] \draw (0.1, -0.1) -- (0.1, #1 * -1.5em + 0.6em);} \parbox[t]{15.0cm}{#2}}
+\newcommand{\aaB}[2]{\hspace{1.0cm} {\tikz[overlay] \draw (0.1, -0.1) -- (0.1, #1 * -1.5em + 0.6em);} \parbox[t]{15.0cm}{#2}}
+\newcommand{\aaC}[2]{\hspace{1.5cm} {\tikz[overlay] \draw (0.1, -0.1) -- (0.1, #1 * -1.5em + 0.6em);} \parbox[t]{15.0cm}{#2}}
+\newcommand{\aaD}[2]{\hspace{2.0cm} {\tikz[overlay] \draw (0.1, -0.1) -- (0.1, #1 * -1.5em + 0.6em);} \parbox[t]{15.0cm}{#2}}
+\newcommand{\aaE}[2]{\hspace{2.5cm} {\tikz[overlay] \draw (0.1, -0.1) -- (0.1, #1 * -1.5em + 0.6em);} \parbox[t]{15.0cm}{#2}}
+\newcommand{\xxx}{\par\vspace{0.1cm}}
+
+\begin{document}
+
+\makeatletter
+\renewcommand{\l@section}{\@dottedtocline{1}{0em}{5em}}
+\makeatother
+
+\thispagestyle{firststyle}
+\tableofcontents \thispagestyle{firststyle} \clearpage \newpage
+
+\addcontentsline{toc}{section}{\textbf{Introduction}}
+\import{Lecture01/}{content.tex} \clearpage\newpage
+\import{Lecture02/}{content.tex} \clearpage\newpage
+
+\addcontentsline{toc}{section}{\textbf{Divide-and-Conquer}}
+\import{Lecture03/}{content.tex} \clearpage\newpage
+\import{Lecture04/}{content.tex} \clearpage\newpage
+\import{Lecture05/}{content.tex} \clearpage\newpage
+\import{Lecture06/}{content.tex} \clearpage\newpage
+
+\addcontentsline{toc}{section}{\textbf{Connectivity of Graphs}}
+\import{Lecture07/}{content.tex} \clearpage\newpage
+\import{Lecture08/}{content.tex} \clearpage\newpage
+\import{Lecture09/}{content.tex} \clearpage\newpage
+\import{Lecture10/}{content.tex} \clearpage\newpage
+
+\addcontentsline{toc}{section}{\textbf{Shortest Path Problems}}
+\import{Lecture11/}{content.tex} \clearpage\newpage
+\import{Lecture12/}{content.tex} \clearpage\newpage
+\import{Lecture13/}{content.tex} \clearpage\newpage
+\import{Lecture14/}{content.tex} \clearpage\newpage
+\import{Lecture15/}{content.tex} \clearpage\newpage
+\import{Lecture16/}{content.tex} \clearpage\newpage
+
+\addcontentsline{toc}{section}{\textbf{Dynamic Programming}}
+\import{Lecture17/}{content.tex} \clearpage\newpage
+\import{Lecture18/}{content.tex} \clearpage\newpage
+\import{Lecture19/}{content.tex} \clearpage\newpage
+\import{Lecture20/}{content.tex} \clearpage\newpage
+\import{Lecture21/}{content.tex} \clearpage\newpage
+\import{Lecture22/}{content.tex} \clearpage\newpage
+
+\addcontentsline{toc}{section}{\textbf{Greedy Algorithms}}
+\import{Lecture23/}{content.tex} \clearpage\newpage
+\import{Lecture24/}{content.tex} \clearpage\newpage
+\import{Lecture25/}{content.tex} \clearpage\newpage
+\import{Lecture26/}{content.tex} \clearpage\newpage
+\import{Lecture27/}{content.tex} \clearpage\newpage
+\import{Lecture28/}{content.tex} \clearpage\newpage
+
+\addcontentsline{toc}{section}{\textbf{Network Flow}}
+\import{Lecture29/}{content.tex} \clearpage\newpage
+\import{Lecture30/}{content.tex} \clearpage\newpage
+\import{Lecture31/}{content.tex} \clearpage\newpage
+
+\addcontentsline{toc}{section}{\textbf{Computational Complexity}}
+\import{Lecture32/}{content.tex} \clearpage\newpage
+\import{Lecture33/}{content.tex} \clearpage\newpage
+
+%%\import{Lecture26/}{content.tex} \clearpage\newpage
+%%\import{Lecture27/}{content.tex} \clearpage\newpage
+%%\import{Lecture28/}{content.tex} \clearpage\newpage
+%%\import{Lecture29/}{content.tex} \clearpage\newpage
+%%\import{Lecture30/}{content.tex} \clearpage\newpage
+%%\import{Lecture31/}{content.tex} \clearpage\newpage
+%%\import{Lecture32/}{content.tex} \clearpage\newpage
+%%\import{Lecture33/}{content.tex} \clearpage\newpage
+%%\import{Lecture34/}{content.tex} \clearpage\newpage
+%%\import{Lecture35/}{content.tex} \clearpage\newpage
+%%\import{Lecture36/}{content.tex} \clearpage\newpage
+%%\import{Lecture37/}{content.tex} \clearpage\newpage
+%%\import{Lecture38/}{content.tex} \clearpage\newpage
+%%\import{Lecture39/}{content.tex} \clearpage\newpage
+%%\import{Lecture40/}{content.tex} \clearpage\newpage
+%%\import{Lecture41/}{content.tex} \clearpage\newpage
+%%\import{Lecture42/}{content.tex} \clearpage\newpage
+
+
+\end{document}
