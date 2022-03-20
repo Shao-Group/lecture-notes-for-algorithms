@@ -1,7 +1,7 @@
 ## About the Notes
 
 These are the lecture notes I (Mingfu Shao) used when teaching the undergrad-course "Data Structures and Algorithms" (CMPSC 465) at Penn State.
-The purpose of these notes is to provide students with a one-stop, complete set of materials to review after class.
+The main purpose of writing these notes is to provide students with a one-stop, complete set of materials to review after class.
 Students found them very helpful which motivates me to make them public for broader use.
 
 When writing them I am trying to provide (a), both intuitive explanations and rigorous proofs; (b), pseudo-code for each algorithm;
