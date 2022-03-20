@@ -5,15 +5,16 @@ The purpose of these notes is to provide students with a one-stop, complete set 
 Students found them very helpful which motivates me to make them public for broader use.
 
 When writing them I am trying to provide (a), both intuitive explanations and rigorous proofs; (b), pseudo-code for each algorithm;
-and (c), as many examples and figures as possible.
-
-## License
-
-The notes are distributed under CC-BY-NC license.
+and (c), as many examples and illustrative figures as possible.
 
 ## How to Use
 
 To compile into a pdf file, run twice of `pdflatex main.tex`.
+Pre-complied versions are available at [releases](https://github.com/shaomingfu/lecture-notes-for-algorithms/releases).
+
+## License
+
+The notes are distributed under CC-BY-NC license.
 
 ## Feedback
 
