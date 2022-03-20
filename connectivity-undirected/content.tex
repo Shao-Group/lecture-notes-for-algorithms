@@ -107,6 +107,15 @@ We also slightly changed the explore function, which allows to store which conne
 The pseudo-codes are given below.
 
 \begin{minipage}{0.8\textwidth}
+	\aaA {5}{function explore ($G = (V, E), v_i \in V$)}\xxx
+	\aab {$visited[i] = $ num-cc;}\xxx
+	\aaB {2}{for any edge $(v_i, v_j) \in E$}\xxx
+	\aac {if ($visited[j] = 0$): explore ($G, v_j$);}\xxx
+	\aab {end for;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+\begin{minipage}{0.8\textwidth}
 	\aaA {9}{function DFS ($G = (V, E)$)}\xxx
 	\aab {num-cc = 0;}\xxx
 	\aab {$visited[i] = 0$, for all $1\le i \le |V|$;}\xxx
@@ -115,16 +124,6 @@ The pseudo-codes are given below.
 	\aad {num-cc = num-cc + 1;}\xxx
 	\aad {explore ($G, v_i$);}\xxx
 	\aac {end if;}\xxx
-	\aab {end for;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
-
-
-\begin{minipage}{0.8\textwidth}
-	\aaA {5}{function explore ($G = (V, E), v_i \in V$)}\xxx
-	\aab {$visited[i] = $ num-cc;}\xxx
-	\aaB {2}{for any edge $(v_i, v_j) \in E$}\xxx
-	\aac {if ($visited[j] = 0$): explore ($G, v_j$);}\xxx
 	\aab {end for;}\xxx
 	\aaa {end algorithm;}\xxx
 \end{minipage}

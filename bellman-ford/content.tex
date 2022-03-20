@@ -239,3 +239,54 @@ Applying $dist[v] \le dist[u] + l(u,v)$ to all edges in $C$ gives:
 \end{displaymath}
 
 Summing up both sides of all above inequalities gives $\sum_{e\in C} l(e) \ge 0$, a contradiction.
+
+
+\subsection*{Shortest Path of DAGs}
+
+Let $G = (V, E)$ be a DAG with possibly negative edge length $c(e)$ for each $e\in E$.
+We want to find the distance from a given source $s$ to each vertex $v\in V$.
+Note that $G$ does not contain negative cycles simply because $G$ does not contain any cycle.
+We can design a simpler version of Bellman-Ford algorithm to solve this problem.
+In particular, we only need to do one round of ``update''~(instead of $|V|-1$ rounds as in Bellman-Ford algorithm).
+But, the edges cannot be updated in a arbitrary order. In fact,
+we first need to find a linearization of $G$~(recall that a directed graph can be linearized if and only if it's a DAG),
+and then update the in-edges of vertices following this linearization.
+
+%%\begin{minipage}{0.8\textwidth}
+%%	\aaA {5}{procedure update~(edge $(u,v)\in E$)}\xxx
+%%	\aaB {3}{if~($dist[v] > dist[u] + l(u,v)$)}\xxx
+%%	\aac {$dist[v] = dist[u] + l(u,v)$;}\xxx
+%%	\aac {\textcolor{black}{$prev[v]= u$};}\xxx
+%%	\aab {end if;}\xxx
+%%	\aaa {end procedure;}\xxx
+%%\end{minipage}
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {10}{Algorithm DP-shortest-path~(DAG $G = (V, E)$, $l(e)$ for any $e\in E$, $s \in V$)}\xxx
+	\aab {init array $dist$ of size $|V|$: $dist[s] = 0$; $dist[v] = \infty$ for any $v\neq s$;}\xxx
+	\aab {calculate a linearization of $G$;}\xxx
+	\aaB {4}{\textcolor{blue}{for $v\in V$ following the order of linearization}}\xxx
+	\aaC {2}{for each $(u,v)\in E$;}\xxx
+	\aad {$update(u,v)$;}\xxx
+	\aac {end for;}\xxx
+	\aab {end for;}\xxx
+	\aab {for each $v\in V$: report: $distance(s,v) = dist[v]$;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+
+The correctness of above algorithm for DAGs can also be proved in the same way as in the Bellman-Ford algorithm.
+Let $p = s \to a \to b \to \cdots \to u \to v$ be the shortest path from $s$ to $v$;
+we have proved that~(for Bellman-Ford algorithm), if the run of the algorithm contains a \emph{subsequence} of update procedures
+that sequentially update the edges in the shortest path, then 
+$dist[v]$ will be equal to $distance(s,v)$ after these update procedures.
+Our above algorithm update the in-edges of vertices sequentially following a linearization.
+In a DAG, the list of vertices of any path, including shortest path, must be a \emph{subsequence}
+of the linearization. Therefore, the list of edges of any path must be updated
+sequentially by the algorithm. See Figure~\ref{fig:dag}.
+
+\begin{figure}[h]
+\centering{\input{dag}}
+\caption{Illustration of the correctness of the above algorithm for DAGs.}
+\label{fig:dag}
+\end{figure}

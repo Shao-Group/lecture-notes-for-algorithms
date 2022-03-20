@@ -1,8 +1,6 @@
 \setcounter{definition}{0} \setcounter{property}{0} \setcounter{claim}{0} \setcounter{fact}{0} \setcounter{corollary}{0} \setcounter{figure}{0}
 \section{Convex Hull}
 
-\subsection*{Definitions}
-
 \begin{definition}[Convex Hull]
 Let $P = \{p_1, p_2, \cdots, p_n\}$ be a set of points on 2D plane, each of which is represented as $p_i = (x_i, y_i)$.
 The \emph{convex hull} of $P$, denoted as $CH(P)$, is defined as the smallest, convex polygon that includes all points in $P$.
@@ -156,11 +154,11 @@ the sequential of these operations.}
 \end{figure}
 
 
-The first 3 lines of Gramham-Scan algorithm corresponds to the preprocessing steps,
+The first 3 lines of the algorithm corresponds to the preprocessing steps,
 which produce a sorted list of points. The main body of the algorithm, referred
-to as ``Graham-Scan-Core'' here, gradually construct the convex hull and guarantees
-above invariant. When the algorithm terminates, the convex hull of all points
-are stored in stack $S$.
+to as ``Graham-Scan-Core'', gradually construct the convex hull and guarantees
+above invariant. When it terminates, the convex hull of all vertices
+are stored $S$.
 
 Graham-Scan-Core can be regarded as an independent algorithm~(you will find its use
 in the divide-and-conquer algorithm for convex hull). Its input
@@ -265,12 +263,11 @@ See figure below for explaining.
 
 
 
-\begin{figure}[h!]
+\begin{figure}[h]
 \centering{\input{combine}}
 \caption{Example of combining $C_1$ and $C_2$.}
 \label{fig:meta-graph}
 \end{figure}
-
 
 
 Clearly each step of above combine takes linear time. Therefore, the entire running time of combine is $\Theta(|C_1| + |C_2|)$.

@@ -1,8 +1,6 @@
 \setcounter{definition}{0} \setcounter{property}{0} \setcounter{claim}{0} \setcounter{fact}{0} \setcounter{corollary}{0} \setcounter{figure}{0}
 \section{Interval Scheduling Problem}
 
-\subsection*{The Problem}
-
 Given an array of \emph{intervals} $A[1\cdots n]$, where $A[i] = (s(i),t(i))$ is an interval represented with
 \emph{start-time} $s(i)$ and \emph{finish-time} $t(i)$, we seek a \emph{compatible} subset $X\subset A$
 such that $|X|$ is maximized. Here, $X$ is \emph{compatible} is defined as that intervals in $X$
@@ -15,8 +13,6 @@ See Figure~\ref{fig:interval}.
 The optimal solution includes 4 intervals $\{1, 2, 5, 6\}$.}
 \label{fig:interval}
 \end{figure}
-
-\subsection*{The Algorithm}
 
 Let's design a greedy algorithm for above interval scheduling problem.
 Recall that a greedy algorithm iteratively makes \emph{local decisions},

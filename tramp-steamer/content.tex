@@ -1,9 +1,7 @@
 \setcounter{definition}{0} \setcounter{property}{0} \setcounter{claim}{0} \setcounter{fact}{0} \setcounter{corollary}{0} \setcounter{figure}{0}
 \section{Tramp Steamer Problem}
 
-\subsection*{Problem Description}
-
-This is about exercise 4.22, on page 125 of textbook~(read it for a real-world application from which the formulation below is abstracted).
+This is about exercise 4.22, on page 125 of book \emph{Algorithms}~(read it for a real-world application from which the formulation below is abstracted).
 Formally, we are given a directed graph $G = (V, E)$,
 where each vertex $v\in V$ is associated with a \emph{profit} $p(v) > 0$,
 and each edge $e\in E$ is associated with a \emph{cost} $c(e) > 0$,
@@ -150,20 +148,21 @@ as $r_2 / \epsilon$ is exponential in its input-size, which is $\log(r_2/\epsilo
 
 In conclusion, binary-search is essential to achieve an efficient algorithm for this problem.
 
-\subsection*{Finding A Negative Cycle}
-
-We know how to extend DP or BF algorithms to decide the existence of a negative cycle.
-If it exists, how to actually find one?
-Again, we can use the shortest-path graph, i.e., $G' = (V, \{(prev[v], v) \mid v\in V\})$ constructed
-from the $prev$ array. Note, this $prev$ array is associated with the row-$|V|$ in the DP algorithm,
-or associated with the $|V|$-th iterations of the BF algorithm.
-We can prove that, if $G$ contains negative cycle, then this graph $G'$ must contain cycle,
-and any cycle in $G'$ must be a negative cycle of $G$. See an example below.
-
-\begin{figure}[h]
-\centering{\input{nc}}
-\caption{Find a negative cycle using $prev$ array.}
-\label{fig:dpbf}
-\end{figure}
-
+% TODO
+%%%%\subsection*{Finding A Negative Cycle}
+%%%%
+%%%%We know how to extend DP or BF algorithms to decide the existence of a negative cycle.
+%%%%If it exists, how to actually find one?
+%%%%Again, we can use the shortest-path graph, i.e., $G' = (V, \{(prev[v], v) \mid v\in V\})$ constructed
+%%%%from the $prev$ array. Note, this $prev$ array is associated with the row-$|V|$ in the DP algorithm,
+%%%%or associated with the $|V|$-th iterations of the BF algorithm.
+%%%%We can prove that, if $G$ contains negative cycle, then this graph $G'$ must contain cycle,
+%%%%and any cycle in $G'$ must be a negative cycle of $G$. See an example below.
+%%%%
+%%%%\begin{figure}[h]
+%%%%\centering{\input{nc}}
+%%%%\caption{Find a negative cycle using $prev$ array.}
+%%%%\label{fig:dpbf}
+%%%%\end{figure}
+%%%%
 
