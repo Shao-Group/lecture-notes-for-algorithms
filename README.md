@@ -10,7 +10,7 @@ and (c), as many examples and illustrative figures as possible.
 ## How to Use
 
 To compile into a pdf file, run twice of `pdflatex main.tex`.
-Pre-complied versions are available at [releases](https://github.com/shaomingfu/lecture-notes-for-algorithms/releases).
+Pre-complied versions are available at [releases](https://github.com/Shao-Group/lecture-notes-for-algorithms/releases).
 
 ## License
 
