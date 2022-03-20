@@ -1,7 +1,6 @@
 \documentclass[letterpaper,11pt]{article}
 
 \usepackage{import}
-
 \usepackage{geometry}
 \usepackage{pslatex}
 \usepackage{graphicx}
@@ -12,14 +11,8 @@
 
 \geometry{ margin = 1.0in }
 
-%\pagestyle{fancy}
-%\lhead{{\bf Lecture 41}}
-%\chead{{\bf CMPSC 465 Fall 2020}}
-%\rhead{{\bf Mingfu Shao}}
-
 \usepackage{fancyhdr}
 %\setlength{\headheight}{15pt}
-
 \pagestyle{fancy}
 %\renewcommand{\chaptermark}[1]{ \markboth{#1}{} }
 \renewcommand{\sectionmark}[1]{ \markright{#1} }
@@ -30,11 +23,6 @@
 \fancyhead[LO]{{ \nouppercase{\thesection:~\rightmark}} }
 
 \renewcommand{\thesection}{Lecture~\arabic{section}}
-
-%\fancypagestyle{plain}{ %
-%  \fancyhf{} % remove everything
-%  \renewcommand{\headrulewidth}{0pt} % remove lines as well
-%  \renewcommand{\footrulewidth}{0pt}
 
 \fancypagestyle{titlestyle}
 {
@@ -48,15 +36,15 @@
 	\fancyhead[LE,RO]{\thepage}
 	\fancyhead[RE]{{ \nouppercase{\leftmark}} }
 	\fancyhead[LO]{{ \nouppercase{\rightmark}} }
-
-   %\fancyhf{}
-   %\lhead{{\bf Lecture Notes for Algorithms}}
-   %\rhead{{\bf Mingfu Shao}}
 }
 
 
+\usepackage{titlesec}
 \setlength\parindent{0em}
-\setlength\parskip{8pt}
+\setlength\parskip{6pt}
+\titlespacing*{\section}{0pt}{2.4ex plus 0.2ex minus .1ex}{1.0ex plus .2ex minus .1ex}
+\titlespacing*{\subsection}{0pt}{2.0ex plus 0.2ex minus .1ex}{0.6ex plus .2ex minus .1ex}
+
 %\setlength{\fboxsep}{6pt}
 
 \usepackage{amsthm}
@@ -126,43 +114,44 @@
 \import{convex-hull/}{content.tex} \clearpage\newpage
 \import{half-plain-intersection/}{content.tex} \clearpage\newpage
 
-\addcontentsline{toc}{section}{\textbf{Connectivity of Graphs}}
-\import{graphs/}{content.tex} \clearpage\newpage
-\import{connectivity-undirected/}{content.tex} \clearpage\newpage
-\import{dag/}{content.tex} \clearpage\newpage
-\import{connectivity-directed/}{content.tex} \clearpage\newpage
-
-\addcontentsline{toc}{section}{\textbf{Shortest Path Problems}}
-\import{priority-queue/}{content.tex} \clearpage\newpage
-\import{bfs/}{content.tex} \clearpage\newpage
-\import{dijkstra/}{content.tex} \clearpage\newpage
-\import{bellman-ford/}{content.tex} \clearpage\newpage
-\import{shortest-path-tree/}{content.tex} \clearpage\newpage
-\import{tramp-steamer/}{content.tex} \clearpage\newpage
-
-\addcontentsline{toc}{section}{\textbf{Dynamic Programming}}
-\import{longest-increasing-subsequence/}{content.tex} \clearpage\newpage
-\import{edit-distance/}{content.tex} \clearpage\newpage
-\import{rna-secondary-structure/}{content.tex} \clearpage\newpage
-\import{shortest-path-dp/}{content.tex} \clearpage\newpage
-\import{knapsack/}{content.tex} \clearpage\newpage
-\import{why-dp-table/}{content.tex} \clearpage\newpage
-
-\addcontentsline{toc}{section}{\textbf{Greedy Algorithms}}
-\import{minimum-spanning-tree/}{content.tex} \clearpage\newpage
-\import{cut-property/}{content.tex} \clearpage\newpage
-\import{disjoint-set/}{content.tex} \clearpage\newpage
-\import{interval-scheduling/}{content.tex} \clearpage\newpage
-\import{weighted-interval-scheduling/}{content.tex} \clearpage\newpage
-\import{vertex-cover/}{content.tex} \clearpage\newpage
-
-\addcontentsline{toc}{section}{\textbf{Network Flow}}
-\import{max-flow/}{content.tex} \clearpage\newpage
-\import{ford-fulkson/}{content.tex} \clearpage\newpage
-\import{max-matching/}{content.tex} \clearpage\newpage
-
-\addcontentsline{toc}{section}{\textbf{Computational Complexity}}
-\import{reduction/}{content.tex} \clearpage\newpage
-\import{npcomplete/}{content.tex} \clearpage\newpage
+%%\addcontentsline{toc}{section}{\textbf{Connectivity of Graphs}}
+%%\import{graphs/}{content.tex} \clearpage\newpage
+%%\import{connectivity-undirected/}{content.tex} \clearpage\newpage
+%%\import{dag/}{content.tex} \clearpage\newpage
+%%\import{connectivity-directed/}{content.tex} \clearpage\newpage
+%%\import{2sat/}{content.tex} \clearpage\newpage
+%%
+%%\addcontentsline{toc}{section}{\textbf{Shortest Path Problems}}
+%%\import{priority-queue/}{content.tex} \clearpage\newpage
+%%\import{bfs/}{content.tex} \clearpage\newpage
+%%\import{dijkstra/}{content.tex} \clearpage\newpage
+%%\import{bellman-ford/}{content.tex} \clearpage\newpage
+%%\import{shortest-path-tree/}{content.tex} \clearpage\newpage
+%%\import{tramp-steamer/}{content.tex} \clearpage\newpage
+%%
+%%\addcontentsline{toc}{section}{\textbf{Dynamic Programming}}
+%%\import{longest-increasing-subsequence/}{content.tex} \clearpage\newpage
+%%\import{edit-distance/}{content.tex} \clearpage\newpage
+%%\import{rna-secondary-structure/}{content.tex} \clearpage\newpage
+%%\import{shortest-path-dp/}{content.tex} \clearpage\newpage
+%%\import{knapsack/}{content.tex} \clearpage\newpage
+%%\import{why-dp-table/}{content.tex} \clearpage\newpage
+%%
+%%\addcontentsline{toc}{section}{\textbf{Greedy Algorithms}}
+%%\import{minimum-spanning-tree/}{content.tex} \clearpage\newpage
+%%\import{cut-property/}{content.tex} \clearpage\newpage
+%%\import{disjoint-set/}{content.tex} \clearpage\newpage
+%%\import{interval-scheduling/}{content.tex} \clearpage\newpage
+%%\import{weighted-interval-scheduling/}{content.tex} \clearpage\newpage
+%%\import{vertex-cover/}{content.tex} \clearpage\newpage
+%%
+%%\addcontentsline{toc}{section}{\textbf{Network Flow}}
+%%\import{max-flow/}{content.tex} \clearpage\newpage
+%%\import{ford-fulkson/}{content.tex} \clearpage\newpage
+%%\import{max-matching/}{content.tex} \clearpage\newpage
+%%
+%%\addcontentsline{toc}{section}{\textbf{Computational Complexity}}
+%%\import{reduction/}{content.tex} \clearpage\newpage
+%%\import{npcomplete/}{content.tex} \clearpage\newpage
 
 \end{document}
