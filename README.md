@@ -19,4 +19,4 @@ The notes are distributed under CC-BY-NC license.
 ## Feedback
 
 If you identify any typos/errors or have comments/suggestions on how to improve them,
-please post an "Issue" in this GitHub repo or let me know via email mxs2589@psu.edu. Thank you.
+please post an "Issue" in this GitHub repo or let me know via email mxs2589 AT psu DOT edu. Thank you.
