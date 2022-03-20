@@ -1,0 +1,164 @@
+\section{Disjoint-Set and Its Use in Kruskal's Algorithm}
+
+\subsection*{Disjoint-Set}
+
+A \emph{disjoint-set}, also called \emph{union-find},
+is an efficient data structure to store \emph{a collection of disjoint sets}.
+In each set, one of the elements is designated as the \emph{representative}
+of this set. The representative element serves
+as the identity of the set. 
+A disjoint-set data structure supports the following operations.
+\vspace*{-\topsep}
+\begin{enumerate}
+\item \emph{make-set~($x$)}, creates a new set with $x$ being the only element.
+\item \emph{find~($x$)}, find the set that includes element $x$, by returning the representative of the set.
+\item \emph{union~($x$, $y$)}, merge the two sets that include $x$ and $y$.
+\end{enumerate}
+
+Note that we can simply decide if two elements $x$ and $y$ are in the same set
+by using above \emph{find} function: two elements are in the same set
+if and only if they correspond to the same representative, i.e., \emph{find~($x$) $=$ find~($y$)}.
+
+We use a tree to store a set: elements of a set is stored in the nodes of a tree.
+The collection of sets is stored with a \emph{forest}~(i.e., a collection of trees).
+The reason we use trees to store sets is that, the \emph{union} operation
+can be easily implemented by simply merging two trees.
+We also store the \emph{height} of each subtree.
+(The height of a subtree rooted at node $v$ is defined as the length of the longest path 
+from $v$ to a leaf node.) The reason we store heights is to maintain a \emph{balanced} tree
+as much as possible---we don't want the tree to be too tall, as the running time
+of \emph{find} operation is proportional to the height of the tree~(see below).
+An implementation of the \emph{node} class of a tree will look like this~(in C++):
+
+\begin{minipage}{0.8\textwidth}
+	\aaa {class node~\{}\xxx
+	\aab {void* data; \ // storing the actual data}\xxx
+	\aab {int height; \ // storing the height of the subtree rooted at this node}\xxx
+	\aab {node* parent; \ // pointer to the parent node of this node}\xxx
+	\aaa {\};}\xxx
+\end{minipage}
+
+We define the root of each tree always being the representative of the corresponding set.
+And we always use a pointer that points to itself, i.e., $x.parent = x$, to label
+that a node is a root.
+Below we give the pseudo-code for these 3 operations.
+We assume that elements~($x$, $y$, etc, used below) are with above \emph{node} type.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {3}{function make-set~($x$)}\xxx
+	\aab {$x.height = 1$;}\xxx
+	\aab {$x.parent = x$;}\xxx
+	\aaa {end;}\xxx
+\end{minipage}
+
+The \emph{find} operation traverses the path following the parent pointers 
+until reaching the root. Note that the running time of this procedure
+is propotional to the height of the tree.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {5}{function find~($x$)}\xxx
+	\aaB {2}{while~($x.parent \neq x$)}\xxx
+	\aac {$x = x.parent$;}\xxx
+	\aab {end;}\xxx
+	\aab {return $x$;}\xxx
+	\aaa {end;}\xxx
+\end{minipage}
+
+The union operation first find the roots of the two trees that contains $x$ and
+$y$ respectively, and then merge them by hanging one of the tree under the root
+of the other tree. Notice that we want the tree as shorter as possible;
+hence we always hang the shorter tree under the taller tree~(break tie arbitrarily when equal).
+Note too that if the two trees have different heights,
+after merging all heights remain the same;
+if the two trees have the same height, then after merging
+the height of the new root will be increased by 1.
+See Figure~\ref{fig:union}.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {12}{function union~($x,y$)}\xxx
+	\aab {$r_x = find(x)$;}\xxx
+	\aab {$r_y = find(y)$;}\xxx
+	\aab {if~($r_x = r_y$): return; \ // $x$ and $y$ already in the same tree}\xxx
+	\aaB {2}{if~($r_x.height < r_y.height$)}\xxx
+	\aac {$r_x.parent = r_y$}\xxx
+	\aaB {2}{else if~($r_x.height > r_y.height$)}\xxx
+	\aac {$r_y.parent = r_x$}\xxx
+	\aaB {3}{else}\xxx
+	\aac {$r_x.parent = r_y$}\xxx
+	\aac {$r_y.height = r_y.height + 1$}\xxx
+	\aab {end}\xxx
+	\aaa {end;}\xxx
+\end{minipage}
+
+
+\begin{figure}[h]
+\centering{\input{union1}}
+\vspace*{0.4cm}
+\centering{\input{union2}}
+\caption{Upper figures: union two trees with different heights: shorter tree will
+be hung under the root of the taller tree, and all heights keep the same.
+Lower figures: union two trees with identical heights: the height of 
+	the new root will be increased by 1.}
+\label{fig:union}
+\end{figure}
+
+\subsection*{Running Time}
+
+We now show that the above balancing procedure guarantees
+that, the height of any tree is $\Theta(\log n)$. 
+\begin{fact}
+Let $T$ be a tree with $n$ nodes. Then $h(T) \le 1 + \log_2 n$, where $h(T)$ denotes the height of $T$.
+\end{fact}
+\emph{Proof.} The \emph{make-set} creates a new tree with a single node, and clearly it holds above fact.
+The \emph{find} operation queries but doesn't change anything. We now show the \emph{union}
+holds above fact too. We prove it by induction: suppose the before merging $T_1$ and $T_2$
+with $n_1$ and $n_2$ nodes respectively, we have $h(T_1) \le 1 + \log n_1$ and $h(T_2) \le 1 + \log n_2$.
+Note that after mering we have $n = n_1 + n_2$.
+Consider the 3 cases in the union procedure. 
+If $h(T_1) < h(T_2)$, then $h(T) = h(T_2) \le 1 + \log n_2 \le 1 + \log n$, as desired.
+The same for $h(T_1) > h(T_2)$. Now consider $h(T_1) = h(T_2)$.
+In this case $h(T) = h(T_1) + 1 = h(T_2) + 1$.
+We can write $2h(T) = 2 + h(T_1) + h(T_2) \le 4 + \log n_1 + \log n_2 = 4 + \log n_1n_2 \le 4 + \log((n_1+n_2)/2)^2 = 4 + 2\log (n/2) = 2(1+\log n)$.  \qed
+
+Hence, the \emph{make-set} takes $\Theta(1)$ time;
+the \emph{find} takes $\Theta(\log n)$ time;
+the \emph{union} takes $\Theta(\log n)$ time as well~(it is dominated by the \emph{find} procedure; the remaining of \emph{union}
+after calling find takes $\Theta(1)$ time).
+
+\subsection*{Complete Kruskal's Algorithm}
+
+Recall that, in the Kruskal's algorithm, the vertices are partitioned
+into a collection of connected components by $E_1$,
+and adding an edge $e = (u,v)$ to $E_1$ doesn't produce a cycle
+if and only if $u$ and $v$ are in different components.
+Hence, we can use a disjoint-set data structure
+to maintain the connected components formed by $E_1$: 
+each set here corresponds to a component.
+When examining if an edge $e=(u,v)$ leads to a cycle in the algorithm,
+we simply query if $find(u)$ equals to $find(v)$.
+If they are not, then $e$ can be safely added,
+and we can then simply call $union(u,v)$ to update the
+disjoint-set to reflect that the two components are merged into one
+by edge $e$.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {12}{Algorithm Kruskal's~($G = (V,E), w(e) \forall e\in E$)}\xxx
+	\aab {sort all edges in $E$ by weights in ascending order;}\xxx
+	\aab {$E_1 = \emptyset$;}\xxx
+	\aab {for each $v\in V$: call \emph{make-set~($v$)}; \ // as $E_1 = \emptyset$, each vertex forms a set of its own}\xxx
+	\aaB {7}{for each $e = (u,v)\in E$ following above ordering}\xxx
+	\aac {$r_u = find(u)$}\xxx
+	\aac {$r_v = find(v)$}\xxx
+	\aaC {3}{if~($r_u\neq r_v$)}\xxx
+	\aad {$E_1 = E_1\cup \{e\}$}\xxx
+	\aad {$union(r_u,r_v)$}\xxx
+	\aac {end;}\xxx
+	\aab {end;}\xxx
+	\aaa {end;}\xxx
+\end{minipage}
+
+Sorting takes $\Theta(|E|\log|E|) = \Theta(|E|\log|V|)$ time~(note that $\log |E| \le \log |V|^2 = 2\log |V|$).
+Examining all edges takes $\Theta(|E|\log|V|)$ too.
+So the entire algorithm, with this implementation of disjoint-set, takes $\Theta(|E|\log|V|)$ time.
+
+

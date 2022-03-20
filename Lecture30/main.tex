@@ -1,0 +1,233 @@
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{geometry}
+\usepackage{pslatex}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{tikz}
+\usepackage{setspace}
+\usepackage{amssymb}
+
+\geometry{ margin = 1.0in }
+
+\pagestyle{fancy}
+\lhead{{\bf Lecture 38}}
+\chead{{\bf CMPSC 465 Fall 2020}}
+\rhead{{\bf Mingfu Shao}}
+
+\setlength\parindent{0em}
+\setlength\parskip{8pt}
+%\setlength{\fboxsep}{6pt}
+
+\usepackage{amsthm}
+\newtheoremstyle{mytheorem}
+  {\parskip} % Space above
+  {0em} % Space below
+  {} % Body font
+  {} % Indent amount
+  {\bfseries} % Theorem head font
+  {.} % Punctuation after theorem head
+  {.5em} % Space after theorem head
+  {} % Theorem head spec (can be left empty, meaning `normal')
+
+\theoremstyle{mytheorem}
+\newtheorem{definition}{Definition}
+\newtheorem{property}{Property}
+\newtheorem{claim}{Claim}
+\newtheorem{fact}{Fact}
+\newtheorem{corollary}{Corollary}
+
+% for algorithms
+\newcommand{\aaa}[1]{\hspace{0.65cm}\parbox[t]{15.3cm}{#1}}
+\newcommand{\aab}[1]{\hspace{1.15cm}\parbox[t]{15.0cm}{#1}}
+\newcommand{\aac}[1]{\hspace{1.65cm}\parbox[t]{15.0cm}{#1}}
+\newcommand{\aad}[1]{\hspace{2.15cm}\parbox[t]{15.0cm}{#1}}
+\newcommand{\aae}[1]{\hspace{2.65cm}\parbox[t]{15.0cm}{#1}}
+\newcommand{\aaf}[1]{\hspace{3.15cm}\parbox[t]{15.0cm}{#1}}
+\newcommand{\aaA}[2]{\hspace{0.5cm} {\tikz[overlay] \draw (0.1, -0.1) -- (0.1, #1 * -1.5em + 0.6em);} \parbox[t]{15.0cm}{#2}}
+\newcommand{\aaB}[2]{\hspace{1.0cm} {\tikz[overlay] \draw (0.1, -0.1) -- (0.1, #1 * -1.5em + 0.6em);} \parbox[t]{15.0cm}{#2}}
+\newcommand{\aaC}[2]{\hspace{1.5cm} {\tikz[overlay] \draw (0.1, -0.1) -- (0.1, #1 * -1.5em + 0.6em);} \parbox[t]{15.0cm}{#2}}
+\newcommand{\aaD}[2]{\hspace{2.0cm} {\tikz[overlay] \draw (0.1, -0.1) -- (0.1, #1 * -1.5em + 0.6em);} \parbox[t]{15.0cm}{#2}}
+\newcommand{\aaE}[2]{\hspace{2.5cm} {\tikz[overlay] \draw (0.1, -0.1) -- (0.1, #1 * -1.5em + 0.6em);} \parbox[t]{15.0cm}{#2}}
+\newcommand{\xxx}{\par\vspace{0.1cm}}
+
+\begin{document}
+
+\section*{Ford-Fulkson Algorithm and The Max-Flow Min-Cut Theorem}
+
+\subsection*{Residual Graph}
+
+The residual graph plays a central role in the Ford-Fulkson algorithm and in
+proving the max-flow min-cut theorem. Let $f$ be an $s$-$t$ flow of a network
+$(G = (V,E),s,t,c)$. We denote by $G_f =(V,E_f)$ the residual graph w.r.t.\ $f$. 
+We emphasize that a residual graph is always associated with (i.e., w.r.t.) a flow of a network.
+Each edge $e\in E_f$ in the residual graph is also associated with a capacity, denoted as $c_f(e)$. 
+The construction of the residual graph is given below.  See Figure~\ref{fig:residual}.
+\vspace*{-\topsep}
+\begin{enumerate}
+\item The residual graph has the same set of vertices with the network.
+\item For each edge $(u,v)\in E$, there are two corresponding edges in
+$E_f$: the \emph{forward-edge} $(u,v)$ with capacity $c_f (u, v) = c(u,v) - f(u,v)$, 
+and the \emph{backward-edge} $(v, u)$ with capacity $c_f (v, u) = f(u,v)$. 
+\end{enumerate}
+
+\begin{figure}[h]
+\centering{\input{residual}}
+\caption{Definition of edges and capacities of the residual graph.}
+\label{fig:residual}
+\end{figure}
+
+Edges in the residual graph with capacity of 0 will be removed. In other words,
+we always assume that edges in the residual graph have positive
+capacities. Therefore, if an edge $e = (u,v) \in E$ in the network carries a
+flow of 0, i.e., $f(e) = 0$, then the residual graph only includes the
+corresponding forward-edge $(u, v)$ with capacity $c_f (u, v) = c(e)$; if an
+edge $e = (u, v) \in E$  is \emph{saturated}, i.e., $f (e) = c(e)$, then the residual
+graph only includes the corresponding backward-edge $(v, u)$ with capacity
+$c_f (v, u) = f(e) = c(e)$. See Figure 2.
+
+\begin{figure}[h]
+\centering{\input{example}}
+\caption{An example of residual graph.}
+\label{fig:example}
+\end{figure}
+
+\subsection*{The Ford-Fulkson Algorithm}
+
+Recall that the central idea of the FF algorithm is to iteratively improve an
+$s$-$t$ flow $f$, initialized with $f(e) = 0$ for every $e \in E$. In each iteration, it
+seeks a path $p$ from $s$ to $t$, called an $s$-$t$ path, in residual graph $G_f$ w.r.t.\ the
+current flow $f$; it then augments $p$ to obtain a flow with increased value. The
+algorithm terminates when such $s$-$t$ path cann’t be found. The pseudo-code is
+given below.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {8}{Algorithm Ford-Fulkson~($G = (V, E), s, t, c$)}\xxx
+	\aab {init an $s$-$t$ flow $f$ with $f(e) = 0$ for any $e\in E$;}\xxx
+	\aaB {5}{while~(true)}\xxx
+	\aac {build the residual graph $G_f$ w.r.t.\ the current flow $f$;}\xxx
+	\aac {find an $s$-$t$ path $p$ in $G_f$;}\xxx
+	\aac {if such path cannot be found: return $f$;}\xxx
+	\aac {$f \leftarrow augment(f,p)$;}\xxx
+	\aab {end;}\xxx
+	\aaa {end;}\xxx
+\end{minipage}
+
+To augment an $s$-$t$ path $p$ in $G_f$, we first calcualte the bottleneck capacity of
+$p$, which is defined as the smallest capacity of all edges in $p$, formally
+written as $x(p) := \min_{e\in p} c_f(e)$. We then examine each edge $e \in p$, and
+update the flow of the corresponding edge in the network with the following rule.
+
+\vspace*{-\topsep}
+\begin{enumerate}
+\item If $e = (u,v) \in p$ is a forward edge, i.e., $(u,v)$ is in the network, we update $f(u,v) \leftarrow f(u,v)+x(p)$;
+\item If $e = (u,v) \in p$ is a backward edge, i.e., $(v,u)$ is in the network, we update $f(v,u) \leftarrow f(v,u)-x(p)$;
+\end{enumerate}
+
+The flow of other edges in the network (i.e., none of their corresponding
+forward edges or backward edges is in $p$) will not get affected. See an
+example in Figure~\ref{fig:augment}.
+
+\begin{figure}[h]
+\centering{\input{augment}}
+\caption{Illustrating the procedure of augmenting continuing Figure~\ref{fig:example}. Suppose
+in the residual graph $G_f$ given in Figure~\ref{fig:example} the algorithm identifies $s$-$t$
+path $p = (s,a,c,t)$. Note that in this path $(s,a)$ and $(c,t)$ are forward
+edges and $(a, c)$ is backward edge. After augmenting $p$ the flow $f$ is given in the right figure,
+where affected flow are circled.}
+\label{fig:augment}
+\end{figure}
+
+We emphasize that, after augmenting, $f$ remains a valid flow, i.e., $f$ satisfies
+both the capacity condition and the conservation condition. The capacity
+condition remains satisfied owes to how the residual graph is constructed.
+Consider the two cases in augmenting: in either case, after augmenting, the
+flow remains non-negative and bounded by the capacity. Specifically,
+
+\vspace*{-\topsep}
+\begin{enumerate}
+\item if $e=(u,v)\in p$ is a forward edge, we know that $c_f(e)=c(u,v)-f(u,v)$ based on the
+construction of the residual graph. Since $x( p) \le c_f (e)$, after augmenting the
+flow of edge $(u, v)$ becomes $f(u, v) + x(p) \le f(u,v)+c_f (e) = f(u,v)+c(u,v)- f(u,v) = c(u,v)$. 
+And it’s obvious that $f(u,v)+x(p) \ge 0$.
+\item if $e=(u,v)\in p$ is a backward edge, we know that $c_f(e)=f(v,u)$ based on the
+construction of the residual graph. Since $x(p) \le c_f(e)$, after augmenting the
+flow of edge $(v, u)$ becomes $f(v, u) - x(p) \ge f(v,u)-c_f (e) = f(v,u)-f(v,u) = 0$. 
+And it’s obvious that $f(v,u)-x(p) \le f(v,u) \le c(v,u)$.
+\end{enumerate}
+
+The reason why the conservation condition remains satisfied is that we augment an entire $s$-$t$ path. Hence,
+for any vertex $v$ in path $p$ except $s$ and $t$, the augmenting procedure adjusts the
+flow of two adjacent edges of $v$ in the network, and such adjustments always
+cancel out. For example, suppose that in path $p$ the two edges are $(u,v)$ and
+$(v,w)$. If both edges are forward edges, then both $f(u,v)$ and $f(v,w)$ are
+increased by $x(p)$; so $v$ remains balanced; If $(u, v)$ is a forward edge and $(v,
+		w)$ is a backward edge, then $f (u, v)$ is increased by $x(p)$ and $f(w,v)$ is
+decreased by $x(p)$; again, $v$ remains balanced; other two cases can be verified
+similarly.
+
+After augmenting path $p$, the value of the new flow becomes $|f|+x(p)$. Since we
+assume that all edges in the residual graph has positive capacity, we have that
+$x(p) > 0$, which means the value of the new flow always gets improved. If we
+further assume that all capacities are integers, we have $x(p) \ge 1$ and therefore
+the value of the new flow will be increased by at least 1 in each iteration.
+
+\begin{figure}[h]
+\centering{\input{ff}}
+\caption{Running the FF algorithm on an instance. Each row shows an iteration. The left column shows
+the current flow $f$. The right column shows the residual graph w.r.t.\ $f$ and the $s$-$t$ path found (in blue).}
+\label{fig:ff}
+\end{figure}
+
+See running the Ford-Fulkson algorithm on an instance in Figure~\ref{fig:ff}.
+The FF algorithm runs in $O(|f^*|\cdot(|V|+|E|))$ time,
+where $f^*$ is the flow returned by the FF. 
+This is because, each iteration (including building $G_f$, finding an $s$-$t$ path $p$ in $G_f$
+with BFS/DFS, and augmenting $p$) takes $O(|V|+|E|)$ time, and in each iteration,
+the value of the flow is increased by at least 1~(assuming that all capacities are integers),
+so the number of iterations needed is $O(|f^*|)$.
+
+
+\subsection*{The Max-Flow Min-Cut Theorem}
+
+We now prove that the FF algorithm is optimal, which also directly implies the so-called max-flow min-cut
+theorem.  Again let $f^*$ be the flow when the FF terminates. Note that the residual graph $G_{f^*}$ w.r.t.\ $f^*$ does
+not have any $s$-$t$ path (or equivalently, $s$ cannot reach $t$ in $G_{f^*}$), because otherwise the FF algorithm will
+not terminate. Now we define a cut: let $S^*$ be the set of vertices in  $G_{f^*}$ that can be reached from $s$, formally 
+$S^* := \{v\in V\mid s \textrm{ can reach $v$ in } G_{f^*} \}$,
+and define $T^* = V\setminus S^*$.
+Clearly, $s\in S^*$.  Since $s$ cannot reach $t$ in $G_{f^*}$, we know that $t\in T^*$. Hence
+$(S^*, T^*)$ is an $s$-$t$ cut. For example, in Figure~4, $S^* = \{s,b\}$ and $T^* = \{a,t\}$.
+
+We now show the central result: $|f^*| = c(S^*,T^*)$. Recall the Fact 1 in Lecture
+37: the value of any flow, here we focus on $f^*$, can be calculated with any $s$-$t$
+cut, and here we will use the particular cut $(S^*,T^*)$.
+Specifically, we can write $|f^*| = \sum_{e\in E(S^*, T^*)} f^*(e) - \sum_{e\in E(T^*, S^*)} f^*(e)$.
+
+In fact, we have $f^*(e) = c(e)$ for every $e \in E(S^*,T^*)$. (Check Figure 4, where
+$E(S^*,T^*) = \{(s,a),(b,t)\}$.) Why? Suppose conversely that $f^*(e) < c(e)$.
+Assume that $e = (u,v)$; the fact that $e = (u,v) \in E(S^*,T^*)$
+means that $u \in S^*$ and $v \in T^*$. According to the way the residual graph is constructed, in $G_{f^*}$, there will be
+a forward edge $(u,v)$. Consequently, $s$ can reach $v$ in $G_{f^*}$, as $s$ can reach $u$~(because $u\in S^*$) and $u$ can reach 
+$v$ following this forward edge. This contradicts to the fact that $v \in T^*$.
+
+Also, we can show that $f^*(e) = 0$ for every $e \in E(T^*,S^*)$. (Check Figure 4, where $E(T^*,S^*) = \{(a,b)\}$.)
+Why? Suppose conversely that $f^*(e)>0$. Assume that $e=(u,v)$; the fact that $e=(u,v) \in E(T^*,S^*)$ means
+that $u \in T^*$ and $v\in S^*$. Then in the residual graph $G_{f^*}$, there will be a backward edge 
+$(v, u)$. Consequently, $s$ can reach $u$ in $G_{f^*}$, as $s$ can reach $v$~(because $v\in S^*$) and $v$ can reach $u$ following this backward edge. 
+This contradicts to the fact that $u \in T^*$.
+
+Combining all above, we have 
+$|f^*| = \sum_{e\in E(S^*, T^*)} f^*(e) - \sum_{e\in E(T^*, S^*)} f^*(e)
+ = \sum_{e\in E(S^*, T^*)} c(e) - 0 = c(S^*, T^*)$.
+
+This proves that $f^*$ is a maximum-flow and $(S^*,T^*)$ is a minimum cut, i.e., the
+FF algorithm is optimal, and a minimum-cut can be constructed from the residual
+graph. It also completes the connection between the maximum-flow problem and
+the minimum-cut problem: for any network, the value of the maximum-flow
+always equal to the capacity of the minimum-cut. This is called the max-flow
+min-cut theorem.
+
+
+\end{document}

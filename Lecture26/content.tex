@@ -1,0 +1,168 @@
+\section{Interval Scheduling Problem}
+
+\subsection*{The Problem}
+
+Given an array of \emph{intervals} $A[1\cdots n]$, where $A[i] = (s(i),t(i))$ is an interval represented with
+\emph{start-time} $s(i)$ and \emph{finish-time} $t(i)$, we seek a \emph{compatible} subset $X\subset A$
+such that $|X|$ is maximized. Here, $X$ is \emph{compatible} is defined as that intervals in $X$
+are disjoint~(i.e., any two intervals in $X$ don't overlap).
+See Figure~\ref{fig:interval}.
+
+\begin{figure}[h]
+\centering{\input{interval}}
+\caption{An instance of interval scheduling problem.
+The optimal solution includes 4 intervals $\{1, 2, 5, 6\}$.}
+\label{fig:interval}
+\end{figure}
+
+\subsection*{The Algorithm}
+
+Let's design a greedy algorithm for above interval scheduling problem.
+Recall that a greedy algorithm iteratively makes \emph{local decisions},
+until reaches a complete solution. In particular, for this problem
+a greedy algorithm follows the following framework.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {6}{Algorithm greedy-framework~(intervals $A[1\cdots n]$)}\xxx
+	\aab {init $X=\emptyset$;}\xxx
+	\aaB {3}{while~(true)}\xxx
+	\aac {\textcolor{blue}{greedily pick a (new) interval $x\in A$ that doesn't conflict with intervals in $X$} and add it to $X$;}\xxx
+	\aac {the algorithm terminates and returns $X$ if such $x$ cannot be found;}\xxx
+	\aab {end;}\xxx
+	\aaa {end;}\xxx
+\end{minipage}
+
+Above procedure is a framework, as how to \emph{greedily pick a new interval that is compatible with $X$} is not specified.
+A common practice in order to design a correct~(i.e., optimal) greedy algorithm is
+exploring different greedy strategies. For each strategy, we first try to
+design a counter-example to show it doesn't work; if such an instance
+is hard to construct, then it's a promising direction and we then try to prove that it is optimal.
+For this interval scheduling problem, we can explore the following strategies:
+
+\vspace*{-\topsep}
+\begin{enumerate}
+\item In each iteration, pick the interval with smallest length that is compatible with $X$.
+In fact, Figure~\ref{fig:interval}
+is an counter-example, where this greedy strategy finds intervals $\{3, 1, 2\}$.
+\item In each iteration, pick the interval with fewest conflicts that is compatible with $X$.
+You may notice that this strategy actually finds the optimal solution on Figure~\ref{fig:interval}.
+But it cannot guarantee optimality on all instances. Can you design an counter-example?
+Figure~4.1~(c) of the textbook~[KT], page 117, gives such a counter-example.
+\item In each iteration, pick the interval with earliest start-time that is compatible with $X$.
+In fact, Figure~\ref{fig:interval} again is an counter-example, where this greedy strategy finds intervals $\{1, 7\}$.
+\item In each iteration, pick the interval with earliest finish-time that is compatible with $X$.
+You may notice that this strategy also finds the optimal solution on Figure~\ref{fig:interval}.
+In fact, this strategy is indeed optimal~(see the formal proof below).
+\end{enumerate}
+
+\subsection*{Correctness}
+
+We now show that, the greedy strategy of picking the (compatible) interval with earliest finish-time leads
+to an optimal greedy algorithm. First, note that this greedy framework guarantees 
+that $X$ is compatible~(even if using the first 3 strategies),
+as any newly added interval doesn't overlap with existings ones in $X$.
+
+Now we show that the algorithm is optimal, i.e., $|X|$ is maximized.
+Assume that $X = \{A[x_1], A[x_2], \cdots, A[x_k]\}$.
+We also assume that these $k$ intervals are sorted by their finish-time, i.e., $t(x_1) \le t(x_2) \le \cdots \le t(x_k)$.
+Assume that $X^* = \{A[x^*_1], A[x^*_2], \cdots, A[x^*_m]\}$ be an optimal solution~(with $m$ intervals).
+We also assume that these $m$ intervals are sorted by their finish-time, i.e., $t(x^*_1) \le t(x^*_2) \le \cdots \le t(x^*_m)$.
+
+Clearly $k \le m$, as we assume $X^*$ is the optimal solution.
+The ultimate goal is to prove that $k = m$, i.e., the greedy algorithm always finds the
+same number of intervals with the optimal solution.
+In order to achieve it, we first prove a more informative fact,
+which shows that the greedy solution always \emph{stays ahead}
+of the optimal solution. Specifically,
+the finish-time of the $i$-th interval in the greedy solution
+is always no latter than the finish-time of the $i$-th interval of the optimal solution,
+formally stated below.
+
+\begin{fact} \label{fact1}
+For any $1 \le i \le k$, we have $t(x_i) \le t(x_i^*)$.
+\end{fact}
+
+\emph{Proof.} We prove it by induction. The base case
+is to show $t(x_1) \le t(x_1^*)$. This is obvious,
+as the first interval picked by the greedy algorithm 
+is always the one with smallest finish-time.
+
+We now show the inductive step. Suppose $t(x_j) \le t(x_j^*)$ for all $1\le j \le i$.
+We aim to prove $t(x_{i+1}) \le t(x_{i+1}^*)$. See Figure~\ref{fig:inductive}.
+We can write $t(x_i) \le t(x_i^*) \le s(x_{i+1}^*)$. 
+This shows that, $A[x^*_{i+1}]$ does not conflict with 
+any of these $\{A[x_1], A[x_2], \cdots, A[x_i]\}$.
+Hence, when greedy algorithm picks the $(i+1)$-th interval, 
+$A[x^*_{i+1}]$ is one of the legitimate candidates.
+As the greedy algorithm always pick the one with earliest finish-time~(among all legitimate ones), 
+either $A[x^*_{i+1}]$ is picked, or another one with even smaller finish-time~(than $A[x^*_{i+1}]$) is picked;
+in either case, we have $t(x_{i+1}) \le t(x_{i+1}^*)$, as desired. \qed
+
+\begin{figure}[h]
+\centering{\input{inductive}}
+\caption{Illustrating of proving Fact~\ref{fact1}.}
+\label{fig:inductive}
+\end{figure}
+
+\begin{fact} \label{fact2}
+We have $k = m$.
+\end{fact}
+
+\emph{Proof.} We prove it by contradiction.
+See Figure~\ref{fig:fact2}.  Suppose conversely that $m \ge k + 1$.
+Using the same reasong in proving Fact~\ref{fact1},
+we know that after picking $\{A[x_1], A[x_2], \cdots, A[x_k]\}$ in the greedy algorithm,
+$A[x^*_{i+1}]$ remains legitimate, as it does not overlap with any of these $k$ intervals that are already picked.
+Hence, the greedy algorithm won't terminate and will continue to pick at least one more interval.
+This contradicts to the assumption that the greedy solution includes $k$ intervals. \qed
+
+\begin{figure}[h]
+\centering{\input{fact2}}
+\caption{Illustrating of proving Fact~\ref{fact2}.}
+\label{fig:fact2}
+\end{figure}
+
+
+\subsection*{The Complete Algorithm}
+
+How to efficiently pick the interval with earliest finish-time that is compatible with existing ones~(i.e., those in $X$)?
+We can sort all intervals by their finish-time, examine them one-by-one following this order, and include it when it does not
+conflict with those in $X$---a similar approach is used in the Kruskal's algorithm.
+Then in each itertion, how to decide if the current interval is compatible with $X$?
+A naive solution is to compare it with all intervals in $X$, but this will take linear time and the resulting algorithm will take $O(n^2)$ time.
+In fact, we can do it faster. 
+As all intervals are now sorted by their finish-time,
+we have that the current interval can be safely added if and only if its start-time
+is larger or equal to the finish-time of the previously added interval.
+Hence, we simply maintain the last interval that is added to $X$,
+and we can use a single comparison, which takes constant time, to decide if the current one is compatible with $X$ or not.
+
+The pseudo-code is given below.
+The for-loop takes linear time. The entire algorithm takes $O(n\log n)$ time, as it is dominated by sorting.
+An example of running this algorithm follows.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {11}{Algorithm greedy~(intervals $A[1\cdots n]$)}\xxx
+	\aab {sort $A$ by their finish-time;}\xxx
+	\aab {init $X=\{A[1]\}$;}\xxx
+	\aab {let $j=1$;\ \ // maintain the previously added interval}\xxx
+	\aaB {5}{for $i = 2 \to n$}\xxx
+	\aaC {3}{if~($s(i) \ge t(j)$)}\xxx
+	\aad {pick $A[i]$ and add it to $X$;}\xxx
+	\aad {$j = i$;}\xxx
+	\aac {end;}\xxx
+	\aab {end;}\xxx
+	\aab {return $X$;}\xxx
+	\aaa {end;}\xxx
+\end{minipage}
+
+\vspace*{-0.8cm}
+
+\begin{figure}[h]
+\centering{\input{jump}}
+\caption{An example of running above algorithm.}
+\label{fig:jump}
+\end{figure}
+
+
+

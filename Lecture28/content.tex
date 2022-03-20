@@ -1,0 +1,257 @@
+\section{Vertex Cover Problem}
+
+\subsection*{Addressing Hard Problems}
+
+The vertex cover problem~(formally defined below), is one of the
+so-called~\emph{NP-hard} problems.  The 3SAT problem and the Knapsack problem
+we introduced before are also in this category.  Informally, a problem is
+{NP-hard} means that \emph{there does not exist any polynomial-time (optimal)
+algorithm for it}. To address a NP-hard problem, we therefore have to either
+drop polynomial-time constraint or drop optimality.
+
+\vspace*{-\topsep}
+\begin{enumerate}
+\item Design optimal algorithms but don't run in polynomial-time.
+For example, for the knapsack problem, we designed a DP algorithm~(which
+is optimal), but runs in $O(nW)$ time, which is exponential.
+\item Design polynomial-time algorithms but are not optimal.
+We usually require that, the solution obtained is \emph{guaranteed
+to be close to the optimal solution}; we call them \emph{approximation algorithms}.
+\end{enumerate}
+
+Here is a formal description of \emph{approximation algorithm}.
+Let $P$ be an optimization problem and assume the objective
+is to \emph{minimize} a function.
+Let $\mathcal{A}$ be an algorithm for problem $P$. We say $\mathcal{A}$
+is an approximation algorithm of $P$ with \emph{approximation ratio} of $c$, if for \emph{every} instance
+$I$ of $P$, we have $\mathcal{A}(I) / opt(I) \le c$,
+where $\mathcal{A}(I)$ represents the solution produced by algorithm $\mathcal{A}$ given instance $I$,
+and $opt(I)$ represents the optimal solution of instance $I$.
+
+Below, we will design greedy algorithms for the vertex cover problem, and
+prove that they are actually approximation algorithms~(with different approximation ratios).
+%by showing that $\mathcal{A}(I) / opt(I) \le c$ for every instance.
+
+\subsection*{The Problem}
+
+Let $G = (V, E)$ be an undirected graph. We say a subset $V_1\subset V$
+\emph{covers} all edges of $E$, if for \emph{every} edge $(u,v)\in E$,
+either we have $u\in V_1$, or $v\in V_1$, or both.
+Given undirected graph $G = (V, E)$,
+the \emph{vertex cover problem} seeks $V_1\subset V$ that covers $E$
+and that $|V_1|$ is minimized. See Figure~\ref{fig:cover}.
+
+\begin{figure}[h]
+\centering{\input{cover}}
+\caption{An instance of the vertex cover problem.
+One of the optimal solution is $\{b,e,c,f\}$.
+The optimal solution is not unique for this instance:
+$\{d,a,f,e\}$ is another optimal solution.}
+\label{fig:cover}
+\end{figure}
+
+\subsection*{Vertex-Based Greedy Algorithm}
+
+We now design a greedy algorithm for above problem
+following an intuitive greedy strategy.
+Since we want to cover all edges using the \emph{minimum} number of vertices,
+a natural approach is therefore to iteratively pick vertices that covers \emph{most} yet-uncovered edges.
+More specifically, we maintain $V_1$ to store the picked vertices,
+and maintain an updated graph $(V, E_1)$ with $E_1$ storing all (uncovered) edges; in each iteration,
+we pick the vertex with the largest degree in graph $(V, E_1)$~(or equivalently, pick the one that covers the
+largest number of uncovered edges), and then remove its adjacent
+edges~(i.e., edges that are covered by the picked vertex) from $E_1$.
+The pseudo-code is given below. See Figure~\ref{fig:greedy1} for an example.
+%this example also shows that this greedy greedy is not optimal.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {9}{Algorithm greedy-vertex-based~($G = (V, E)$)}\xxx
+	\aab {$V_1 = \emptyset$;}\xxx
+	\aab {$E_1 = E$;}\xxx
+	\aaB {4}{while~($E_1 \neq \emptyset$)}\xxx
+	\aac {pick $v$ with largest degree in graph $(V, E_1)$}\xxx
+	\aac {$V_1 = V_1\cup \{v\}$;}\xxx
+	\aac {remove all adjacent edges of $v$ from $E_1$;}\xxx
+	\aab {end;}\xxx
+	\aab {return $V_1$;}\xxx
+	\aaa {end;}\xxx
+\end{minipage}
+
+%%An equivalent intepretation of above algorithm is that,
+%%we always keep the graph $G = (V, E)$ up-to-date, and in each iteration,
+%%we pick the vertex $v$ \emph{with largest degree}, and we then update the
+%%graph by removing $v$ and the adjacent edges of $v$ in the graph.
+
+\begin{figure}[h]
+\centering{\input{greedy1}}
+\caption{Running above greedy algorithm on this instance:
+	the picked vertex and the graph $(V, E_1)$
+	in each iteration is illustrated. 
+The greedy algorithm returns $V_1$, while the optimal solution is $V_1^*$.}
+\label{fig:greedy1}
+\end{figure}
+
+\emph{Note: you may skip the following analysis and jump to the edge-based greedy algorithm.}
+The performance of above algorithm could be very poor on certain instance.
+Figure~\ref{fig:logn} gives such an instance, on which this algorithm
+finds a vertex cover with $m\log m$ vertices, while the optimal solution
+uses $m$ vertices. This instance is a \emph{bipartite graph}~(all vertices
+are divided into two disjoint parts, and all edges are spanning the two parts;
+the example shown in Figure~\ref{fig:greedy1} is a bipartite graph too; can you spot it?).
+It's constructed as follows. The upper part consists of $m$ vertices.
+The lower part consists of $m$ groups of vertices, and the $k$-th group
+consists of $m/k$ vertices, $1\le k \le m$; 
+each vertex in the $k$-th group connects to $k$ vertices
+in the upper part, and two vertices in the $k$-th group
+won't connect to the same vertex in the upper part.
+Hence, every vertex in the upper part connects to a vertex in the $k$-th group once.
+In the resulting graph, the degree of each vertex in the upper part is $m$,
+and the degree of each vertex in the $k$-th group is $k$.
+
+\begin{figure}[h]
+\centering{\input{logn}}
+\caption{An instance on which above vertex-based approximation 
+algorithm finds a vertex cover consists of all vertices in the
+lower part, while the optimal solution consists of all vertices
+in the upper part.}
+\label{fig:logn}
+\end{figure}
+
+Let's run above greedy algorithm on this complex instance.
+Recall that the algorithm picks the vertex with largest degree in
+each iteration. %assuming that the graph will be kept updated by removing these edges that are covered by the picked vertex in each iteration. 
+Consider the first iteration, 
+these $m$ vertices in the upper part and the $m$-th group in the lower part~(with 1 vertex)
+all have the largest degree of $m$.
+At a bad luck the algorithm picks the one in the lower part.
+After removing its adjacent edges, the vertices in the upper part
+have degree of $(m-1)$.
+Consider the second iteration,
+again the $m$ vertices in the upper part and the $(m-1)$-th group in the lower part~(with $\lfloor m/(m-1) \rfloor$ vertices)
+have degree of $(m-1)$.
+And assume that the algorithm picks the one(s) in the lower part.
+Clearly, if the algorithm always picks the vertices in the lower part
+to break tie, the solution returned by this greedy algorithm will include all vertices in the lower part: the total
+number of vertices is $m + m/2 + m/3 + \cdots + m/m = \Theta(m\log m)$.
+Notice that the optimal solution consists of all vertices in the upper part with $m$ vertices.
+Hence, the ratio on this instance is $\Theta(m\log m / m) = \Theta(\log m)$.
+
+Is above complex instance the worst-case example for this greedy algorithm~(i.e.,
+the ratio is maximized among all instances)?
+Actually yes~(in asymptotic manner).
+Formally, we can prove that, the ratio is bounded by $\Theta(\log |E|)$. In
+other words, this algorithm is an \emph{approximation algorithm} with an approximation
+ratio of $\Theta(\log |E|)$.
+\begin{fact}
+Let $V_1$ be the vertex cover returned by above (vertex-based) greedy algorithm.
+Let $V_1^*$ be the optimal vertex cover.
+We have $|V_1| \le \Theta(\log |E|) |V_1^*|$.
+\end{fact}
+\emph{Proof.}
+Assume that $|V_1| = k$ and $|V_1^*| = k^*$.
+Assume that the greedy algorithm iteratively picks $v_1, v_2, \cdots, v_k$,
+and assume that in the beginning of the $i$-th iteration, the degree of $v_i$ is $m_i$.  We have the following facts.
+\vspace*{-\topsep}
+\begin{enumerate}
+\item After the $i$-th iteration~(or before the $(i+1)$-th iteration),
+there are $|E| - \sum_{j=1}^i m_j$ edges in the graph,
+as $m_i$ edges will be removed in the $i$-th iteration.
+\item In the beginning of the $i$-th iteration,
+there are $|E| - \sum_{j=1}^{i-1} m_j$ edges in the graph.
+Let $d(v)$ be the degree of $v$ at this time. 
+Recall that $V_1^*$ is a cover, i.e., $|V_1^*|$ covers all edges~(at any time of the algorithm). 
+Hence, we have $\sum_{v\in V_1^*} d(v) \ge |E| - \sum_{j=1}^{i-1} m_j$.
+\item Since the greedy algorithm always picks the vertex
+with the largest degree in each iteration, we know that $m_i$ is the largest 
+degree in the graph in the beginning of the $i$-th iteration.
+Combined with above item, we can write $|E| - \sum_{j=1}^{i-1} m_j \le \sum_{v\in V_1^*} d(v) \le \sum_{v\in V_1^*} m_i = m_i \cdot k^*$.
+\end{enumerate}
+
+We therefore have $|E| - \sum_{j=1}^{i-1} m_j \le  m_i \cdot k^*$, for any $1\le i \le k$.
+We now use it to bound $m_i$ and $|E| - \sum_{j=1}^{i} m_j$, i.e., the number of edges remaining after $i$-th iteration. 
+\vspace*{-\topsep}
+\begin{enumerate}
+\item For $i = 1$, $|E| \le m_1 \cdot k^*$ and therefore $m_1 \ge |E| / k^*$.
+Hence $|E| - m_1 \le |E| - |E|/k^* = |E| \cdot (1-1/k^*)$.
+
+\item For $i = 2$, $|E| - m_1 \le m_2 \cdot k^*$ and therefore $m_2 \ge (|E| - m_1) / k^*$.
+Hence $|E| - m_1 - m_2 \le |E| - m_1 - (|E| - m_1)/k^* = (|E| - m_1) \cdot (1-1/k^*) \le |E|\cdot(1-1/k^*)^2$.
+
+\item For $i = 3$, $|E| - m_1 - m_2 \le m_3 \cdot k^*$ and therefore $m_3 \ge (|E| - m_1 - m_2) / k^*$.
+Hence $|E| - m_1 - m_2 - m_3\le |E| - m_1 - m_2 - (|E| - m_1 - m_2)/k^* = (|E| - m_1 - m_2) \cdot (1-1/k^*) \le |E|\cdot(1-1/k^*)^3$.
+\end{enumerate}
+
+Clearly, after $k-1$ iterations, 
+we have $|E| - \sum_{j=1}^{k-1} m_i \le |E| \cdot (1-1/k^*)^{k-1}$.
+Note that at this time the graph contains $m_k$ edges and $m_k \ge 1$.
+Hence, we have $|E| \cdot (1-1/k^*)^{k-1} \ge 1$.
+Take $\log(\cdot)$ on both sides, we have $\log |E| + (k-1)\cdot \log (1-1/k^*) \ge 0$.
+
+We apply $(1+x)\le e^x$ with $x = -1/k^*$.
+We have $0 \le \log |E| + (k-1)\cdot \log (1-1/k^*) \le \log |E| - (k-1)/k^*$.
+This gives $(k-1)/k^* \le \log |E|$, and also implies 
+$k/k^* \le \Theta(\log |E|)$, a desired result. \qed
+
+(Note: above proof is essentially the same with the proof used in the set cover problem~(Chapter 5.4~[DPV]).
+The set cover problem is the genealization of vertex cover problem.)
+
+To summarize, this (vertex-based) greeedy algorithm is an approximation algorithm with ratio of $\Theta(\log |E|)$.
+This ratio is \emph{tight}; the instance given in Figure~\ref{fig:logn} is a \emph{tight example},
+as for that instance, the actual ratio $\log m = \Theta(\log |E|)$.
+
+
+\subsection*{Edge-Based Greedy Algorithm}
+
+We now design another greedy algorithm for the vertex-cover problem.
+This algorithm is less intuitive, but we can prove a (much) better approximation ratio.
+The idea is to \emph{iteratively} pick uncovered edges, and once we pick an edge,
+we include \emph{both} its end-vertices.
+More specifically, we use $M$ to store the picked edges, use $V_1$ to store the picked vertices,
+and maintain an updated graph $(V, E_1)$ with $E_1$ storing all (uncovered) edges. In each iteration,
+we \emph{arbitrarily} pick an edge $e=(u,v)$ from $E_1$, add both $u$ and $v$ to $V_1$, 
+and then remove all adjacent edges of $u$ and $v$ from $E_1$.
+The pseudo-code is given below. See Figure~\ref{fig:greedy2} for an example.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {9}{Algorithm greedy-edge-based~($G = (V, E)$)}\xxx
+	\aab {$E_1 = E$; $M = \emptyset$; $V_1 = \emptyset$;}\xxx
+	\aaB {5}{while~($E_1 \neq \emptyset$)}\xxx
+	\aac {arbitrarily pick $e=(u,v)\in E_1$}\xxx
+	\aac {$M = M\cup \{e\}$;}\xxx
+	\aac {$V_1 = V_1\cup \{u,v\}$;}\xxx
+	\aac {remove all adjacent edges of $u,v$ from $E_1$;}\xxx
+	\aab {end;}\xxx
+	\aab {return $V_1$;}\xxx
+	\aaa {end;}\xxx
+\end{minipage}
+
+%%An equivalent intepretation of above algorithm is that,
+%%we always keep the graph $G = (V, E)$ up-to-date, and in each iteration,
+%%we pick the vertex $v$ \emph{with largest degree}, and we then update the
+%%graph by removing $v$ and the adjacent edges of $v$ in the graph.
+
+\begin{figure}[h]
+\centering{\input{greedy2}}
+\caption{Running the edge-based greedy algorithm on this instance:
+the picked edges and the graph $(V, E_1)$ in each iteration is illustrated. 
+The greedy algorithm returns $V_1$, while the optimal solution is $V_1^*$.}
+\label{fig:greedy2}
+\end{figure}
+
+Is this greedy algorithm an approximation algorithm? Again yes, and it commits
+a (much) better approximation ratio of 2!
+\begin{fact}
+Let $V_1$ be the vertex cover returned by above (edge-based) greedy algorithm.
+Let $V_1^*$ be the optimal vertex cover.
+We have $|V_1| \le 2 |V_1^*|$.
+\end{fact}
+\emph{Proof.} First, notice that $|V_1| = 2|M|$, as both end-vertices
+of an edge in $M$ will be added to $V_1$. Second, edges in $M$ don't
+share vertices. (In other words, $M$ is a \emph{matching}; a matching
+is defined as a set of edges that don't share vertices.)
+Therefore, in order to cover these edges in $M$, at least
+one end-vertex of each edge in $M$ needs to be included.
+Hence, any vertex cover will contain at least $|M|$ vertices.
+This of course applies to the optimal vertex cover, i.e., $|V_1^*| \ge |M|$.
+Combined, we have $|V_1| = 2|M| \le 2|V_1^*|$.  \qed
+

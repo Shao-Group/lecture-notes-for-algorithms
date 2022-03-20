@@ -1,0 +1,188 @@
+\section{Edit Distance Problem}
+
+\subsection*{The Problem}
+
+The edit distance problem is largely motivated by and abstracted from genome evolution.
+There are three types of nucleotide-level mutations, substitutions, insertions, and deletions.
+See Figure~\ref{fig:edits}. Given two DNA sequences, for examples, the sequences of two homologous genes,
+we want to infer the most likely mutation events happened between them during the evolutionary history.
+This can be modeled as the following edit distance problem: given two strings $X$ and $Y$ over alphabet $\Sigma$,
+to find the minimum number of such events that transforms $X$ into $Y$.
+We denote by $d(X, Y)$ as the edit distance between $X$ and $Y$.
+See Figure~\ref{fig:align} for an example, where we can write $d(X, Y) = 4$.
+
+\begin{figure}[h]
+\centering{\input{edits}}
+\caption{Illustration of the 3 types of mutation events in genome evolution.}
+\label{fig:edits}
+\end{figure}
+
+An equivalent and convenient way to represent edits between two sequences 
+is \emph{alignment}. See Figure~\ref{fig:align}.
+In an alignment, deletions and insertions are represented with \emph{gaps}, shown with $-$.
+(Note that deletions on $X$ is equivalent to insertions on $Y$;
+deletions on $Y$ is equivalent to insertions on $X$.)
+Both exactly-matched characters and mismatched-characters~(i.e., requires a substitutions event),
+are shown by vertical-bars with substitutions highlighted.
+Clearly, there is a one-to-one correspondence between a series
+of events that transforms $X$ into $Y$ and an alignment between $X$ and $Y$,
+and the number of events is equal to the number of gaps and mismatches in the alignment.
+Hence, calculating edit distance between $X$ and $Y$ is equivalent to
+seeking the optimal alignment between $X$ and $Y$~(here, ``optimal'' means
+the number of gaps and mismatches in the alignment is minimized).
+
+\begin{figure}[h]
+\centering{\input{align}}
+\caption{Illustration of the edit distance and the corresponding optimal alignment.}
+\label{fig:align}
+\end{figure}
+
+
+\subsection*{The Algorithm}
+
+We now design a dynamic programming to find the optimal alignment of two given strings.
+We first look into the optimal substructures. Suppose that $\mathcal{A}$ is the optimal
+alignment of two strings $X$ and $Y$~(see Figure~\ref{fig:optimal}).
+Then clearly its substructure, i.e., the first $k$ columns, gives the optimal
+alignment between the corresponding two substrings, which can be obtained by removing
+the gaps in the first $k$ columns of $\mathcal{A}$.
+(Proof: if the two substrings can be aligned with
+a better alignment~(with smaller number of gaps and mismatches), then we can have
+a better alignment, than $\mathcal{A}$, between $X$ and $Y$,
+by concatenating to it the remaining columns of $\mathcal{A}$.)
+
+\begin{figure}[h]
+\centering{\input{optimal}}
+\caption{Illustration of the optimal substructure of alignment.
+The left figure shows the optimal alignment between $X$ and $Y$.
+Then we can remove any number of columns from right-side, and the resulting
+alignment must be the optimal alignment of the corresponding two substrings.
+For examples, the middle figure shows the optimal alignment between $X' = AGCATCAG$ and $Y' = AGGAAG$,
+where one column of the alignment in the left-figure is removed;
+and the right figure shows the optimal alignment between $X'' = AGCATC$ and $Y'' = AGGA$,
+where three columns of the alignment in the left-figure is removed.}
+\label{fig:optimal}
+\end{figure}
+
+So, the alignment problem indeed satisfies the optimal substructure property.
+And the substructure suggests defining the subproblems as to computing the optimal
+alignment between a substring of $X$~(starting from beginning) and 
+a substring of $Y$~(starting from beginning).
+Formally, let $F(i,j)$ be the edit distance between $X[1\cdots i]$ and $Y[1\cdots j]$.
+Clearly, we have $d(X, Y) = F(|X|, |Y|)$.
+Now we develop a recursion. In order to calculate the optimal alignment between $X[1\cdots i]$
+and $Y[1\cdots j]$, consider the possible scenario of the last step, i.e., how $X[i]$ and $X[j]$
+are placed in the optimal alignment. There are three cases. See Figure~\ref{fig:recursion}.
+
+\begin{figure}[h]
+\centering{\input{recursion}}
+\caption{Illustration of the three cases in developing the recursion.}
+\label{fig:recursion}
+\end{figure}
+
+
+First, $X[i]$ is aligned to $Y[j]$ in the optimal alignment. In this case, the optimal alignment
+between $X[1\cdots i]$ and $Y[1\cdots j]$ can be obtained by concatenating the optimal alignment
+between $X[1\cdots i-1]$ and $Y[1\cdots j-1]$ and this column of $(X[i], Y[j])^T$.
+Hence, in this case, $F(i,j) = F(i, j) + \delta(X[i] \neq Y[j])$, where the delta function
+$\delta(X[i] \neq Y[j]) = 1$ if $X[i] \neq Y[j]$, i.e., a mismatch that requires a substitution event,
+and $\delta(X[i] \neq Y[j]) = 0$ if $X[i] = Y[j]$, i.e., an exactly-match that does not need any event.
+%The extra delta function represents if a substitution is needed.
+
+Second, $X[i]$ is not aligned~(or, aligned to a gap) in the optimal alignment. In this case, the optimal alignment
+between $X[1\cdots i]$ and $Y[1\cdots j]$ can be obtained by concatenating the optimal alignment
+between $X[1\cdots i-1]$ and $Y[1\cdots j]$ and this column of $(X[i], -)^T$.
+Hence, in this case, $F(i,j) = F(i-1, j) + 1$, where 
+the extra 1 represents a deletion on $X$ is needed.
+
+Third, $Y[j]$ is not aligned~(or, aligned to a gap) in the optimal alignment. In this case, the optimal alignment
+between $X[1\cdots i]$ and $Y[1\cdots j]$ can be obtained by concatenating the optimal alignment
+between $X[1\cdots i]$ and $Y[1\cdots j-1]$ and this column of $(-, Y[j])^T$.
+Hence, in this case, $F(i,j) = F(i, j- 1) + 1$, where 
+the extra 1 represents a deletion on $Y$ is needed.
+
+Combined, the recursion is given below.
+\begin{displaymath}
+F(i,j) = \min\left\{
+	\begin{array}{llll}
+	F(i-1,j-1) + \delta(X[i] \neq Y[j]) \\
+	F(i-1,j) + 1 \\
+	F(i,j-1) + 1 \\
+	\end{array}
+\right.
+\end{displaymath}
+
+We now can complete the algorithm. The algorithm fills a DP table. See Figure~\ref{fig:table}.
+To facilitate the recursion, we add a new row and a new column in the table,
+and fill them in the initialization step. 
+We then fill the table, either row by row, or column by column~(why both work?).
+The right bottom entry, $F(|X|, |Y|)$, gives the edit distance between $X$ and $Y$.
+The actual alignment can be constructed by maintaining a tracking back pointer on each entry.
+The running time of the algorithm is therefore $O(|X||Y|)$.
+
+\begin{figure}[h]
+\centering{\input{table}}
+\caption{The dynamic programming table.}
+\label{fig:table}
+\end{figure}
+
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {9}{Algorithm edit-distance~(two strings $X$, $Y$)}\xxx
+	\aab {$F(0,j) = j$, for any $0 \le j \le |Y|$}\xxx
+	\aab {$F(i,0) = i$, for any $0 \le i \le |X|$}\xxx
+	\aaB {4}{for $i = 1 \to |X|$}\xxx
+	\aaC {2}{for $j = 1 \to |Y|$}\xxx
+	\aad {$F(i,j) = \min\{F(i-1,j-1) + \delta(X[i] \neq Y[j]), F(i-1,j) + 1, F(i,j-1) + 1\}$;}\xxx
+	\aac {end for;}\xxx
+	\aab {end for;}\xxx
+	\aab {report: $F(|X|,|Y|) = d(X,Y)$;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+\subsection*{Transforming into Shortest Path Problem}
+
+Another way to solve the edit distance problem is to transform it into a shortest-path problem.
+See Figure~\ref{fig:graph}.
+We build a graph with $(|X| + 1)(|Y| + 1)$ vertices, $v_{ij}$, $0\le 0 \le |X|$ and $0\le j \le |Y|$. 
+(Imagine placing a vertex in each entry of above DP table.)
+There are three in-edges for vertex $v_{ij}$, when $i\ge 1$ and $j \ge 1$, corresponding to
+the 3 cases of the recursion. 
+All vertical edges have edge length of 1;
+all horizontal edges have edge length of 1;
+all diagonal edges have edge length of either 1 or 0: 
+if $X[i] \neq Y[j]$ then the edge $(v_{i-1,j-1}, v_{ij})$ has a length of 1,
+and otherwise this edge has a length of 0.
+
+\begin{figure}[h]
+\centering{\input{graph}}
+\caption{The graph constructed for $X=ACG$ and $Y = AGGT$. The 3 blue edges have length of 0, and all other edges have length 1.}
+\label{fig:graph}
+\end{figure}
+
+Clearly, there is a one-to-one correspondence between a path from $v_{00}$ to $v_{|X|,|Y|}$
+and an alignment between $X$ and $Y$, and the length of the path equals to the
+number of operations in the alignment. 
+See Figure~\ref{fig:graph2}.
+In fact, a path from $v_{00}$ to $v_{|X|,|Y|}$
+suggests how to align $X$ and $Y$: a diagonal edge pointing to vertex $v_{ij}$ implies aligning $X[i]$ and $Y[j]$;
+a vertical edge pointing to vertex $v_{ij}$ implies not to aligning $X[i]$~(or aligning $X[i]$ with gap);
+a horizontal edge pointing to vertex $v_{ij}$ implies not to aligning $Y[j]$~(or aligning $Y[j]$ with gap).
+You can also see that the length of this path equals to the number of 
+gaps and mismatches in the resulting alignment. This correlation is bi-directional:
+an alignment can be mapped into a path in the graph too.
+
+
+\begin{figure}[h!]
+\centering{\input{graph2}}
+\caption{Two examples showing the one-to-one correspondence between paths in the graph and alignments.}
+\label{fig:graph2}
+\end{figure}
+
+The above analysis leads to that, the optimal alignment between $X$ and $Y$
+corresponds to the shortest path from  $v_{00}$ to $v_{|X|,|Y|}$.
+As the graph is a DAG, we can use the linear time algorithm to find the shortest path from $v_{00}$.
+The graph contains $\Theta(|X||Y|)$ edges and vertices.
+Hence the running time is $\Theta(|X||Y|)$,
+the same as the DP algorithm.
+

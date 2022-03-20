@@ -1,0 +1,247 @@
+\section{Maximum Flow and Minimum Cut}
+
+A \emph{network}~(also called \emph{flow network}) models 
+an abstracted flow~(traffic, data, etc) transmits from an origin to a destination
+via a graphical structure. Formally, a (flow) network is a tuple $(G = (V, E), s, t, c(\cdot))$, where
+%$G = (V, E)$ is a directed graph, $s\in V$ represents the source vertex~(i.e., the in-degree of $s$ is 0),
+%$t\in V$ represents the sink vertex~(i.e., the out-degree of $t$ is 0),
+%and $c(e) \ge 0$ represents the \emph{capacity} of edge $e\in E$.
+
+\vspace*{-\topsep}
+\begin{enumerate}
+\item $G = (V, E)$ is a directed graph;
+\item $s\in V$ is a source vertex of $G$~(i.e., the in-degree of $s$ is 0), from which the flow is generated;
+\item $t\in V$ is a sink vertex of $G$~(i.e., the out-degree of $t$ is 0), at which the flow is absorbed;
+\item $c: E\to \mathbb{R}^+$, in which $c(e)$ represents the \emph{capacity} of edge $e\in E$, which models the limit of the flow that edge $e$ can carry.
+\end{enumerate}
+
+An \emph{$s$-$t$ flow} of network $(G = (V, E), s, t, c(\cdot))$
+describes {how} the flow is transmitted from $s$ to $t$
+via the graph $G$ under the capacity constraints. Formally,
+an $s$-$t$ flow $f$ is a function $f: E\to \mathbb{R}^+$
+that satisfies the following two conditions:
+\vspace*{-\topsep}
+\begin{enumerate}
+\item For every $e\in E$, $0\le f(e) \le c(e)$; this is called the \emph{capacity condition};
+\item For every vertex $v\in V\setminus\{s,t\}$, $\sum_{e\in I(v)} f(e) = \sum_{e\in O(v)} f(e)$, where $I(v) := \{(u,v)\in E\mid u\in V\}$ represents
+the set of in-edges of $v$, and $O(v) := \{(v,w)\in E\mid w\in V\}$ represents
+the set of out-edges of $v$. This is called the \emph{conservation condition}.
+\end{enumerate}
+
+Intuitively, an $s$-$t$ flow assigns an non-negative value $f(e)$ to edge $e$, representing the
+amount of flow that is carried by edge $e$; such amount must not exceed the capacity of $e$, i.e., $f(e) \le c(e)$, for every $e\in E$.
+All vertices, except the source $s$ that generates the flow and the sink that absorbs the flow,
+redistribute the flow~(instead of repositing any flow); therefore, for each vertex $v\in V\setminus\{s,t\}$,
+the total amount of flow that enters $v$ equals to the total amount of flow that leaves $v$.
+See Figure~\ref{fig:flow}.
+
+\begin{figure}[h]
+\centering{\input{flow}}
+\caption{An example of a network and an $s$-$t$ flow.
+The capacities are marked as black numbers next to edges;
+the flow values are marked as red numbers next to edges.}
+\label{fig:flow}
+\end{figure}
+
+The \emph{value} of an $s$-$t$ flow $f$, denoted as $|f|$,
+is defined as the total amount of flow that is generated from source vertex $s$:
+$|f| := \sum_{e\in O(s)} f(e)$. Intuitively, the total amount of flow that is generated
+from $s$ eventually must be fully absorbed by sink $t$, as all internal vertex~(i.e., $V\setminus\{s,t\}$)
+don't keep any flow. Therefore, we must have that 
+$|f| = \sum_{e\in I(t)} f(e)$.  
+This property is also a direct consequence of the conservation property.
+Below we formally state and prove it.
+
+\begin{fact}
+We have $\sum_{e\in O(s)} f(e) = \sum_{e\in I(t)} f(e)$. 
+\end{fact}
+
+\emph{Proof.} According to the conservation condition:
+$\sum_{e\in I(v)} f(e) = \sum_{e\in O(v)} f(e)$, 
+for every vertex $v\in V\setminus\{s,t\}$. 
+We sum up both sides over all $v\in V\setminus\{s,t\}$: 
+we have $\sum_{v\in V\setminus\{s,t\}} \sum_{e\in I(v)} f(e) = \sum_{v\in V\setminus\{s,t\}} \sum_{e\in O(v)} f(e)$. 
+
+We now break down the left side 
+$L := \sum_{v\in V\setminus\{s,t\}} \sum_{e\in I(v)} f(e) 
+= \sum_{v\in V} \sum_{e\in I(v)} f(e) -  \sum_{e\in I(s)} f(e) - \sum_{e\in I(t)} f(e)$.
+Notice also that $\sum_{v\in V} \sum_{e\in I(v)} f(e) = \sum_{e\in E} f(e)$.
+Since $s$ is a source vertex, we have $I(s) = \emptyset$, and therefore $\sum_{e\in I(s)} f(e)  = 0$.
+Hence, $L = \sum_{e\in E} f(e) - \sum_{e\in I(t)} f(e)$.
+
+Similarly, the right side 
+$R := \sum_{v\in V\setminus\{s,t\}} \sum_{e\in O(v)} f(e) 
+= \sum_{v\in V} \sum_{e\in O(v)} f(e) -  \sum_{e\in O(s)} f(e) - \sum_{e\in O(t)} f(e)$.
+Again we have $\sum_{v\in V} \sum_{e\in O(v)} f(e) = \sum_{e\in E} f(e)$.
+Since $t$ is a sink, we have $O(t) = \emptyset$, and therefore $\sum_{e\in O(t)} f(e)  = 0$.
+Hence, $R = \sum_{e\in E} f(e) - \sum_{e\in O(s)} f(e)$.
+
+Combining $L = R$ and noticing that $\sum_{e\in E} f(e)$ is shared, we have $\sum_{e\in O(s)} f(e) = \sum_{e\in I(t)} f(e)$, as desired.  \qed
+
+We now define the \emph{maximum-flow problem}: given network $(G= (V, E), s, t, c(\cdot))$,
+to find an $s$-$t$ flow $f$ such that $|f|$ is maximized.
+
+See Figure~\ref{fig:maxflow} for an example. Playing with the instance you may find
+a flow $f$ with $|f| = 9$, shown with red numbers in the figure.
+It seems that this flow $f$ is a maximum flow.
+Here is an argument that this flow $f$ is indeed a maximum flow.
+Consider the \emph{cut} shown with blue curve. Notice that
+$s$ and $t$ are on different sides of this cut. Therefore, all flow
+from $s$ to $t$ must cross this cut. Notice also that there are three
+cut-edges~(i.e., edges cross the border from $s$-side to $t$-side)
+and the \emph{total capacities} of these 3 edges is $3 + 2 + 4 = 9$.
+This gives an \emph{upper bound} of the maximum flow, which is 9.
+And, we have found a flow $f$ with $|f| = 9$. Therefore, $f$
+is a maximum flow.
+
+\begin{figure}[h]
+\centering{\input{maxflow}}
+\caption{An example of an network and its maximum $s$-$t$ flow~(red numbers).
+The right panel shows a certificate~(an $s$-$t$ cut) that proves that
+the $s$-$t$ flow given in the left panel is a maximum flow.}
+\label{fig:maxflow}
+\end{figure}
+
+
+\subsection*{Minimum-Cut}
+
+Recall that a \emph{cut} of a graph $G = (V, E)$ is defined
+as a \emph{partition} of the vertices, formally written as $(S, V\setminus S)$ where $S \subset V$.
+Given an network $G=(V, E)$ with source $s\in V$ and sink $t\in V$, 
+an \emph{$s$-$t$ cut} of the network is defined as a cut $(S, T)$, where $S\subset V$ and $T = V\setminus S$,
+satisfying that $s\in S$ and $t\in T$. In short, an $s$-$t$ cut of a network is a partition
+of the vertices that separates the source and the sink.
+
+An $s$-$t$ cut $(S, T)$ of a network $G = (V, E)$ with source $s$ and sink $t$ also partitions all
+edges $E$ into four disjoint subsets, described below. 
+We define the first category, i.e., $E(S, T) := \{(u,v)\in E\mid u\in S, v\in T\}$,
+as the \emph{cut-edges} w.r.t.\ the $s$-$t$ cut $(S, T)$.
+\vspace*{-\topsep}
+\begin{enumerate}
+\item Edges that span the cut and point from $s$-side to $t$-side, formally $E(S, T) := \{(u,v)\in E\mid u\in S, v\in T\}$;
+\item Edges that span the cut and point from $t$-side to $s$-side, formally $E(T, S) := \{(u,v)\in E\mid u\in T, v\in S\}$;
+\item Edges with both end-vertices in $s$-side, formally $E(S, S) := \{(u,v)\in E\mid u\in S, v\in S\}$;
+\item Edges with both end-vertices in $t$-side, formally $E(T, T) := \{(u,v)\in E\mid u\in T, v\in T\}$.
+\end{enumerate}
+
+Let $(S, T)$ be an $s$-$t$ cut of a network $G = (V, E)$ with source $s$, sink $t$, and capacity $c(e)$ for any $e\in E$.
+We define the \emph{capacity} of $(S, T)$, denoted as $c(S, T)$, as the sum of the capacities of its cut-edges. Formally
+as $c(S, T) := \sum_{e\in E(S, T)} c(e)$. See Figure~\ref{fig:cut}.
+
+\begin{figure}[h]
+\centering{\input{cut}}
+\caption{Three different $s$-$t$ cuts and their capacities of the same network.}
+\label{fig:cut}
+\end{figure}
+
+We now introduce the so-called \emph{minimum-cut problem}: given network $G = (V, E)$ with source $s$, sink $t$ and capacity $c(e)$ for any $e\in E$,
+   we seek an $s$-$t$ cut $(S, T)$ such that its capacity $c(S, T)$ is minimized.
+
+Note that, the definition of $s$-$t$ cut, capacity of an $s$-$t$ cut, and above minimum-cut problem,
+are completely independent of flow. Note too that, the input of the maximum-flow problem and the minimum-cut
+problem is the same: a network~(consisting of a directed graph, source and sink, and edge capacities).
+
+Although the maximum-flow problem and the minimum-cut problem are defined independently, they
+can be solved by the same algorithm~(for example, the Ford-Fulkson algorithm)
+and are connected by an elegant theorem~(i.e., the max-flow min-cut theorem).
+Below, we first show half of this theorem.
+Leter on we will introduce the Ford-Fulkson algorithm
+and use it to prove the other other half of the theorem.
+
+\subsection*{Maximum-Flow v.s.\ Minimum-Cut, One-Side Connection}
+
+We now show that, the capacity of \emph{any} $s$-$t$ cut of a network
+gives an \emph{upper bound} of the value of \emph{any} $s$-$t$ flow of the same network, 
+formally stated below.
+\begin{claim} \label{claim1}
+Let $(G=(V, E), s, t, c(\cdot))$ be a network.
+Let $f$ be an arbitrary $s$-$t$ flow and let $(S, T)$ be an arbitrary $s$-$t$ cut, of this network.
+We have $|f| \le c(S, T)$.
+\end{claim}
+
+Above claim is intuitive to understand: an $s$-$t$ flow $f$ transfer $|f|$ units of flow from source $s$ to sink $t$;
+since an $s$-$t$ cut $(S, T)$ separates $s$ and $t$, so the flow, all generated from $s$, must cross the cut in order to reach $t$,
+and such ``crossing'' must use the cut-edges.
+Hence, the total amount of the flow that can be transferred, i.e., the value of $f$, is limitted by
+the total capacities of the cut-edges, i.e., the capacity of the $s$-$t$ cut.
+See Figure~\ref{fig:claim}.
+
+\begin{figure}[h]
+\centering{\input{claim}}
+\caption{An example showing Claim~\ref{claim1} and Fact~\ref{fact1}.}
+\label{fig:claim}
+\end{figure}
+
+
+In order to formally prove above claim, we first show that, the value of an $s$-$t$ flow $f$
+can also be calculated by examining the flow carried by the ``spanning edges'' of any $s$-$t$ cut.
+Formally,
+\begin{fact} \label{fact1}
+Let $f$ be an arbitrary $s$-$t$ flow and let $(S, T)$ be an arbitrary $s$-$t$ cut, of network $(G=(V, E), s, t, c(\cdot))$.
+We have $|f| = \sum_{e\in E(S, T)} f(e) - \sum_{e\in E(T, S)} f(e)$.
+\end{fact}
+
+Above fact is also intuitive to understand: $S$ is a subset that includes $s$ but excludes $t$.
+See Figure~\ref{fig:claim}.
+When thinking $S$ as a whole, 
+the total amount of flow generated by $S$ is equal to $|f|$, as only $s$ generates flow.
+On the other hand, this amount of flow emitted from $S$ 
+can also be calcuated by summing up the flow leaves $S$, i.e., $\sum_{e\in E(S, T)} f(e)$,
+and subtracting the amount of the flow that enters back to $S$, i.e., $\sum_{e\in E(T, S)} f(e)$.
+
+We now formally prove Fact~\ref{fact1}. 
+Similar to the proof of Fact~1 of Lecture~36, this proof also simply applies the conservation property.
+
+\emph{Proof of Fact~\ref{fact1}.} According to conservation property, for any $v\in S\setminus \{s\}$,
+we have $\sum_{e\in I(v)} f(e) = \sum_{e\in O(v)} f(e)$. 
+We sum up both sides over all $v\in S\setminus\{s\}$: 
+we have $\sum_{v\in S\setminus\{s\}} \sum_{e\in I(v)} f(e) = \sum_{v\in S\setminus\{s\}} \sum_{e\in O(v)} f(e)$. 
+Note that $I(s) = \emptyset$ as $s$ is a source, so the left side of above equation can be rewritten as $\sum_{v\in S} \sum_{e\in I(v)} f(e)$.
+Note that $|f| = \sum_{e\in O(s)} f(e)$ by definition, so the right side can be rewritten as $\sum_{v\in S} \sum_{e\in O(v)} f(e) - |f|$.
+Combined, we have $|f| = \sum_{v\in S} \sum_{e\in O(v)} f(e) - \sum_{v\in S} \sum_{e\in I(v)} f(e)$. 
+Now consider the 4 types of edges partitioned by $(S, T)$ and consider if they are taken into account by the two items
+i.e., $\sum_{v\in S} \sum_{e\in O(v)} f(e)$ and $\sum_{v\in S} \sum_{e\in I(v)} f(e)$. 
+\vspace*{-\topsep}
+\begin{enumerate}
+\item All edges in $E(S, T)$ appear in the first item, but not the second one.
+\item All edges in $E(T, S)$ appear in the second item, but not the first one.
+\item All edges in $E(S, S)$ appear in both items~(so they cancel out).
+\item None of the edges in $E(T, T)$ appear in either item.
+\end{enumerate}
+Therefore, we have $|f| = \sum_{e\in E(S, T)} f(e) - \sum_{e\in E(T, S)} f(e)$. \qed
+
+We now formally prove Claim~\ref{fact1}. The proof simply combiines the capacity condition (and the non-negative property) of an $s$-$t$ flow,
+Fact~\ref{fact1}, and the definition of the capacity of an $s$-$t$ cut.
+
+\emph{Proof of Claim~\ref{claim1}.} Since $0\le f(e) \le c(e)$ for any $e\in E$,
+based on Fact~\ref{fact1}, we can write
+$|f| = \sum_{e\in E(S, T)} f(e) - \sum_{e\in E(T, S)} f(e)
+\le \sum_{e\in E(S, T)} c(e) - 0 = c(S, T)$. \qed
+
+Claim~\ref{claim1} states that capacity of \emph{any} $s$-$t$ cut
+is larger or equal to the value of \emph{any} $s$-$t$ flow.
+Consequently, if there exists an $s$-$t$ flow $f$ and an $s$-$t$ cut $(S,T)$
+satisfies that $|f| = c(S, T)$, then this $f$ must be a maximum-flow,
+and this $(S, T)$ must be a minimum-cut.
+An illustration of this property is given in Figure~\ref{fig:meet},
+where each red point represents the value of an $s$-$t$ flow
+while each blue point represents the capacity of an $s$-$t$ cut.
+So all red points lie to the left side of all blue points,
+and if a red point and a blue point meet, they are maximum-flow and minimum-cut.
+
+\begin{figure}[h]
+\centering{\input{meet}}
+\caption{Illustration of the relationship between capacity of any $s$-$t$ cut
+and value of \emph{any} $s$-$t$ flow.  Do they always meet in the middle?}
+\label{fig:meet}
+\end{figure}
+
+Does there \emph{always} exist $f$ and $(S,T)$ such that $|f| = c(S,T)$?
+In Figure~2 of Lecture~36 we saw an example where such flow and cut exist.
+But is this the case for \emph{every} instance?
+Actually, the answer is yes! (And this suprising result is referred to the max-flow min-cut theorem.)
+The proof is constructive: we will design an algorithm~(i.e., the Ford-Fulkson algorithm)
+that actually always finds an $s$-$t$ flow $f$ and an $s$-$t$ cut $(S, T)$
+that satisfies $|f| = c(S, T)$.
+
+

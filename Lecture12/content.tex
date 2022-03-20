@@ -1,0 +1,128 @@
+\section{Shortest Path Problems and BFS}
+
+In many applications, edges of graphs are associated with \emph{lengths}.
+We will consider three cases.
+\vspace*{-\topsep}
+\begin{enumerate}
+\item unit edge length: the length of each edge is 1;
+\item positive edge length: the length of each edge is a positive number;
+\item length of edge might be a negative number.
+\end{enumerate}
+
+Let $G = (V, E)$ be a graph; let $l(e)$ be the length of $e\in E$~(in any of above cases).
+Let $p$ be a path of $G$. We define the length of path $p$, still denoted as $l(p)$,
+as the sum of the length of all edges in $p$, i.e., $l(p) := \sum_{e\in p} l(e)$.
+Given $u,v\in V$, the \emph{shortest path} from $u$ to $v$, is the path from $u$ to $v$
+with smallest length. We use notation $distance(u,v)$ to denote the length
+of the shortest path from $u$ to $v$.
+
+%%%Shortest path admits the following \emph{optimal substructure} property.
+%%%Intuitively, this property states that, the shortest path from $u$ to $v$
+%%%contains the shortest path from $u$ to any internal vertex on this path~(formally described below).
+%%%Essentially, this is why shortest path problem can be solved efficiently.
+%%%
+%%%\begin{property}
+%%%Let $p = (v_1, v_2) \to (v_2, v_3) \to \cdots \to (v_{k-1}, v_k)$
+%%%be the shortest path from $v_1$ to $v_k$.
+%%%Then for any $1\le i \le k$,
+%%%$p_i := (v_1, v_2) \to (v_2, v_3) \to \cdots \to (v_{i-1}, v_i)$, i.e., the portion of $p$ from $v_1$ to $v_i$,
+%%%is the shortest path from $v_1$ to $v_i$.
+%%%\end{property}
+%%%
+%%%\emph{Proof.} Suppose that 
+%%%$p_i = (v_1, v_2) \to (v_2, v_3) \to \cdots \to (v_{i-1}, v_i)$
+%%%is not the shortest path from $v_1$ to $v_i$. Assume that
+%%%$q$ is the shorest path from $v_1$ to $v_i$.
+%%%Then we can construct a path from $v_1$ to $v_k$ shorter than $p$,
+%%%by concatenating $q$ and $(v_i, v_{i+1}) \to \cdots \to (v_{k-1}, v_k)$.
+%%%This contradicts to the fact that $p$ is the shortest path from $v_1$ to $v_k$.\qed
+%%%
+%%%Note that the above property holds even for graphs with negative edge length~(as
+%%%in the proof we don't assume anything about edge length).
+
+There are different variants of shortest path problems.
+One category is \emph{single-source shortest path problem}, where
+we are given graph $G = (V, E)$ with edge length~(one of the three cases)
+and a \emph{source} vertex $s\in V$, and we seek to find the shortest
+path from $s$ to \emph{all} vertices.
+
+
+We first solve the easiest version of shortest path problem: 
+given $G = (V, E)$ with unit edge length and a \emph{source} vertex $s\in V$,
+to find the shortest path from $s$ to all vertices, i.e., to find $distance(s, v)$ for any $v\in V$.
+
+The breadth-first search~(BFS) can solve above problem. The idea of BFS
+is to traverse the vertices of graph in increasing order of their distance from $s$.
+Formally, we define $V_k$, $k = 0, 1, 2, \cdots$, as the subset of
+vertices whose distance~(from $s$) is exactly $k$, i.e., $V_k = \{v \in V \mid distance(s, v) = k\}$.
+BFS will first traverse vertices in $V_0$, then vertices in $V_1$, then $V_2$, and so on,
+until all vertices reachable from $s$ are traversed.
+
+Notice that $V_0 = \{s\}$ as $distance(s, s) = 0$.
+How about $V_1$? They are the vertices reachable from $s$ with one edge~(but cannot be $s$), i.e., $V_1 = \{v \in V \mid (s, v) \in E\}\setminus V_0$.
+How about $V_2$? They are the vertices reachable from some vertex in $V_1$ with one edge, but not in $V_0$ or $V_1$, i.e., $V_2 = \{v \in V \mid u\in V_1 \textrm{ and } (u, v) \in E\} \setminus (V_0\cup V_1)$.
+The general form is that $V_{k + 1} = \{v \in V \mid u \in V_k \textrm{ and } (u, v) \in E\} \setminus (V_0\cup V_1 \cup \cdots \cup V_k)$.
+This suggests an iterative framework of BFS: to find $V_{k+1}$, explore the out-edges of $V_k$ to collect the \emph{newly} reached 
+vertices~(i.e., those not in $V_0\cup V_1 \cup \cdots \cup V_k$).
+To realize this idea, BFS uses two data structures; the complete algorithm follows. 
+\vspace*{-\topsep}
+\begin{enumerate}
+\item Array $dist$ of size $|V|$, initialized as $dist[v] = \infty$ for any $v\in V$.
+Array $dist$ serves as two purposes: indicating a vertex has been reached or not,
+and storing the distance from $s$~(after it has been reached).
+Formally, before $v$ is reached, $dist[v] = \infty$;
+after $v$ is reached, $dist[v] = distance~(s, v)$.
+
+\item Queue $Q$, which stores the vertices haven't been explored.
+Vertices will be added to $Q$ in the order of $V_0, V_1, V_2, \cdots$,
+and vertices will be deleted from $Q$ in the same order~(as queue is first-in-first-out).
+%At the time $v$ is deleted from $Q$, BFS explores it: examine out-edges of $v$,
+%set $dist$ value for newly reached vertices, and add them to $Q$.
+\end{enumerate}
+
+%The complete BFS algorithm is given below.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {15}{Algorithm BFS~($G = (V, E), s \in V$)}\xxx
+	\aab {$dist[v] = \infty$, for any $v\in V$;}\xxx
+	\aab {init an empty queue $Q$;}\xxx
+	\aab {$dist[s] = 0$;}\xxx
+	\aab {insert~($Q, s$);}\xxx
+	\aaB {9}{while~(empty~($Q$) = false)}\xxx
+	\aac {$u$ = find-earliest~($Q$);}\xxx
+	\aac {delete-earliest~($Q$);}\xxx
+	\aaC {5}{for each edge~$(u, v)\in E$}\xxx
+	\aaD {3}{if~($dist[v] = \infty$)}\xxx
+	\aae {$dist[v] = dist[u] + 1$;}\xxx
+	\aae {insert~($Q$, $v$);}\xxx
+	\aad {end if;}\xxx
+	\aac {end for;}\xxx
+	\aab {end while;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+
+
+
+Initially BFS has $V_0$~(i.e., $s$) in $Q$~(right before the while loop), 
+then BFS deletes $s$ from $Q$ and explores $s$~(newly reached vertices---these are $V_1$, will have their $dist$ set as 1 and be added to $Q$);
+at the time of finishing exploring $V_0$, $V_1$ will be in $Q$. 
+Next, BFS will gradually delete and explore each of the vertices in $Q$~(i.e., $V_1$);
+in this process, vertices in $V_2$ will be reached, their $dist$ be set as 2, and be added to $Q$;
+after all of them are deleted and explored, $Q$ will exactly consist of $V_2$.
+
+In general, BFS keeps the following invariant: for every $k = 0, 1, 2, \cdots$, 
+there is a time at which $Q$ contains exactly $V_k$, $dist[v] = distance(s, v)$ for any $v\in V_0\cup V_1\cup \cdots V_k$,
+and $dist[v] = \infty$ for all other vertices.
+This invariant explains the behavior of BFS while also proves its correctness:
+when the $Q$ becomes empty, $dist[v] = distance(s, v)$ for any $v\in V$.
+
+Following above invariant and the pseudo-code, we know that the time that vertex $v$ is reached for the first time~(happend when $(u,v)\in E$ is checked and $dist[v] = \infty$),
+is also the time that the shortest path to $v$ is found, that the $dist[v]$ gets assigned, and that $v$ is added to $Q$.
+
+
+BFS runs in $O(|V| + |E|)$ time, as each vertex will be explored at most once, and each 
+edge will be examined at most once~(for directed graph) and at most twice~(for undirected graph).
+Note that BFS~($G$, $s$) only traverses those vertices in $G$ can be reached from $s$.
+
+

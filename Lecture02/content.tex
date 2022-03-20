@@ -1,0 +1,109 @@
+\section{Asymptotic Notations}
+
+\subsection*{Definitions and Properties}
+
+\begin{definition}[Big-O]
+Let $f = f(n)$ and $g=g(n)$ be two positive functions over integers $n$.
+We way $f = O(g)$, if there exists positive number $c > 0$ and integer $N \ge 0$
+such that $f(n) \le c\cdot g(n)$ for all $n\ge N$.
+\end{definition}
+
+Similarly, we can define Big-O for multiple-variable functions.
+
+\begin{definition}[Big-O]
+Let $f = f(m,n)$ and $g=g(m,n)$ be two positive functions over integers $m$ and $n$.
+We way $f = O(g)$, if there exists positive number $c > 0$ and integers $M\ge 0$ and $N \ge 0$
+such that $f(m,n) \le c\cdot g(m,n)$ for all $m\ge M$ and $n\ge N$.
+\end{definition}
+
+Intuitively, Big-O is analogous to ``$\le$''.
+
+\emph{Example.} Let $f(m,n) = 4m + 4n + 5$ and $g(m,n) = m + n$. We now show that $f = O(g)$,
+using above definition. To show it, we need to find $c$, $M$, and $N$. What are good choices for them?
+There are lots of choices; one set of it is: $c = 7$, $M = 1$, and $N = 1$.
+Let's verify: $f(m,n) - c\cdot g(m,n) = 4m + 4n + 5 - 7m - 7n = 5 - 3m - 3n \le 5 - 3 - 3 = -1 \le 0$,
+where we use that $m \ge M = 1$ and $n \ge N = 1$. This proves that $f = O(g)$.
+
+\begin{definition}[Big-Omega]
+Let $f = f(n)$ and $g=g(n)$ be two positive functions over integers $n$.
+We way $f = \Omega(g)$, if there exists positive number $c > 0$ and integer $N \ge 0$
+such that $f(n) \ge c\cdot g(n)$ for all $n\ge N$.
+\end{definition}
+
+Similarly, we can define Big-Omega for multiple-variable functions.
+
+\begin{definition}[Big-O]
+Let $f = f(m,n)$ and $g=g(m,n)$ be two positive functions over integers $m$ and $n$.
+We way $f = \Omega(g)$, if there exists positive number $c > 0$ and integers $M\ge 0$ and $N \ge 0$
+such that $f(m,n) \ge c\cdot g(m,n)$ for all $m\ge M$ and $n\ge N$.
+\end{definition}
+
+Intuitively, Big-Omega is analogous to ``$\ge$''.
+
+\emph{Example.} Let $f(m,n) = 4m + 4n + 5$ and $g(m,n) = m + n$. We now show that $f = \Omega(g)$,
+using above definition. To show it, we need to find $c$, $M$, and $N$. 
+We can choose: $c = 1$, $M = 0$, and $N = 0$.
+Let's verify: $f(m,n) - c\cdot g(m,n) = 4m + 4n + 5 - m - n = 5 + 3m + 3n \ge 5 \ge 0$,
+where we use that $m \ge M = 0$ and $n \ge N = 0$. This proves that $f = \Omega(g)$.
+
+\begin{claim}
+$f = O(g)$ if and only if $g = \Omega(f)$.
+\end{claim}
+
+\emph{Proof.} We have\\
+		\begin{displaymath}
+		\begin{array}{llll}
+		& & f = O(g) \\
+		& \Leftrightarrow & \exists\ c > 0, N \ge 0, \textrm{ s.t.\ } f(n) \le c\cdot g(n), \forall n \ge N\\
+		& \Leftrightarrow & \exists\ c > 0, N \ge 0, \textrm{ s.t.\ } 1/c \cdot f(n) \le g(n), \forall n \ge N\\
+		& \Leftrightarrow & \exists\ c' = 1/c > 0, N \ge 0, \textrm{ s.t.\ } g(n) \ge c'\cdot f(n), \forall n \ge N\\
+		& \Leftrightarrow & g = \Omega(f) \\
+		\end{array}
+		\end{displaymath}
+\qed
+
+\begin{definition}[Big-Theta]
+We say $f = \Theta(g)$ if and only if $f = O(g)$ and $f = \Omega(g)$.
+\end{definition}
+
+Intuitively, Big-Theta is analogous to ``$=$''.
+
+\emph{Example.} Let $f(m,n) = 4m + 4n + 5$ and $g(m,n) = m + n$. We have $f = \Theta(g)$ as 
+we proved that $f = O(g)$ and that $f = \Omega(g)$.
+
+Below we give an equivalent description of Big-Theta.
+
+\begin{fact}
+Let $f$ and $g$ be two positive functions. Then $f = \Theta(g)$ if and only if $\lim_{n\to\infty} f(n) / g(n) = c > 0$.
+\end{fact}
+
+\emph{Example.} Let $f(m,n) = 4m + 4n + 5$ and $g(m,n) = m + n$. We now show $f = \Theta(g)$ using above fact.
+$\lim_{m\to\infty, n\to\infty} f / g = \lim_{m\to\infty, n\to\infty} (4m + 4n + 5)/(m + n) = 4 > 0$.
+Hence, $f = \Theta(g)$.
+
+\begin{definition}[small-o]
+Let $f = f(n)$ and $g = g(n)$ be two positive functions. We say $f = o(g)$ if and only if $\lim_{n\to\infty} f(n) / g(n) = 0$.
+\end{definition}
+
+Intuitively, small-o is analogous to ``$<$''.
+
+\emph{Example.} Let $f(n) = n$ and $g(n) = n^2$. We now show $f = o(g)$ using above definition.
+$\lim_{n\to\infty} f / g = \lim_{n\to\infty} n/n^2 = \lim_{n\to\infty} 1 / n = 0$.
+Hence, $f = o(g)$.
+
+
+\subsection*{Commonly-Used Functions in Algorithm Analysis}
+
+In theoretical computer science, we often see following categories of functions.
+\vspace*{-\topsep}
+\begin{enumerate}
+\item logarithmic functions: $\log\log n$, $\log n$, $(\log_n)^2$;
+\item polynomial functions: $\sqrt{n} = n^{0.5}$, $n$, $n\log n$, $n^{1.001}$;
+\item exponential functions: $2^n$, $n2^n$, $3^n$;
+\item factorial functions: $n!$;
+\end{enumerate}
+
+In above lists, any logarithmic function is small-o of any polynomial function: for example, $(\log n)^2 = o(n^{0.01})$;
+any polynomial function is small-o of any exponential function: for example, $n^2 = o(2^n)$;
+any exponential function is small-o of any factorial function: for example, $n2^n = o(n!)$.
+Within each category, a function to the left is small-o of a function to the right, for example $n\log n = o(n^{1.001})$.

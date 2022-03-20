@@ -1,0 +1,133 @@
+\section{Merge-Sort and Master's Theorem}
+
+\subsection*{Framework of Divide-and-Conquer}
+
+We now start introducing the first algorithm-design technique:
+divide-and-conquer. 
+A typical divide-and-conquer algorithm follows the framework below.
+\vspace*{-\topsep}
+\begin{enumerate}
+\item partition the original problem into smaller problems;
+\item recursively solve all subproblems;
+\item combine the solutions of the subproblems to obtain the solution of the original problem.
+\end{enumerate}
+
+\subsection*{Merge-Sort}
+
+We use sorting as the first problem
+to demonstrate designing divide-and-conquer algorithms.
+Recall that the \emph{sorting} problem is to find the sorted array~(say, in increasing order) $S'$ of a given array $S$.  
+We now design a divide-and-conquer algorithm for it. For any recursive algorithm, we always need to
+clearly define the recursion. In this case, we define function merge-sort~($S$) returns the
+sorted array~(in ascending order) of $S$.
+
+The idea is to sort the first half and second half of $S$, by recursively call the merge-sort function.
+How to obtain the sorted array of $S$ then with the two sorted half-sized arrays?
+We have introduced such an algorithm to merge two sorted arrays into a single sorted array.
+That's exactly the algorithm we need here in the combining step.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {5}{Algorithm merge-sort~($S[1\cdots n]$)}\xxx
+	\aab {if $n \le 1$: return $S$;}\xxx
+	\aab {$S'_1 =$ merge-sort~($S[1\cdots n/2]$);}\xxx
+	\aab {$S'_2 =$ merge-sort~($S[n/2 + 1\cdots n]$);}\xxx
+	\aab {return merge-two-sorted-arrays~($S_1', S_2'$);}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+We now analyze above algorithm.
+The correctness of the algorithm can be proved by induction, as the natural structure of above algorithm is recursive.
+Specifically, we want to prove the statement that the merge-sort function with $A$ as input returns the sorted array of $A$ if $|A| = n$.
+The induction is w.r.t.\ $n$. The base case, i.e., $n = 1$, is clearly correct.
+In the inductive step, we assume that above statement is true for $|A| = 1, 2, \cdots, n - 1$, and we aim to prove it is correct for $|A| = n$.
+As the algorithm is correct for $|A| = 1, 2, \cdots, n - 1$, in particular, it is correct for $|A| = n/2$, i.e.,
+$S'_1$ and $S_2'$ store the sorted array of $S_1$ and $S_2$, respectively.
+Combinining the correctness of merge-two-sorted-arrays that we have already proved,
+we have that merge-sort returns the sorted array of $S$.
+
+To see its runing time, we define $T(n)$ as the running time of merge-sort~($S$) when $|S| = n$.
+Clearly, both merge-sort~($S[1\cdots n/2]$) and
+merge-sort~($S[n/2+1\cdots n]$) take $T(n/2)$ time.
+As merge-two-sorted-arrays takes linear time, we have the recurrence $T(n) = 2T(n/2) + \Theta(n)$.
+We will use \emph{master's theorem} to get the closed form for $T(n)$, described below.
+
+\subsection*{Master's Theorem}
+
+Master's theorem gives closed form for the following recurrence:
+\begin{displaymath}
+T(n) = \left\{
+\begin{array}{llll}
+aT(n/b) + \Theta(n^d)  & \textrm{ if } n \ge 2 \\
+1  & \textrm{ if } n \le 1 
+\end{array}
+\right.
+\end{displaymath}
+
+Master's theorem is widely used to analyze the running time of divide-and-conquer algorithms. 
+Recall that a divide-and-conquer algorithm
+first partitions the original problems into subproblems, solve all subproblems recursively,
+and then combine them to answer the original question.
+Hence, above recurrence precisely describes the running time of such algorithms.
+Specifically, $a$ refers to the number of subproblems that the original problem is partitioned,
+$n/b$ refer to the input-size of each subproblem,
+and $\Theta(n^d)$ refer to the running time of the combining step.
+In merge-sort, $a = 2$, as it calls merge-sort twice in the algorithm,
+$b = 2$, as the input-size of each subproblem becomes $n/2$,
+and $d = 1$, as the merge-two-sorted-arrays takes $\Theta(n)$ time.
+Note that, it is not always the case that $a = b$~(in merge-sort though, $a = b$).
+Such example includes matrix multiplication.
+
+We now solve above recurrence. Without loss of generality, we assume that $n$ is a power of $b$, i.e., $n = b^k$ for some $k$.
+To further simplify, we use $n^d$ instead of $\Theta(n^d)$.
+We therefore need to add $\Theta(\cdot)$ to the resulting formular of $T(n)$.
+
+\begin{eqnarray*}
+T(n) & = & aT(n/b) + n^d \\
+     & = & a(aT(n/b^2) + (n/b)^d) + n^d \\
+	 & = & a^2 T(n/b^2) + a(n/b)^d + n^d \\
+     & = & a^2(aT(n/b^3) + (n/b^2)^d) + a(n/b)^d + n^d \\
+	 & = & a^3 T(n/b^3) + a^2(n/b^2)^d + a(n/b)^d + n^d \\
+	 & = & \cdots \\
+	 & = & a^k T(n/b^k) + \sum_{i = 0}^{k-1} a^i(n/b^i)^d
+\end{eqnarray*}
+
+As we assume that $n = b^k$ and $T(1) = 1$, we have
+$$ T(n) =  a^k + \sum_{i = 0}^{k-1} a^i(n/b^i)^d = \sum_{i = 0}^{k} a^i(n/b^i)^d = n^d \sum_{i = 0}^{k} (a/b^d)^i.$$
+
+Consider the following 3 cases. 
+\vspace*{-\topsep}
+\begin{enumerate}
+\item If $a = b^d$, i.e., $d = \log_b a$, then $T(n) = n^d k = n^d \log_b n = \Theta(n\log n)$.
+\item If $a < b^d$, i.e., $d > \log_b a$, then the series decreases exponentially, and therefore the item of $i = 0$ dominates.  $T(n) = n^d a/b^d = \Theta(n^d)$.
+\item If $a > b^d$, i.e., $d < \log_b a$, then the series increases exponentially, and therefore the item of $i = k$ dominates.  
+$T(n) = n^d (a/b^d)^k = n^d a^k / b^{dk} = n^d a^k/n^d = a^k = a^{\log_b n} = n^{\log_b a}$.
+\end{enumerate}
+
+We have used one facts about logarithmic function above: %$\log_b n = \log_b 2 \cdot \log_2 n$, and 
+$a^{\log_b n} = n^{\log_b a}$.
+
+Master's theorem can be summarized as below. For recurrence $T(n) = aT(n/b) + n^d$ with $T(1) = 1$, we have the following:
+\begin{displaymath}
+T(n) = \left\{
+\begin{array}{llll}
+\Theta(n^d \log n) & \textrm{ if } d = \log_b a \\
+\Theta(n^d) & \textrm{ if } d > \log_b a \\
+\Theta(n^{\log_b a}) & \textrm{ if } d < \log_b a \\
+\end{array}
+\right.
+\end{displaymath}
+
+In the case of merge-sort, $a = b = 2$ and $d = 1$. So $d = \log_b a = 1$.
+Hence, $T(n) = \Theta(n\log n)$.
+
+A more generalized form of master's theorem is to solve this recurrence:
+$T(n) = aT(n/b) + n^d \log^s n$ with $T(1) = 1$. The closed form is given below: %~(proved in recitations).
+\begin{displaymath}
+T(n) = \left\{
+\begin{array}{llll}
+\Theta(n^d \log^{s+1} n) & \textrm{ if } d = \log_b a \\
+\textcolor{blue}{\Theta(n^d \log^s n)} & \textrm{ if } d > \log_b a \\
+\Theta(n^{\log_b a}) & \textrm{ if } d < \log_b a \\
+\end{array}
+\right.
+\end{displaymath}

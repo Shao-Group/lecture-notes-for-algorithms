@@ -1,0 +1,203 @@
+\section{Queue and Priority Queue}
+
+\subsection*{Queue}
+
+A \emph{queue} data structure supports the following four operations.
+\vspace*{-\topsep}
+\begin{enumerate}
+\item empty~($Q$): decides if queue $Q$ is empty;
+\item insert~($Q$, $x$): add element $x$ to $Q$;
+\item find-earliest~($Q$): return the earliest added element in $Q$;
+\item delete-earliest~($Q$): remove the earliest added element in $Q$.
+\end{enumerate}
+
+To implement above operations, we can use a (dynamic) array $S$ to stores all elements,
+and use two pointers, \emph{head} and \emph{tail}, where \emph{head} pointer always points
+to the first available space in $S$, and \emph{tail} pointer always points to the 
+earliest added element in $S$. When we add an element to $S$ we can directly
+add it to the place \emph{head} points to, and when we delete the earliest added
+element, we can directly remove the one \emph{tail} points to.
+
+\begin{figure}[h!]
+\centering{\input{queue}}
+\caption{An example of queue.}
+\end{figure}
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {3}{function empty($Q$)}\xxx
+	\aab {if \emph{head} = \emph{tail}: return true;}\xxx
+	\aab {else: return false;}\xxx
+	\aaa {end function;}\xxx
+\end{minipage}
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {3}{function insert($Q$, $x$)}\xxx
+	\aab {$S[head] = x$;}\xxx
+	\aab {head = head + 1;}\xxx
+	\aaa {end function;}\xxx
+\end{minipage}
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {2}{function find-earliest($Q$)}\xxx
+	\aab {return $S[tail]$;}\xxx
+	\aaa {end function;}\xxx
+\end{minipage}
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {2}{function delete-earliest($Q$)}\xxx
+	\aab {tail = tail + 1;}\xxx
+	\aaa {end function;}\xxx
+\end{minipage}
+
+Note, a queue data structure exhibits a first-in-first-out property~(while a stack is first-in-last-out).
+
+\section*{Priority Queue}
+
+In a priority queue, each element is associated with a \emph{priority}~(also called key).
+In other words, each element in a priority queue is a pair (\emph{key, value}),
+where \emph{key} indicates its priority, while \emph{value} stores the actual data.
+A \emph{priority queue} data structure supports the following operations.
+\vspace*{-\topsep}
+\begin{enumerate}
+\item empty~($PQ$): decides if priority queue $PQ$ is empty;
+\item insert~($PQ$, $x$): add element $x$ to $PQ$;
+\item find-min~($PQ$): return the element in $PQ$ with smallest key~(i.e., highest priority);
+\item delete-min~($PQ$): remove the element in $PQ$ with smallest key~(i.e., highest priority).
+\item decrease-key~($PQ$, pointer-to-an-element, new-key): set the key of the specified element as the given new-key.
+\end{enumerate}
+
+Note that a queue can be regarded as a special case of priority, for which the priority
+is the time an element is added to the queue.
+
+There are numerous different implementations for priority queue~(check wikipedia). 
+Here we introduce one of them, \emph{binary heap}. To do it, let's first
+formally introduce \emph{heap}.
+
+%%A \emph{tree} is a connected undirected graph without cycle. A tree with $n$ vertices has $(n - 1)$ edges.
+%%A tree can be \emph{rooted} by picking a vertex as root.
+%%Such \emph{rooting} procedure adds a direction to each edge~(goes from root to leaves).
+%%
+%%\begin{figure}[h!]
+%%\centering{\input{tree}}
+%%\caption{An example of tree and rooting by picking $v_9$ as root.}
+%%\end{figure}
+
+A \emph{heap} is a (rooted) tree data structure satisfies the \emph{heap property}.
+A heap is either a \emph{min-heap} if it satisfies the \emph{min-heap property}: for any edge $(u, v)$ in the (rooted) tree $T$,
+the key of $u$ is smaller than that of $v$,
+or a \emph{max-heap} if it satisfies the \emph{max-heap property}: for any edge $(u, v)$ in the (rooted) tree $T$,
+the key of $u$ is larger than that of $v$.
+Here we always consider a heap as a min-heap, unless otherwise specified.
+
+\begin{figure}[h!]
+\centering{\input{heap}}
+\caption{An example of heap. The key of an element is next to vertices}
+\end{figure}
+
+A \emph{binary heap} is a heap with the tree being the \emph{complete binary tree}.
+A \emph{complete binary tree} is a binary tree~(i.e., each vertex has at most 2 children)
+and that in every layer of the tree, except possibly the last, is completely filled, and all vertices in the last layer are placed from left to right.
+
+\begin{figure}[h!]
+\centering{\input{binary-heap}}
+\caption{An example of binary heap.}
+\end{figure}
+
+Since a binary heap $T$ is so regular, we can use an array $S$ to store its elements~(rather than using adjacency list).
+The root~(i.e., layer 0) of $T$ is placed in $S[1]$~(we assume that the index of $S$ starts from 1),
+the first element of the layer~1 is placed in $S[2]$, and so on.
+Generally, the $j$-th element in the $i$-th layer of $T$ will be placed in $S[2^i + j - 1]$.
+%Using an array to store a binary heap $T$, 
+We can also easily access the parent and children of an element:
+\vspace*{-\topsep}
+\begin{enumerate}
+\item the parent element of $S[k]$ is $S[k/2]$~(floor of $k/2$);
+\item the left child of $S[k]$ is $S[2k]$; the right child of $S[k]$ is $S[2k + 1]$.
+\end{enumerate}
+
+We now introduce two common procedures used in implementing a binary heap.
+These procedures apply when one vertex violates the heap property,
+and they can adjust the heap to make it satisfy the heap property.
+
+The \emph{bubble-up} function applies when a vertex has a smaller key than its parent.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {6}{function bubble-up~($S$, $k$)}\xxx
+	\aab {$p = k / 2$;}\xxx
+	\aaB {3}{if ($S[k].key < S[p].key$);}\xxx
+	\aac {swap $S[p]$ and $S[k]$;}\xxx
+	\aac {bubble-up~($S$, $p$);}\xxx
+	\aab {end if;}\xxx
+	\aaa {end function;}\xxx
+\end{minipage}
+
+\begin{figure}[h!]
+\centering{\input{bubble-up}}
+\caption{Illustrating bubble-up procedure.}
+\end{figure}
+
+
+The \emph{sift-down} function applies when a vertex has a larger key than its children.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {6}{function sift-down~($S$, $k$)}\xxx
+	\aab {$c = \arg\min_{t \in \{2k, 2k+1\}} S[t].key$ be the index of the child of $S[k]$ with smaller key;}\xxx
+	\aaB {3}{if ($S[k].key > S[c].key$);}\xxx
+	\aac {swap $S[c]$ and $S[k]$;}\xxx
+	\aac {sift-down~($S$, $c$);}\xxx
+	\aab {end if;}\xxx
+	\aaa {end function;}\xxx
+\end{minipage}
+
+\begin{figure}[h!]
+\centering{\input{sift-down}}
+\caption{Illustrating sift-down procedure.}
+\end{figure}
+
+We finally give the pseudo-code for implementing the binary heap.
+We not only maintain the array $S$ but also the number of elements in $S$, denoted as $n$.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {3}{function empty($PQ$)}\xxx
+	\aab {if $n = 0$: return true;}\xxx
+	\aab {else: return true;}\xxx
+	\aaa {end function;}\xxx
+\end{minipage}
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {4}{function insert($PQ$, $x$)}\xxx
+	\aab {$n = n + 1$;}\xxx
+	\aab {$S[n] = x$;}\xxx
+	\aab {bubble-up~($S$, $n$);}\xxx
+	\aaa {end function;}\xxx
+\end{minipage}
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {2}{function find-min($PQ$)}\xxx
+	\aab {return $S[1]$;}\xxx
+	\aaa {end function;}\xxx
+\end{minipage}
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {4}{function delete-min($PQ$)}\xxx
+	\aab {$S[1] = S[n]$;}\xxx
+	\aab {$n = n - 1$;}\xxx
+	\aab {sift-down~($S$, $1$);}\xxx
+	\aaa {end function;}\xxx
+\end{minipage}
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {3}{function decrease-key($PQ$, $k$, new-key)}\xxx
+	\aab {$S[k].key = $ new-key;}\xxx
+	\aab {bubble-up~($S$, $k$);}\xxx
+	\aaa {end function;}\xxx
+\end{minipage}
+
+Both bubble-up and sift-down procedures runs in $O(\log n)$ time.
+This is because, a complete binary tree with $n$ vertices has a height of $\log n$, while
+the worst case of either procedure traverses along a path between the root and a leaf.
+Formally, in each recursive call, $k$ is either halved or doubled, and hence the number
+of recursive calls is $\log n$.
+The empty and find-min procedures takes $\Theta(1)$ time; the other 3 procedures takes $O(\log n)$ time, as they are dominated by either bubble-up or sift-down.
+
+

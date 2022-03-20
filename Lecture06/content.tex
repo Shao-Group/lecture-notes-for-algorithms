@@ -1,0 +1,129 @@
+\section{Half-Plane Intersection}
+
+\subsection*{Definitions}
+
+\begin{definition}[half-planes]
+A line $l$ on 2D plane with function $y = ax - b$ defines two \emph{half-planes}:
+the \emph{upper half-plane}: $y \ge ax -b$ and the \emph{lower half-plane}: $y \le ax -b$.
+\end{definition}
+
+\begin{definition}[upper- and lower-envelop]
+Let $L = \{y = a_i x - b_i \mid 1 \le i \le n \}$ be a set of lines on 2D plane.
+We define the \emph{upper-envelop} of $L$, denoted as $UE(L)$, as the intersection of
+the corresponding $n$ upper half-planes $\{y \ge a_i x -b \mid 1 \le i \le n \}$.
+We define the \emph{lower-envelop} of $L$, denoted as $LE(L)$, as the intersection of
+the corresponding $n$ lower half-planes $\{y \le a_i x -b \mid 1 \le i \le n \}$.
+\end{definition}
+
+Either upper-envolop or lower-envelop of a set of lines can be represented
+as the list of lines that define its boundary from left to right. In the example
+below, we can write $UE(L) = (l_1, l_2, l_4, l_7)$
+and $LE(L) = (l_7, l_5, l_1)$.
+
+\begin{figure}[h!]
+\centering{\input{envelop}}
+\caption{Illustration of upper-envelop and lower-envelop of lines $L = \{l_1, l_2, \cdots, l_7\}$.}
+\end{figure}
+
+We want to design efficient algorithms to calculate the upper- and lower-envelop of a set of lines.
+In fact, we don't need to design any new algorithm here. Below we will show that, the problem of finding
+upper- and lower-envolop of a set of lines is equivalent to the problem of finding the convex hull
+of a set of points. Therefore, the algorithms we've designed for finding the convex hull can be
+directly used to find the upper- and lower-envelop of lines.
+
+
+\subsection*{Duality}
+
+\begin{definition}[dual of a point]
+Let $p = (p_x, p_y)$ be a point on 2D plane. We define the \emph{dual} of $p$, denoted as $p^*$, as
+a line with function $y = p_x x - p_y$ on 2D plane.
+\end{definition}
+
+\begin{definition}[dual of a line]
+Let $l$ be a line with function $y = ax-b$ on 2D plane. We define its \emph{dual}, denoted as $l^*$,
+as a point with coordinates $(a,b)$ on 2D plane.
+\end{definition}
+
+The following three properties are direct consequences of above definitions. (Think how to prove them.)
+
+\begin{property}
+For any point $p$, we have $(p^*)^* = p$. 
+For any line $l$, we have $(l^*)^* = l$. 
+\end{property}
+
+\begin{property}
+Point $p$ is on line $l$ if and only if point $l^*$ is on line $p^*$.
+\end{property}
+
+\begin{property}
+Point $p$ is above~(resp.\ below) line $l$ if and only if point $l^*$ is above~(resp.\ below) line $p^*$.
+\end{property}
+
+
+\subsection*{Half-plane Intersection vs.\ Convex Hull}
+
+\begin{definition}[upper- and lower-hull]
+Let $P$ be a set of points, and let $CH(P)$ be the convex hull of $P$.
+Let $p_S\in CH(P)$ be the vertex with smallest $x$-coordinate,
+and $p_L\in CH(P)$ be the vertex with largest $x$-coordinate.
+Therefore $p_S$ and $p_L$ partition $CH(P)$ into two parts:
+the list of vertices from $p_S$ to $p_L$ following the counter-clockwise order is called \emph{lower hull} of $P$, denoted as $LH(P)$;
+the list of vertices from $p_L$ to $p_S$ following the counter-clockwise order is called \emph{upper hull} of $P$, denoted as $UH(P)$.
+\end{definition}
+
+We now show that upper- and lower-envelop of lines is essentially the same with lower- and upper-hull of points.
+We first prove the connection between upper-envelop and lower-hull; the other one, i.e., lower-envelop and upper-hull, can be proved symmetrically.
+
+Let $L$ be a set of lines, we define $L^* = \{l^* \mid l \in L\}$, i.e., the set of ``dual points'' of $L$.
+
+
+\begin{figure}[h!]
+\centering{\input{dual}}
+\caption{Illustration of duality between upper-/lower-envelop and lower-/upper-hull.}
+\end{figure}
+
+
+\begin{claim}
+A line $l\in L$ is part of the boundary of $UE(L)$ if and only if $l^*$ is one of the vertices
+of $LH(L^*)$.
+\end{claim}
+
+{\it Proof.}
+Line $l$ is part of $UE(L)$, implies that a piece of $l$ is above all other lines.
+This is equivalent to: there exists a point $p$, such that $p$ is on $l$, and that
+$p$ is above all lines in $L \setminus \{l\}$.
+This statement is also equivalent to the following statement, 
+by translating everything to their dual counterparts~(and applying above Properties of duality):
+there exists a line $p^*$, such that $l^*$ is on $p^*$ and that
+all points in $L^* \setminus \{l^*\}$ are above line $p^*$.
+Clearly, this statement is also equivalent to that 
+$l^*$ is one vertex of the lower-hull of $L^*$~(think the Properties of convex hull).
+\qed
+
+The above claim shows that lines in $UE(L)$ and
+vertices in $LH(L^*)$ are in a ``dual'' relationship.
+We now show how their ordering are connected.
+Recall that we represent $UE(L)$ as a list of lines from left to right. Therefore, the
+\emph{slope} of these lines are in increasing order. As the dual of line $y = ax - b$
+is point $(a, b)$, i.e., the slope of a line becomes the $x$-coordinate of its dual,
+we know that the corresponing ``dual points'' of $UE(L)$ are in the increasing
+order of their $x$-coordinates.
+
+The above two facts can be combined as the following: 
+$UE(L) = (l_{p_1}, l_{p_2}, \cdots, l_{p_k})$ if and only if
+$LH(L^*) = (l^*_{p_1}, l^*_{p_2}, \cdots, l^*_{p_k})$.
+Formally, we can write
+\begin{fact}
+$UE(L) = (LH(L^*))^*$.
+\end{fact}
+
+Symmetrically, with the same reasonging, we can prove that
+$LE(L) = (l_{p_1}, l_{p_2}, \cdots, l_{p_k})$ if and only if
+$UE(L^*) = (l^*_{p_1}, l^*_{p_2}, \cdots, l^*_{p_k})$. (Recall
+that $LE(L)$ is represented as the list of lines from left to right, i.e., their slopes are decreasing,
+while $UH(L^*)$ is represented as the list of vertices
+from rightmost vertex to leftmost vertex in couter-clockwise order, i.e., their $x$-coordinates are also decreasing.)
+Formally, we can also write
+\begin{fact}
+$LE(L) = (UH(L^*))^*$.
+\end{fact}

@@ -1,0 +1,154 @@
+\section{Minimum Spanning Tree}
+
+\subsection*{Tree and Spanning Tree}
+
+A tree is an undirected graph that is connected and acyclic.
+(``connected'' here means the graph consists of a single connected component.)
+A tree $T = (V, E)$ always satisfies that $|E| = |V| - 1$.
+In fact, any two of these three properties~(i.e., connected, acyclic, and $|E| = |V| - 1$)
+implies the other one, formally stated below. Play with some examples
+to fully understand these properties.
+
+\begin{fact}\label{fact1}
+Let $T = (V, E)$ be an undirected graph. The following statements are equivalent.
+\vspace*{-\topsep}
+\begin{enumerate}
+\item $T$ is a tree.
+\item $T$ is connected and acyclic.
+\item $|E| = |V| - 1$ and $T$ is acyclic.
+\item $|E| = |V| - 1$ and $T$ is connected.
+\item There exists an unique path between every pair of vertices of $T$.
+\end{enumerate}
+\end{fact}
+
+Let $G = (V,E)$ be an undirected graph.
+We say tree $T = (V_1, E_1)$ is a \emph{spanning tree}
+of $G$ if $V_1 = V$ and $E_1\subset E$.
+As $T$ is a tree, clearly we have $|E_1| = |V_1| - 1 = |V| - 1$.
+Note that a spanning tree is always w.r.t.\ a graph, i.e., we always
+say a spanning tree of a graph. Note too, that for an undirected graph $G$, 
+its spanning tree may not be unqiue. See Figure~\ref{fig:spanning}
+for an example.  (Think: when an undirected graph has a unique spanning tree?)
+
+\begin{figure}[h]
+\centering{\input{spanning}}
+\caption{Two spanning trees~(middle and right) of an undirected graph~(left).}
+\label{fig:spanning}
+\end{figure}
+
+By above definition, a spanning tree of $G = (V,E)$ is a tree that uses $(|V| - 1)$ edges
+of $G$ that connects all vertices of $G$.
+Following Fact~\ref{fact1}, we can construct a spanning tree of $G$
+in the following two ways:
+\vspace*{-\topsep}
+\begin{enumerate}
+\item pick $(|V|-1)$ edges of $G$ that are acyclic;
+\item pick $(|V|-1)$ edges of $G$ that connects all vertices of $G$;
+\end{enumerate}
+These two approaches are equivalent but leads to different algorithms
+in constructing the minimum spanning tree~(see below).
+
+
+\subsection*{Minimum Spanning Tree~(MST)}
+
+Now we introduce the minimum spanning tree problem.
+Given an directed graph $G = (V, E)$ with \emph{edge weight} $w(e)$ for any $e\in E$,
+we seek a spanning tree $T = (V, E_1)$ of $G$ such that 
+the total weight of $T$, defined as $\sum_{e\in E_1} w(e)$, is minimized.
+Such tree $T$ is also called a minimum spanning tree~(MST) of $G$.
+MST problem has been widely used in in real-world applications.
+Essentially, this is because MST is the most efficient way to connect all
+vertices: one can use edge weight to model the cost of connecting
+two vertices, and a MST gives a way to connect all vertices with minimized total costs.
+
+We now design algorithms to solve the MST problem.
+We will use a new algorithm-design technique: \emph{greedy}.
+In general, a greedy algorithm iteratively constructs a solution,
+and in each iteration, chooses the optimal solution based on the \emph{current} state.
+In other words, a greedy algorithm consists of a series of \emph{local-optimal} decisions.
+Whether or not a greedy algorithm results in a \emph{global} optimal solution
+needs a proof.
+
+Recall that a spanning tree of $G = (V, E)$ consits of $(|V| - 1)$ edges.
+As an MST seeks a spanning tree with minimized total weights,
+we are therefore motivated to pick edges with small weights when constructing
+the spanning tree---this is a greedy strategy.
+Recall we have two different ways to construct a spanning tree, i.e., 
+either pick $(|V|-1)$ edges that are acyclic,
+or pick $(|V|-1)$ edges that connects all vertices.
+These two approaches, together with the greedy strategy,
+%~(i.e., pick an edge with smallest weight whenever possible), 
+lead to two greedy algorithms, the Kruskal's algorithm and the Prim's algorithm.
+
+\subsection*{Kruskal's Algorithm}
+
+Kruskal's algorithm can be summarized as: \emph{iteratively pick $(|V|-1)$ edges,
+and in each iteration, pick the smallest edge that doesn't produce a cycle}.
+The pseudo-code is given below, where we use $E_1$ to store
+the edges picked. See an example in Figure~\ref{fig:mst1}.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {9}{Algorithm Kruskal's~(graph $G = (V, E)$)}\xxx
+	\aab {sort all edges in increasing order w.r.t.\ weights;}\xxx
+	\aab {init $E_1 = \emptyset$;}\xxx
+	\aaB {5}{for $e\in E$ in above order}\xxx
+	\aaC {3}{if~($E_1\cup\{e\}$ doesn't form a cycle)}\xxx
+	\aad {$E_1 = E_1\cup\{e\}$;}\xxx
+	\aad {if~($|E_1| = |V| -1$): report $E_1$ and exit;}\xxx
+	\aac {end if;}\xxx
+	\aab {end for;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+Note that above algorithm is a framework, as how to decide if $E_1\cup\{e\}$
+produces cycles is not specified. Later on we will introduce a new data
+structure, namely \emph{disjoint set}, to efficiently do that.
+We also need to prove the correctness of the Kruskal's algorithm, i.e.,
+it always finds an MST; we will do that later on.
+
+\begin{figure}[h]
+\centering{\input{mst1}}
+\caption{Running Kruskal's algorithm. The cycled numbers give the order edges are picked.}
+\label{fig:mst1}
+\end{figure}
+
+\subsection*{Prim's Algorithm}
+
+Prim's algorithm combines the greedy strategy~(i.e., pick the smallest edge whenever possible)
+and the 2nd way to construct a spanning tree~(i.e., pick $(|V|-1)$ edges that connects all vertices).
+To connect all vertices, we can start from an \emph{arbitrary} vertex and iteratively
+make it connected to all other vertices. As we need to use $(|V| - 1)$ edges to connect
+to all other $(|V|-1)$ vertices, therefore every edge we pick needs to be connected to a
+\emph{new} vertex.
+Prim's algorithm can be summarized as: \emph{iteratively pick $(|V|-1)$ edges,
+and in each iteration, pick the smallest edge that connects to a new vertex}.
+We again use $E_1$ to store the picked edges.
+We also use $S$ to store the vertices that have been connected.
+The pseudo-code is given below.  See an example in Figure~\ref{fig:mst2}.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {8}{Algorithm Prim's~(graph $G = (V, E)$)}\xxx
+	\aab {init $E_1 = \emptyset$;}\xxx
+	\aab {init $S$ with an arbitrarily picked vertex;}\xxx
+	\aaB {4}{for $k = 1 \to |V| - 1$}\xxx
+	\aac {pick the smallest edge $e = (u,v)$ that connects to a new vertex~(i.e., $u\in S$ and $v\not\in S$);}\xxx
+	\aac {$E_1 = E_1\cup\{e\}$;}\xxx
+	\aac {$S = S\cup\{v\}$;}\xxx
+	\aab {end for;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+\begin{figure}[h]
+\centering{\input{mst2}}
+\caption{Running Prim's algorithm with $S$ being initialized as $\{a\}$. The cycled numbers give the order edges are picked.}
+\label{fig:mst2}
+\end{figure}
+
+
+Again the above algorithm is a framework, as how to select the
+smallest edge that connects to a new vertex is not specified. 
+Later on we will use \emph{priority queue} to efficiently do that.
+We also need to prove the correctness of the Prim's algorithm, i.e., it can always find
+an MST; we will do that later on.
+
+

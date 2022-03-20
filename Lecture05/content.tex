@@ -1,0 +1,282 @@
+\section{Convex Hull}
+
+\subsection*{Definitions}
+
+\begin{definition}[Convex Hull]
+Let $P = \{p_1, p_2, \cdots, p_n\}$ be a set of points on 2D plane, each of which is represented as $p_i = (x_i, y_i)$.
+The \emph{convex hull} of $P$, denoted as $CH(P)$, is defined as the smallest, convex polygon that includes all points in $P$.
+\end{definition}
+
+A convex hull is usually represented as the list of vertices~(which is subset
+of $P$) of the polygon in counter-clockwise order. Such list 
+is circular, and it's equivalent to shifting any number of vertices.
+If a point $p\in P$ is one of the vertices of the convex hull of $P$,
+we usually say that $p$ is \emph{on} the convex hull, and denote it as $p\in CH(P)$.
+
+\begin{figure}[h!]
+\centering{\input{convex-hull}}
+\caption{A set of points $P = \{p_1, p_2, \cdots, p_{10}\}$ and its convex hull.}
+\end{figure}
+
+For most computational geometry problems, we always assume that the data~(points, lines, etc) given
+to us are in \emph{general} situation. For example, we usually assume no three~(or more) lines go through the
+same point, no three~(or more) points are colinear, and no four points are on the same circle, etc.
+
+\begin{property}
+Let $p\in P$. Then $p\in CH(P)$ if and only if there exists a line $l$ such that $p$ is on $l$, and that
+all other points, i.e.\ $P\setminus \{p\}$, are on the same side of $l$.
+\end{property}
+
+The above property gives us a way to determine if a point is on the convex hull, which will be used
+in the following algorithm~(e.g., Graham-Scan). 
+
+\begin{property}
+For any set of points $P$ and another point $q$, we have $CH(P \cup \{q\}) = CH(CH(P) \cup \{q\})$.
+\end{property}
+
+The above property gives a way to gradually contruct convex hull.
+Suppose we already know the convex hull of $P$, i.e., $CH(P)$. Now we want to calculate
+the convex hull of $P\cup\{q\}$. We only need to consider these points in $CH(P)$ and $q$:
+those points that are inside of the convex hull of $P$ can be safely discarded.
+
+\subsection*{Graham-Scan Algorithm}
+
+The idea of Graham-Scan is to gradually construct the convex hull.
+The first step of this algorithm is the identification of the lowest point in $P$, i.e., the point with smallest $y$-coordinate, denoted as $p_*$.
+The second step is to sort all others points in counter-clockwise order w.r.t.\ $p_*$.
+Specifically, for any point $p\in P$, the measure we use in sorting is the \emph{angle} defined by points $p$, $p_*$ and $(+\infty, \textrm{$y$-coordinate of $p_*$})$.
+We define such angle for $p_*$ is 0. All points are then sorted in ascending order by their angles.
+After sorting, for the sake of simplicity, we rename all points in $P$ in this order, i.e., 
+rename $p_*$ as $p_1$, the point with second smallest angle as $p_2$, and so on.
+These two steps can be regarded as \emph{preprocessing} steps of the Graham-Scan algorithm~(i.e., first 3 lines of Algorithm Graham-Scan);
+the resulting of it is a sorted list of points $P$.
+See Figure~\ref{fig:sorting}.
+
+
+\begin{figure}[h!]
+\centering{\input{sorting}}
+\caption{Preprocessing steps of Graham-Scan.}
+\label{fig:sorting}
+\end{figure}
+
+
+The main body of Graham-Scan is referred to as Graham-Scan-Core.
+It processess points in $P$~(notice that now they are properly sorted) one by one
+and gradually construct the convex hull.
+It maintains a \emph{stack} data structure, called $S$, and keeps the following variant:
+
+\emph{Invariant:} after processing the first $k$ points of $P$, the convex hull
+of these $k$ points, i.e., $CH(p_1, p_2, \cdots, p_k)$ will be stored in the stack $S$: the list of points in $S$
+from bottom to top gives the list of the vertices of the convex hull in
+counter-clockwise order.
+
+\begin{figure}[b!]
+\centering{\input{invariant}}
+\caption{Procedure to decide if top element of $S$ is on $CH(p_1, p_2, \cdots, p_k)$.}
+\label{fig:invariant}
+\end{figure}
+
+
+How to guarantee above invariant? Consider the general case when we are processing $p_k$.
+Now we know that $S$ stores $CH(p_1, p_2, \cdots, p_{k-1})$, and the goal is to determine $CH(p_1, p_2, \cdots, p_k)$.
+Following above Property 2, we know that $CH(p_1, p_2, \cdots, p_k) = CH(CH(p_1, p_2, \cdots, p_{k-1}) \cup \{p_k\})$.
+Hence we only need to consider the points in $S$ and the current point $p_k$.
+
+But the issue is that, points in $S$, which is exactly $CH(p_1, p_2, \cdots, p_{k-1}$, may not be in
+$CH(p_1, p_2, \cdots, p_k)$.  We therefore need to \emph{determine} and \emph{exclude} such points in $S$.
+How? See Figure~\ref{fig:invariant} for an example.
+We use the following procedure to determine if the top element, called $p_a$, of $S$ is on 
+$CH(p_1, p_2, \cdots, p_k)$: we check the \emph{orientation} of the three points $p_b \to p_a \to p_k$,
+where $p_a$ and $p_b$ are the top and second top elements of $S$ respectively.
+If it's ``turning right'', then $p_a$ will not be on $CH(p_1, p_2, \cdots, p_k)$.
+Why? Because in this case $p_a$ will be within triangle $p_1p_bp_k$~(the angle of $p_a$ is in the middle of that of $p_b$ and $p_k$).
+If this happens, we can remove $p_a$ safely, i.e., by calling \emph{pop~($S$)}, as $p_a$ cannot be in the convex hull of the first $k$ points.
+After we remove $p_a$ from $S$, we will need to continue to examine the top element of $S$ iteratively.
+If the orientation is ``turning left'', then actually we get the convex hull of the first $k$ points---that's the points in $S$ plus $p_k$, where $p_k$ will be 
+pushed into $S$ and become the top element of $S$. We will give a formal proof after the algorithm.
+
+
+
+The complete Gramham-Scan algorithm is illustrated with pseudo-code below.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {5}{Algorithm Graham-Scan ($P$)}\xxx
+	\aab {calculate point $p_*$ in $P$ with smallest $y$-coordinate;}\xxx
+	\aab {sort $P$ in ascending order of the angles w.r.t.\ $p_*$ and $(\infty, 0)$;}\xxx
+	\aab {rename points in $P$ so that points in $P$ are following above order;}\xxx
+	\aab {Graham-Scan-Core ($P$);}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {14}{Algorithm Graham-Scan-Core ($P = \{p_1, p_2, \cdots, p_n\}$)}\xxx
+	\aab {init empty stack $S$;}\xxx
+	\aab {\emph{push ($S, p_1$)};}\xxx
+	\aab {\emph{push ($S, p_2$)};}\xxx
+	\aab {\emph{push ($S, p_3$)};}\xxx
+	\aaB {8}{for $k = 4$ to $n$}\xxx
+	\aaC {5}{while ($S$ is not empty)}\xxx
+	\aad {let $p_a$ and $p_b$ be the top two elements of $S$;}\xxx
+	\aad {check the orientation of $p_b \to p_a \to p_k$;}\xxx
+	\aad {if ``turning right'': \emph{pop ($S$)} and then continue the while loop;}\xxx
+	\aad {if ``turning left'': break the while loop;}\xxx
+	\aac {end while;}\xxx
+	\aac {\emph{push ($S, p_k$)};}\xxx
+	\aab {end for;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+%%Second, notice that $p_k$ must be on $CH(p_1, p_2, \cdots, p_k)$. Why?
+%%This can be proved using line $p_1p_k$ following Property 1: line $p_1p_k$ goes through point $p_k$
+%%and all others points in $S$ are on the right side of this line~(this is because points in $P$ are sorted
+%%and we are processing them in counter-clockwise order; you can see now the reason why we sort points
+%%in this way).
+
+
+Now we show that, when the while-loop breaks, i.e., the orientation is ``turning left'', then  
+$S\cup \{p_k\}$ becomes the convex hull of $\{p_1, p_2, \cdots, p_k\}$.
+The proof is based on the definition of convex-hull: we will verify that $S\cup \{p_k\}$ is the smallest, convex polygon that includes all $\{p_1, p_2, \cdots, p_k\}$.
+First, we verify that $S\cup \{p_k\}$ forms a convex polygon. This is because, all consecutive 3 points of $S$ are ``turning left'', as this is guaranteed by the algorithm: 
+we push $p_k$ right after verifying $p_b\to p_a\to p_k$ are turning left.
+To verify that it is circularly ``turning left'', we further need to show that two more consecutive 3 points, namely, $(p_a, p_k, p_1)$ and $(p_k, p_1, p_2)$,
+are also turning left.  These are easy to see as $p_kp_1$ are the rightmost line and all other points, including $p_1$ and $p_a$ are on the right side of this line.
+Second, we verify that the convex polygon formed by $S\cup \{p_k\}$ contains all points in $\{p_1,p_2,\cdots, p_k\}$.
+To see this, we just need to show that all poped points are not possible to be in $CH(p_1, p_2, \cdots, p_k)$,
+and this is true, as every poped point is inside of a triangle~(Figure~\ref{fig:invariant}), and therefore must be inside of the convex hull. %$CH(p_1, p_2, \cdots, p_k)$.
+Third, we show that $S\cup \{p_k\}$ is the smallest convex polygon that include all first $k$ points.
+This is obvious as $S\cup \{p_k\}$ is a subset of the first $k$ points.
+
+
+\begin{figure}[h!]
+\centering{\input{stack}}
+\caption{Running Graham-Scan-Core on the example given in Figure~\ref{fig:sorting}.
+Blue and pink arrows show the push and pop operations; the red numbers show
+the sequential of these operations.}
+\end{figure}
+
+
+The first 3 lines of Gramham-Scan algorithm corresponds to the preprocessing steps,
+which produce a sorted list of points. The main body of the algorithm, referred
+to as ``Graham-Scan-Core'' here, gradually construct the convex hull and guarantees
+above invariant. When the algorithm terminates, the convex hull of all points
+are stored in stack $S$.
+
+Graham-Scan-Core can be regarded as an independent algorithm~(you will find its use
+in the divide-and-conquer algorithm for convex hull). Its input
+is a list of points $P$, in which the first point, i.e.\ $p_1$, is the point with smallest $y$-coordinate,
+and the following points, i.e.\ $p_2, p_3, \cdots, p_n$, are placed in ascending order
+by their angle w.r.t.\ $p_1$ and $(+\infty, p_1.y)$. The output of Graham-Scan-Core
+is $CH(P)$ which will be stored in the stack $S$.
+
+There are two technical details in implementing above algorithms.
+First, in the preprocessing step, for each point $p_i$ do we really need to calculate the actual angle
+of $\angle p_ip_*p_{\infty}$, where $p_{\infty} = (+\infty, p_*.y)$?
+No. Notice that the only purpose of calculating these angles is sorting these points.
+Therefore, only the relative order matters but not the actual angles.
+Hence, we can calculate $\cos(\cdot)$ of the angle and use it to sort,
+as $\cos(\cdot)$ is monotone over $[0,\pi]$. Clearly,
+$\cos( \angle p_ip_*p_{\infty} ) = \overrightarrow{p_*p_i}\cdot (1, 0) / |\overrightarrow{p_*p_i}|$.
+
+Second, in Graham-Scan-Core, how to determine
+the orientation of 3 points~(i.e.\ $p_b \to p_a \to p_k$)? We will use ``right-hand-rule''.
+Define two vectors: $\overrightarrow{A} := \overrightarrow{p_bp_a}$ and $\overrightarrow{B} = \overrightarrow{p_ap_k}$.
+Let $\overrightarrow{A} = (x_A,y_A)$ and $\overrightarrow{B}= (x_B, y_B)$ be their coordinates,
+which can be calculated from the coordinates of $p_b$, $p_a$ and $p_k$.
+The right-hand-rule gives that
+\begin{displaymath}
+\left\{
+	\begin{array}{rccl}
+		x_Ay_B - x_By_A & > & 0 \quad \textrm{if and only if} & p_b \to p_a \to p_k \textrm{\ ``turning left''} \\
+		x_Ay_B - x_By_A & < & 0 \quad \textrm{if and only if} & p_b \to p_a \to p_k \textrm{\ ``turning right''} \\
+		x_Ay_B - x_By_A & = & 0 \quad \textrm{if and only if} & p_b, p_a, p_k \textrm{\ ``colinear''} \\
+	\end{array}
+\right.
+\end{displaymath}
+
+\subsection*{Running Time of Graham-Scan}
+
+Although Graham-Scan-Core consists of two nested loop, in fact it runs in linear time!
+To see this, consider the types of operations and how many each type of operation
+the algorithm needs to do.  There are three types of operations this algorithm does: \emph{push}, \emph{pop}, and \emph{checking-orientation},
+and each operation takes $\Theta(1)$ time. Now let's consider the times of each type will need to execute.
+First, notice that \#(\emph{push}) $= n$, as each point will be pushed to the stack exactly once.
+Second, \#(\emph{pop}) $\le n$, as \#(\emph{push}) $\le$ \#(\emph{pop}) starting from an empty stack~(a point must be pushed into the stack prior to pop).
+Third, notice that right after \emph{checking-orientation} it is either a \emph{push} or a \emph{pop} operation~(i.e.,
+it's not possible to have two \emph{checking-orientation} operations next to each other).
+This implies that \#(\emph{checking-orientation}) $\le$ \#(\emph{push}) + \#(\emph{pop}) $\le 2n$.
+Combined, we have that Graham-Scan-Core takes $\Theta(n)$ time.
+
+The preprocessing step of Graham-Scan takes $\Theta(n \log n)$, as it's dominated by the sorting step.
+The entire running time of Graham-Scan therefore takes $\Theta(n \log n)$ time.
+
+\subsection*{Divide-and-Conquer Algorithm}
+
+We now design a divide-and-conquer algorithm for convex hull problem.
+As usual, we define recursive function, say, CHDC~($P$), which takes
+a set of points $P$ as input and returns $CH(P)$, represented
+as the list of vertices of the convex polygon in counter-clockwise order.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {5}{function CHDC~($P = \{p_1, p_2, \cdots, p_n\}$)}\xxx
+	\aab {if $n \le 3$: resolve this base case and return the convex hull;}\xxx
+	\aab {$C_1$ = CHDC~($P[1..n/2]$);}\xxx
+	\aab {$C_2$ = CHDC~($P[n/2 + 1..n]$);}\xxx
+	\aab {return \textcolor{blue}{combine~($C_1, C_2$)};}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+The ``combine'' function in above pseudo-code is missing.
+Before design an algorithm for ``combine'', we first make sure that
+it suffices to only consider points in $C_1$ and $C_2$. Formally,
+we can write $CH(P) = CH(C_1\cup C_2)$. This can be proved using the
+Property~2 of convex hull. Intuitively, any point \emph{inside} $C_1$ or $C_2$
+with be inside $CH(P)$, and therefore won't be \emph{on} $CH(P)$.
+
+We can use, for example, Graham-Scan to calculate $CH(C_1\cup C_2)$, which takes $\Theta(m\log m)$, where $m = |C_1\cup C_2|$.
+Can we do better? Yes. We will design an $\Theta(m)$ time algorithm to calculate $CH(C_1\cup C_2)$.
+The idea is to take advantage of that, $C_1$ and $C_2$ are already sorted~(in counter-clockwise order along the polygon),
+and then to use Graham-Scan-Core to calculate $CH(C_1\cup C_2)$. Recall that, Graham-Scan-Core is linear-time algorithm for convex hull;
+it just requires that all points in its input is sorted in counter-clockwise order w.r.t.\ the first point in its input.
+
+
+The pseudo-code for combine procedure is given below.
+See figure below for explaining.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {14.5}{function combine~($C_1, C_2$)}\xxx
+	\aab {find $p_*$ in $C_1\cup C_2$ with smallest $y$-coordinate;}\xxx
+	\aab {assume that $p_*\in C_1$; otherwise exchange $C_1$ and $C_2$;}\xxx
+	\aab {rewrite $C_1$ into $C_1'$ with circular shifting so that $p_*$ is the first point of $C_1'$; 
+		(\emph{Note: now points in $C_1'$ is sorted w.r.t.\ $p_*$ in counter-clockwise order.})}\xxx
+	\aab {find $p_S$ in $C_2$ with smallest angle~(i.e., angle $\angle p_S p_* p_\infty$, where $p_\infty = (+\infty, p_*.y)$;}\xxx
+	\aab {find $p_L$ in $C_2$ with largest angle~(i.e., angle $\angle p_L p_* p_\infty$, where $p_\infty = (+\infty, p_*.y)$;}\xxx
+	\aab {let $C_{2a}$ be the sublist of $C_2$ from $p_S$ to $p_L$ in counter-clockwise order; 
+		(\emph{Note: now points in $C_{2a}$ is sorted w.r.t.\ $p_*$ in counter-clockwise order.})}\xxx
+	\aab {let $C_{2b}$ be the sublist of $C_2$ from $p_S$ to $p_L$ in clockwise order;
+		(\emph{Note: now points in $C_{2b}$ is sorted w.r.t.\ $p_*$ in counter-clockwise order.})}\xxx
+	\aab {$C_2' = $ merge-two-sorted-arrays~($C_{2a}, C_{2b}$);
+		(\emph{Note: merging is by the angle w.r.t.\ $p_*$ and $p_\infty$; after it points in $C_2'$ is sorted w.r.t.\ $p_*$ in counter-clockwise order.})}\xxx
+	\aab {$C' = $ merge-two-sorted-arrays~($C_1', C_2'$);
+		(\emph{Note: merging is by the angle w.r.t.\ $p_*$ and $p_\infty$; after it points in $C'$, i.e., points in $C_1\cup C_2$, is sorted w.r.t.\ $p_*$ in counter-clockwise order.})}\xxx
+	\aab {return Graham-Core-Scan~($C'$);}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+
+
+\begin{figure}[h!]
+\centering{\input{combine}}
+\caption{Example of combining $C_1$ and $C_2$.}
+\label{fig:meta-graph}
+\end{figure}
+
+
+
+Clearly each step of above combine takes linear time. Therefore, the entire running time of combine is $\Theta(|C_1| + |C_2|)$.
+
+To obtain the running time of CHDC, we write its recursion $T(n) = 2T(n/2) + \Theta(|C_1| + |C_2|)$.
+In worst case, $|C_1| + |C_2| = \Theta(n)$, and therefore $T(n) = 2T(n/2) + \Theta(n)$, which gives $T(n) = \Theta(n\log n)$.
+In this (worst) case the running time of this divide-and-conquer algorithm is the same with Graham-Scan.
+However, if the size of $|C_1| + |C_2|$ is in the order of $o(n)$, we will have
+improved running time.  For example, if $|C_1| + |C_2| = \Theta(n^{0.99})$, then $T(n) = \Theta(n)$.  
+This might happen in practical cases, although in worst case divide-and-conquer runs in $\Theta(n\log n)$ time.

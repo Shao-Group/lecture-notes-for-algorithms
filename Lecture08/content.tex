@@ -1,0 +1,160 @@
+\section{Connectivity of Undirected Graphs}
+
+A \emph{path} in a graph is a list of consecutive edges.
+In directed graphs, two consecutive edges in a path must be in the form of $(v_a, v_b), (v_b, v_c)$,
+i.e., the head of the predecessor connects to the tail of successor. If there exists a path from $u$ to $v$,
+then we also say $u$ can reach $v$, or $v$ is reachable from $u$, or $v$ can be reached from $u$.
+These definitions applies to both directed and undirected graphs.
+
+%Let $u,v\in V$. We say $u$ and $v$ are \emph{connected} if and only if there exists a path from $u$ to $v$
+%and there exists a path from $v$ to $u$. In undirected graph, the existence of a path from $u$ to $v$ implies the
+%existence of a path from $v$ to $u$. It's not necessarily the case in directed
+%graphs. For example, in Figure~\ref{fig:explore-directed}, there exists a path from $v_1$ to $v_5$ but there is no path
+%from $v_5$ to $v_1$~(so they are not connected).
+%
+%Let $G = (V, E)$. Let $V_1\subset V$. We say $V_1$ is a \emph{connected component} of $G$,
+%if and only if (1), for \emph{every pair of} $u,v\in V_1$, $u$ and $v$ are connected,
+%and (2), $V_1$ is \emph{maximal}, i.e., there does not exists vertex $w\in V\setminus V_1$ such
+%that $V_1\cup \{w\}$ satisfies condition (1).
+%For example, in Figure~\ref{fig:explore-directed}, $\{v_1, v_3, v_6\}$ is a connected component;
+%$\{v_2\}$ is a connected component; 
+%$\{v_1, v_3\}$ is not a connected component~(as it is not maximal). 
+
+%Below, we will design algorithms to reveal the connectivity-structures of graphs, i.e.,
+%what their connected components are and how these connected components are connected.
+
+One basic procedure in graphs is to find the set of vertices that are reachable from a given vertex.
+We will use an array, called $visited$, of size $|V|$, to store the vertices that are reachable from
+the given vertex $v_i$: $visited[j] = 1$ if and only if there exists a path from $v_i$ to $v_j$.
+This array will be initialized as 0 for all entries.
+The following recursive algorithm, named \emph{explore}, finds all vertices that are reachable from $v_i$
+and stores these vertices in $visited$ array properly.
+Below we give two examples of running $explore$. 
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {5}{function explore ($G = (V, E), v_i \in V$)}\xxx
+	\aab {$visited[i] = 1$;}\xxx
+	\aaB {2}{for any edge $(v_i, v_j) \in E$}\xxx
+	\aac {if ($visited[j] = 0$): explore ($G, v_j$);}\xxx
+	\aab {end for;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+%\section*{DFS and Connectivity of Graphs}
+
+%Recall that the \emph{explore} function starting from a given vertex $v$ finds
+%all vertices in $G$ reachable from $v$.  
+%We represent the running process
+%using a \emph{search graph}: 
+%we draw a new vertex $v_j$ in the search graph when we start calling $explore~(G, v_j)$; 
+%we draw a \emph{tree edge}, shown with solid lines below, if we examine an edge $(v_i, v_j)$ and $visited[j] = 0$;
+%we draw a \emph{back edge}, shown with dashed lines below, if we examine an edge $(v_i, v_j)$ and $visited[j] = 1$.
+
+\begin{figure}[h!]
+\centering{\input{explore-undirected}}
+\caption{Running $explore~(G, v_1)$ on an undirected graph.}
+\label{fig:explore-undirected}
+\end{figure}
+
+\begin{figure}[h!]
+\centering{\input{explore-directed}}
+\caption{Running $explore~(G, v_1)$ on an directed graph.}
+\label{fig:explore-directed}
+\end{figure}
+
+We now define ``connected'' and ``connected component'' to formally reveal the connectivity-structure of graphs.
+Let $u,v\in V$. We say $u$ and $v$ are \emph{connected} if and only if there exists a path from $u$ to $v$
+\emph{and} there exists a path from $v$ to $u$. 
+We note that this definition applies to both directed and undirected graph.
+In undirected graph, the existence of a path from $u$ to $v$ implies the
+existence of a path from $v$ to $u$. However, this is not necessarily true in directed
+graphs. For example, in Figure~\ref{fig:explore-directed}, there exists a path from $v_1$ to $v_5$ but there is no path
+from $v_5$ to $v_1$~(so they are not connected).
+
+Let $G = (V, E)$. Let $V_1\subset V$. We say $V_1$ is a \emph{connected component} of $G$,
+if and only if (1), for \emph{every pair of} $u,v\in V_1$, $u$ and $v$ are connected,
+and (2), $V_1$ is \emph{maximal}, i.e., there does not exists vertex $w\in V\setminus V_1$ such
+that $V_1\cup \{w\}$ satisfies condition (1).
+For example, in Figure~\ref{fig:explore-directed}, $\{v_1, v_3, v_6\}$ is a connected component;
+$\{v_2\}$ is a connected component; 
+$\{v_1, v_3\}$ is not a connected component~(as it is not maximal, i.e., does not satisfy condition 2). 
+
+The explore algorithm identifies all vertices that can be reached from $v_i$.
+Hence, in the case of undirected graphs, these vertices~(including $v_i$) are pairwise reachable, 
+i.e., they form a connected component of $G$~(summarized below). In other words,
+$explore(G,v_i)$ identifies the connected component of $G$ that includes $v_i$.
+
+\begin{fact}
+For undirected graphs, after $explore(G, v_i)$, the vertices that are marked by $visited$, i.e.,
+$\{v_j \mid visited[j] = 1\}$ forms a connected component of $G$ that includes $v_i$.
+\end{fact}
+
+However, the above fact does not apply to directed graph: Figure~\ref{fig:explore-directed} gives such an example,
+where $\{v_1,v_2,v_3,v_5,v_6\}$ does not form a connected component. Note: in directed graphs
+$\{v_j \mid visited[j] = 1\}$ are still those vertices that are reachable from $v_i$; it's just that
+they may not be a connected component of $G$.
+
+How to identify \emph{all} connected components of an undirected graph?
+We can run above explore algorithm multiple times, each of which starts from an un-explored vertex,
+until all vertices are explored. To keep track of which vertices are in which connected
+component, we will introduce variable \emph{num-cc} to store the index of current connected component.
+We redefine the behavior of $visited$ array: $visited[j] = 0$ still represents that $v_j$ has not yet been explored;
+$visited[j] = k$, $k\ge 1$, represents that $v_j$ has been explored and $v_j$ is in the $k$-th connected component.
+
+This new algorithm that traverses all vertices and edges of a graph is named as DFS~(depth first search).
+We also slightly changed the explore function, which allows to store which connected component each vertex is in.
+The pseudo-codes are given below.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {9}{function DFS ($G = (V, E)$)}\xxx
+	\aab {num-cc = 0;}\xxx
+	\aab {$visited[i] = 0$, for all $1\le i \le |V|$;}\xxx
+	\aaB {5}{for $i = 1 \to |V|$}\xxx
+	\aaC {3}{if ($visited[i] = 0$)}\xxx
+	\aad {num-cc = num-cc + 1;}\xxx
+	\aad {explore ($G, v_i$);}\xxx
+	\aac {end if;}\xxx
+	\aab {end for;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {5}{function explore ($G = (V, E), v_i \in V$)}\xxx
+	\aab {$visited[i] = $ num-cc;}\xxx
+	\aaB {2}{for any edge $(v_i, v_j) \in E$}\xxx
+	\aac {if ($visited[j] = 0$): explore ($G, v_j$);}\xxx
+	\aab {end for;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+Below we gave examples of running DFS on undirected graphs and undirected graphs.
+
+\begin{figure}[h!]
+\centering{\input{dfs-undirected}}
+\caption{Running $DFS~(G)$ on an undirected graph.}
+\label{fig:dfs-undirected}
+\end{figure}
+
+\begin{figure}[h!]
+\centering{\input{dfs-directed}}
+\caption{Running $DFS~(G)$ on a directed graph.}
+\label{fig:dfs-directed}
+\end{figure}
+
+DFS runs in $\Theta(|E| + |V|)$ time. This is because, each vertex
+is explored exactly once, and each edge is examined exactly once~(in the case of directed graphs)
+or exactly twice~(in the case of undirected graphs).
+
+\begin{fact}
+For undirected graphs, DFS~($G$) identifies all connected components of $G$:
+	$\{v_j \mid visited[j] = k \}$ constitutes the $k$-th connected component of $G$.
+\end{fact}
+
+Again, the above fact does not apply to directed graphs: $\{v_j \mid visited[j] = k\}$
+are not necessarily form a connected component, although you can still run DFS on directed graphs. In
+Figure~\ref{fig:dfs-directed}, $\{v_j \mid visited[j] = 1\}$ gives such an
+counter-example.
+To prepare revealing the connectivity-structure of directed graphs, we first introduce
+a spsecial class of directed graphs, given below.
+

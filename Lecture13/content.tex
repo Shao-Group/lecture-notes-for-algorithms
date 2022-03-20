@@ -1,0 +1,230 @@
+\section{Dijkstra's Algorithm}
+
+We now study the single-source shortest path problem with positive edge length:
+given graph $G = (V, E)$ with edge length $l(e) > 0$ for any $e\in E$ and
+source vertex $s\in V$, to seek $distance(s, v)$ for any $v\in V$.
+We solve this problem with the \emph{Dijkstra's algorithm}.
+
+Similar to BFS, the idea of Dijkstra's algorithm is also to
+determine and calculate the distance of each vertex
+in increasing order of distance.
+More specifically, let $(v_1^*, v_2^*, \cdots, v_n^*)$, $n = |V|$,
+be the order of vertices with increasing distance, i.e., $distance(s, v_k^*) \le distance(s, v_{k+1}^*)$, $1\le k < n$.
+In other words, we define $v_k^*$ as the $k$-th closest vertex from $s$.
+We don't know this order in advance.
+But Dijktra's algorithm will identify vertices in this order and calculate
+their distance.
+For the sake of writing and notations, we define $R_k = \{v_1^*, v_2^*, \cdots, v_k^*\}$, i.e., 
+the first $k$ vertices in above list; $R_k$ are also the closest $k$ vertices from $s$.
+
+Clearly, $v_1^* = s$, $distance(s, v_1^*) = distance(s, s) = 0$, and $R_1 = \{s\}$.
+The key question is: given $R_k$~(i.e., the closest $k$ vertices from $s$) and their distances~(i.e., $distance(s, v)$ for every $v\in R_k$),
+how to find $v_{k + 1}^*$?
+Below we show that $v_{k + 1}^*$ must be within \emph{one-edge extension} of $R_k$.
+\begin{claim}
+There must exist vertex $u\in R_k$ such that $(u, v_{k+1}^*) \in E$.
+\end{claim}
+\emph{Proof.} Suppose conversely that for every $u\in R_k$ we have $(u, v_{k+1}^k)\not\in E$.
+Consider the shortest path from $s$ to $v_{k+1}^*$.
+Let $w$ be the vertex right before $v_{k+1}^*$ in path $p$, i.e, $(w, v_{k+1}^*)$ is the last edge of $p$.
+We have $distance(s, v_{k+1}^*) = distance(s, w) + l(w, v_{k+1}^*)$. %following the optimal substructure property.
+As edges have positive edge length, we have $l(w, v_{k+1}^*) > 0$, and consequently
+$distance(s, w) < distance(s, v_{k+1}^*)$.
+Besides, according to the assumption, we have $w\not\in R_k$.
+Therefore, $v_{k+1}^*$ cannot be the $(k+1)$-th closest vertex from $s$,
+because $w$ has a shorter distance than $v_{k+1}^*$. This contradicts to the definition of $v_{k+1}^*$.\qed
+
+Note that, in above proof, we use the fact that edges have positive lengths.
+Hence, above claim may not be true for graphs with negative edge length.
+This also explains why Dijkstra's algorithm won't work for graphs with negative edge length.
+
+
+The above claim shows that, the last edge $(u,v)$ of the shortest path from $s$ to $v_{k+1}^*$
+satisfies that $u\in R_k$ and $v\not\in R_k$. Which such edge is the correct one?
+We don't know, so we enumerate all such edges $(u,v)\in E$ with $u\in R_k$ and $v\not\in R_k$.
+Suppose that $(u,v)$ is the last edge of the shortest path from $s$ to $v_{k+1}^*$,
+%then following the optimal substructure property,
+we know that $distance(s,v) = distance(s,u) + l(u,v)$.
+This leads to the following formula to calculate $v_{k+1}^*$ and its predecessor in the shortest path.
+See an example in Figure~\ref{fig:extension}.
+
+
+\begin{corollary} \label{cor1}
+We have 
+$$distance(s, v_{k+1}^*) = \textstyle \min_{u\in R_k, v\in V \setminus R_k, (u, v)\in E} (distance(s, u) + l(u,v)).$$
+Let $(u',v')$ be the optimal edge in the minimization, i.e.,
+$$(u',v') := \textstyle \arg\min_{u\in R_k, v\in V \setminus R_k, (u, v)\in E} (distance(s, u) + l(u,v)).$$
+Then $v_{k+1}^* = v'$ and $u'$ is the predecessor of $v_{k+1}^*$ in the shortest path from $s$ to $v_{k+1}^*$.
+\end{corollary}
+
+
+\begin{figure}[h]
+\centering{\input{extension}}
+\caption{Example for Colollary~1. Suppose that we know $R_5 = \{s, a, d, e, f\}$ and their distances from $s$, marked next to vertices.
+To find $v_6^*$ and calculate $distance(s,v_6^*)$, we consider all one-edge extension of $R_5$, marked as thick blue edges.
+Following Corollary~1, $distance(s, v_6^*) = \min_{u\in R_5, v\not\in R_5, (u,v)\in E} (distance(s,u) + l(u,v)) = \min\{6 + 2, 3 + 10, 3 + 4, 9 + 5, 9 + 8\} = 7$,
+and the optimal edge is $(d,c)$. Hence, $v_6^* = c$ and $d$ is the predecessor of $d$ in the shortest path.  }
+\label{fig:extension}
+\end{figure}
+
+
+%Above Corollary offers a framework of Dijkstra's algorithm by sequentially calculating $v_k^*$ and $distance~(s, v_k^*)$ for $k = 1, 2, \cdots, n$.
+%We will show details in realizing this framework by using efficient data structures.
+We therefore have the following algorithm~(framework), in which we follow above formula
+to iteratively construct $R_k$, $k = 1, 2, \cdots, n$.
+We again use array $dist$ of size $n$ to store the distance for vertices in $R_k$.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {8}{Algorithm Dijkstra-Framework~($G = (V, E), s \in V$)}\xxx
+	\aab {let $R_1 = \{s\}$;}\xxx
+	\aab {$dist[s] = 0$; $dist[v] = \infty$ for any $v \neq s$;}\xxx
+	\aaB {4}{for $k = 1 \to n-1$}\xxx
+	\aac {calculate $(u',v') := \arg\min_{u\in R_k, v\in V \setminus R_k, (u, v)\in E} (dist[u] + l(u,v))$;}\xxx
+	\aac {$R_{k+1} = R_k\cup \{v'\}$;}\xxx
+	\aac {$dist[v'] = dist[u'] + l(u',v')$;}\xxx
+	\aab {end for;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+A naive implementation of above framework takes $O(|V|\cdot|E|)$ time,
+as for each $k$, the calculation of the minimization may take $O(|E|)$ time.
+Next lecture, we will show how to use efficient data structures to speed up,
+leading to the complete Dijkstra's algorithm with improved running time.
+
+We rewrite the formula in Corollary~1~(last Lecture) into an equivalent form by separating the minimization into two levels:
+$$distance(s, v_{k+1}^*) = \textstyle \min_{v\in V\setminus R_k} \min_{u\in R_k, (u, v)\in E} (distance(s, u) + l(u,v)).$$
+Now we define the inner level of minimization with a new term $dist_k(v)$:
+$$dist_k(v) := \textstyle \min_{u\in R_k, (u, v)\in E} (distance(s, u) + l(u,v)).$$
+Then we have 
+$$distance(s, v_{k+1}^*) = \textstyle \min_{v\in V\setminus R_k} dist_k(v).$$
+Intuitively, $dist_k(v)$ gives the length of the shortest path from $s$ to $v$ by only using vertices in $R_k$.
+
+\begin{figure}[h]
+\centering{\input{extension}}
+\caption{Try above formulas in Figure~\ref{fig:extension}.
+Answer: $dist_5(b) = \min\{8, 13\} = 8$, $dist_5(c) = \min\{7, 14\} = 7$, $dist_5(h) = 17$, $dist_5(k) = \infty$, $dist_5(j) = \infty$;
+hence $v_6^* = c$ and $distance(s,v_6^*) = dist_5(c) = 7$.}
+\label{fig:extension}
+\end{figure}
+
+With $dist_k$ available, the next closest vertex, i.e., $v_{k+1}^*$ can be easily calculated
+by picking the one with smallest $dist_k$ value.
+More importantly, we can design a more efficient procedure
+to calculate $dist_{k+1}$ in the next iteration by largely reusing $dist_k$.
+To see that, recall its definition, for any $v\in V\setminus R_{k+1}$, we have 
+$$dist_{k+1}(v) = \textstyle \min_{u\in R_{k+1}, (u, v)\in E} (distance(s, u) + l(u,v)).$$
+Note that $R_{k+1} = R_k \cup \{v_{k+1}^*\}$. Hence
+\begin{displaymath}
+dist_{k+1}(v) = \left\{
+\begin{array}{llllll}
+\min\{ dist_k(v), distance(s, v_{k+1}^*) + l(v_{k+1}^*, v) \} & \textrm{ if } & (v_{k+1}^*, v) \in E \\
+dist_k(v) & \textrm{ if } & (v_{k+1}^*, v) \not\in E
+\end{array}
+\right.
+\end{displaymath}
+In other words, when calculating $dist_{k+1}$, we only need to examine the out-edges of $v_{k+1}^*$
+and update only if the use of $v_{k+1}^*$ leads to a shorter path. The pseudo-code of
+calculating $dist_{k+1}$ from $dist_k$ is given below.
+Before calling this updating procedure, $dist_{k+1}$ is first copied from $dist_k$.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {6}{procedure update-dist~($dist_k, v_{k+1}^*$)}\xxx
+	\aaB {4}{for $(v_{k+1}^*, v) \in E$}\xxx
+	\aaC {2}{if~($dist_k(v) > distance(s, v_{k+1}^*) + l(v_{k+1}^*, v)$)}\xxx
+	\aad {$dist_{k+1}(v) = distance(s, v_{k+1}^*) + l(v_{k+1}^*, v)$;}\xxx
+	\aac {end if;}\xxx
+	\aab {end for;}\xxx
+	\aaa {end procedure;}\xxx
+\end{minipage}
+
+Try above procedure with the example below.
+
+\begin{figure}[h!]
+\centering{\input{update}}
+\caption{Following Figure~\ref{fig:extension}, we have that $v_6^* = c$.
+We now want to calculate $dist_6$ using $dist_5$. We consider the out-edges of $c$, marked as thick blue edges.
+Eventually, $dist_6(b) = 8$, $dist_6(h) = 13$, $dist_6(k) = \infty$, and $dist_6(j) = 10$.  }
+\label{fig:update}
+\end{figure}
+
+The above procedure enables fast calculation of $dist_k$.
+The last piece of Dijkstra's algorithm comes with the use of \emph{priority queue}
+to quickly pick the next closest vertex, i.e., to calculate $v_{k+1}^* = \arg\min_{v\in V\setminus R_k} dist_k(v)$.
+To this end, the priority queue $PQ$ always stores $V\setminus R_k$,
+and for each vertex $v$ that is stored in $PQ$, its priority is $dist_k(v)$.
+In this way, every time we call find-min~($PQ$), it gives us $\min_{v\in V\setminus R_k} dist_k(v)$.
+In the complete Dijkstra's algorithm, we don't need to implicitly maintain $R_k$,
+as $PQ$ is always complement to $R_k$.
+In order to maintain this invariant, we delete $v_{k+1}^*$ from $PQ$, by calling delete-min, at the time of adding $v_{k+1}^*$ to $R_{k+1}$.
+In order to guarantee that the priority of $v$ is always $dist_k(v)$,
+we call decrease-key every time we update $dist_k$ of a vertex.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {16}{Algorithm Dijkstra~($G = (V, E)$, $l(e)$ for any $e\in E$, $s \in V$)}\xxx
+	\aab {$dist[v] = \infty$, for any $v\in V$;}\xxx
+	\aab {init an empty priority queue $PQ$;}\xxx
+	\aab {for any $v\in V$: insert~($PQ$, $v$), where the priority of $v$ is $\infty$;}\xxx
+	\aab {$dist[s] = 0$;}\xxx
+	\aab {decrease-key~($PQ, s, 0$);}\xxx
+	\aaB {9}{while~(empty~($PQ$) = false)}\xxx
+	\aac {$u$ = find-min~($PQ$);}\xxx
+	\aac {delete-min~($PQ$);}\xxx
+	\aaC {5}{for each edge~$(u, v)\in E$}\xxx
+	\aaD {3}{if~($dist[v] > dist[u] + l(u,v)$)}\xxx
+	\aae {$dist[v] = dist[u] + l(u,v)$;}\xxx
+	\aae {decrease-key~($PQ$, $v$, $dist[v]$);}\xxx
+	\aad {end if;}\xxx
+	\aac {end for;}\xxx
+	\aab {end while;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+The pseudo-code for complete Dijkstra's algorithm is given above.
+We use array $dist$ of size $n$ to store $dist_k$.
+Where are the distances for those vertices in $R_k$~(i.e., those are not in $PQ$) stored?
+They are in array $dist$ as well.
+This is because, at the time $v_{k+1}^*$ is identified and added to $R_{k+1}$~(i.e., removed from $PQ$),
+$dist_k$ value for this vertex is exactly its distance.
+In fact, at any time of the algorithm, $dist[v] = distance(s,v)$ for any vertex $v$ that is not in $PQ$.
+Finally, the algorithm don't explicitly maintain an index $k$: this index implicitly increases in every iteration of the while loop.
+
+
+Here are some facts about Dijkstra's algorithm.
+First, $dist[v]$ is always an upper bound of the distance.
+\begin{fact} \label{fact1}
+At any time of the algorithm, $dist[v] \ge distance(s,v)$.
+\end{fact}
+
+This is because, by definition, $dist_k(v)$ is the length of 
+shortest path from $s$ to $v$ using only vertices in $R_k$.
+In other words, $dist_k(v)$ represents the length of the optimal
+path of a subset~(of all possible paths from $s$ to $v$).
+
+Second, once $v$ is removed from $PQ$, $dist[v]$ won't change and remain as $distance(s,v)$.
+\begin{fact}
+At any time of the algorithm, if $v$ is not in $PQ$, then $dist[v] = distance(s,v)$.
+\end{fact}
+This is because, at the time $v$ is deleted from $PQ$, $dist[v] = distance(s,v)$.
+Following Fact~\ref{fact1}, it will remain this minimized value.
+Notice though, in Dijkstra's algorithm, a vertex $v$ not in $PQ$ might be ``touched''
+by an edge $(v^*_{k+1}, v)$, where $v^*_{k+1}$ is the newly determined closest vertex,
+   but the actual update will not happen.
+See an example in Figure~2 of Lecture 17, edge~$(c, e)$.
+%Such ``attempts'' to reduce $dist[v]$ will always fail.
+
+The running time of Dijkstra's algorithmd depends on the specific implementation of priority queue used.
+Consider using binary heap. The break-down of running time is given below.
+Note that each vertex will be picked from the $PQ$ at most once and each edge will be examined at most once~(for directed graph) or at most twice~(for undirected graph).
+The total running time is $\Theta((|V|+|E|)\log |V|)$.
+\vspace*{-\topsep}
+\begin{enumerate}
+\item initialization: $\Theta(|V|)$;
+\item insert~($PQ$): $|V| \times \Theta(\log |V|)$;
+\item empty~($PQ$): $|V| \times \Theta(1)$;
+\item find-min~($PQ$): $|V| \times \Theta(1)$;
+\item delete-min~($PQ$): $|V| \times \Theta(\log |V|)$;
+\item updating-dist: $|E| \times \Theta(1)$;
+\item decrease-key~($PQ$): $|E| \times \Theta(\log |V|)$;
+\end{enumerate}
+
+

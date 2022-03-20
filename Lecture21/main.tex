@@ -1,0 +1,173 @@
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{geometry}
+\usepackage{pslatex}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{tikz}
+\usepackage{setspace}
+\geometry{ margin = 1.0in }
+
+\pagestyle{fancy}
+\lhead{{\bf Lecture 28}}
+\chead{{\bf CMPSC 465 Fall 2020}}
+\rhead{{\bf Mingfu Shao}}
+
+\setlength\parindent{0em}
+\setlength\parskip{8pt}
+%\setlength{\fboxsep}{6pt}
+
+\usepackage{amsthm}
+\newtheoremstyle{mytheorem}
+  {\parskip} % Space above
+  {0em} % Space below
+  {} % Body font
+  {} % Indent amount
+  {\bfseries} % Theorem head font
+  {.} % Punctuation after theorem head
+  {.5em} % Space after theorem head
+  {} % Theorem head spec (can be left empty, meaning `normal')
+
+\theoremstyle{mytheorem}
+\newtheorem{definition}{Definition}
+\newtheorem{property}{Property}
+\newtheorem{claim}{Claim}
+\newtheorem{fact}{Fact}
+\newtheorem{corollary}{Corollary}
+
+% for algorithms
+\newcommand{\aaa}[1]{\hspace{0.65cm}\parbox[t]{15.3cm}{#1}}
+\newcommand{\aab}[1]{\hspace{1.15cm}\parbox[t]{15.0cm}{#1}}
+\newcommand{\aac}[1]{\hspace{1.65cm}\parbox[t]{15.0cm}{#1}}
+\newcommand{\aad}[1]{\hspace{2.15cm}\parbox[t]{15.0cm}{#1}}
+\newcommand{\aae}[1]{\hspace{2.65cm}\parbox[t]{15.0cm}{#1}}
+\newcommand{\aaf}[1]{\hspace{3.15cm}\parbox[t]{15.0cm}{#1}}
+\newcommand{\aaA}[2]{\hspace{0.5cm} {\tikz[overlay] \draw (0.1, -0.1) -- (0.1, #1 * -1.5em + 0.6em);} \parbox[t]{15.0cm}{#2}}
+\newcommand{\aaB}[2]{\hspace{1.0cm} {\tikz[overlay] \draw (0.1, -0.1) -- (0.1, #1 * -1.5em + 0.6em);} \parbox[t]{15.0cm}{#2}}
+\newcommand{\aaC}[2]{\hspace{1.5cm} {\tikz[overlay] \draw (0.1, -0.1) -- (0.1, #1 * -1.5em + 0.6em);} \parbox[t]{15.0cm}{#2}}
+\newcommand{\aaD}[2]{\hspace{2.0cm} {\tikz[overlay] \draw (0.1, -0.1) -- (0.1, #1 * -1.5em + 0.6em);} \parbox[t]{15.0cm}{#2}}
+\newcommand{\aaE}[2]{\hspace{2.5cm} {\tikz[overlay] \draw (0.1, -0.1) -- (0.1, #1 * -1.5em + 0.6em);} \parbox[t]{15.0cm}{#2}}
+\newcommand{\xxx}{\par\vspace{0.1cm}}
+
+\begin{document}
+
+\section*{Knapsack Problem}
+
+\subsection*{The Problem}
+
+Given a knapsack with total capacity of $W$, and $n$ items, where item-$i$ has weight $w_i$ and value $v_i$,
+the \emph{knapsack problem} is to select a bunch of items, represented as a vector $(x_1, x_2, \cdots, x_n)$,
+where $x_i$ gives how many item-$i$ are picked, such that
+the total weight of these items is at most $W$, i.e., $\sum_{1\le i \le n} x_iw_i \le W$,
+and that the total value of them, i.e., $\sum_{1\le i \le n} x_i v_i$, is maximized.
+
+There are two variants of above knapsack problem. 
+The first variant~(with repetition) allows each (type of) item can be
+selected unlimitted number of times, i.e., $x_i \in \{0, 1, 2, \cdots \}$, $1\le i \le n$.
+The second variant~(without repetition) requires that each item can be
+selected at most once, i.e., $x_i \in \{0, 1\}$, $1\le i \le n$.
+
+Consider an instance with total capacity $W = 7$ and 4 items with weights being $(5, 2, 1, 3)$
+and values being $(8, 3, 2, 7)$. 
+For the variant~1, the optimal solution is $(0, 0, 1, 2)$, i.e.,
+item~3 is picked once and item~4 is picked twice, which gives a total value of 16 and a total weight of 7.
+For the variant~2, the optimal solution is $(0, 1, 1, 2)$, i.e.,
+item~2, 3 and 4 are picked (once), which gives a total value of 12 and total weight of 6.
+
+\subsection*{An Exercise}
+
+Since we want to maximize the total value given the capacity limit,
+an intuitive strategy is therefore to pick ``the most valuable item per unit''.
+This leads to a greedy algorithm. Formally, we sort all items w.r.t.\ $v_i/w_i$ in descending order,
+and then pick items (greedily) following this order: if the current item can be fit into the knapsack,
+we pick it, reduce the total capacity by its weight, and then either stay at this item~(for variant~1) or move to next item~(for variant~2);
+if the weight of the current item exceeds the remaining capacity of the knapsack, move to the next item. 
+This algorithm is good heuristic and unfortunately may not always find the optimal solution.
+\vspace*{-\topsep}
+\begin{enumerate}
+\item Design an instance for variant~1 such that this algorithm fails to find the optimal solution.
+\item Design an instance for variant~2 such that this algorithm fails to find the optimal solution.
+\end{enumerate}
+
+\subsection*{Algorithm for Variant~1}
+
+We now design an optimal, dynamic programming algorithm for variant~1.
+Again, let's first check if it satisfies optimal substructure property.
+Let $p = (x_1, x_2, \cdots, x_n)$ be the optimal solution.
+Assume that $x_k \ge 1$. Let $q$ be the solution obtained from $p$ by
+reducing $x_k$ by 1, i.e., $q = (x_1, x_2, \cdots, x_{k-1}, x_k - 1, x_{k + 1}, \cdots, x_n)$.
+Then $q$ is the optimal solution when the total capacity is $W - w_k$.
+(Proof: suppose $q$ is not the optimal solution with total capacity being $W - w_k$,
+i.e., one can find a solution achieves higher value than $q$ and does not exceed capacity limit of $W - w_k$.
+Then adding item-$k$ to this solution yields a better solution than $p$, contradicting to the assumption of $p$.)
+
+According to this optimal substructure property, naturally,
+we define $F(a)$ as the total achievable value with capacity limit being $a$.
+Clearly $F(W)$ answers the original question.
+We now develop the recursion.
+In order to calculate $F(a)$, following above optimal substructure property,
+we need to find an item in the optimal solution so as to reduce it to a smaller subproblem.
+Which item is in the optimal solution? We don't know. So we enumerate.
+We consider every single item that fits~(i.e., weight is less or equal to $a$).
+Once we know, say item-$k$, is in the optimal solution, the remaining part of the optimal
+solution can be obtained by calculating the optimal solution with $a - w_k$ being the total capacity.
+Hence, the recursion is
+$$F(a) = \textstyle \max_{1\le k \le n, w_k \le a} (F(a-w_k) + v_k).$$
+
+The algorithm simply fills the array of size $(W + 1)$, i.e., $F(0), F(1), \cdots F(W)$,
+with this recursion. The running time is therefore $O(nW)$, as solving
+a single subproblem takes $O(n)$ time.
+
+Note that this algorithm does not run in polynomial-time.
+This is because, the \emph{input size} of numerical value $W$ is $\log W$.
+By rewriting the running time as a function of input-size, i.e.,
+$O(nW) = O(n2^{\log W})$, we can see the running time is exponential.
+(Note: if the running time is a polynomial function of \emph{numerail values}, we call it
+\emph{pseudo-polynomial time} algorithm. And this algorithm is such an example.)
+
+\subsection*{Algorithm for Variant~2}
+
+Note that the optimal substructure property stated above for variant~1 does not hold for variant 2 anymore.
+This is because in variant 2 each item can be picked at most once. Therefore, another parameter should
+be introduced to ``memorize'' which items are available in the subproblem. A convenient and efficient way is to
+limit the largest index of available items. Here is the optimal substructure property for variant 2:
+let $p = (x_1, x_2, \cdots, x_n)$ be the optimal solution~(recall that each $x_i \in \{0,1\}$).
+Let $k$ be the largest index with $x_k = 1$.
+Let $q$ be the solution obtained from $p$ by
+reducing $x_k$ by 1, i.e., $q = (x_1, x_2, \cdots, x_{k-1}, x_k - 1, x_{k + 1}, \cdots, x_n)$.
+Then $q$ is the optimal solution when the total capacity is $W - w_k$ and only first $(k-1)$ items are available.
+(Proof: suppose $q$ is not the optimal solution,
+i.e., one can find a set of items from the first $(k-1)$ items that achieves higher value~(than $q$) and does not exceed capacity limit of $W - w_k$.
+Then adding item-$k$ to this solution yields a better and feasible solution than $p$, contradicting to the assumption of $p$.)
+
+Following above optimal substructure property,
+we define $F(k, a)$ as the total achievable value using the first $k$ items with capacity limit being $a$.
+Clearly $F(n, W)$ answers the original question.
+We now develop the recursion.
+Consider the last step, i.e., whether item-$k$ is included in the optimal solution.
+In the case that the optimal solution doesn't include item-$k$ we have $F(k,a) = F(k-1,a)$.
+In the case that the optimal solution includes item-$k$ we have $F(k,a) = F(k-1,a-w_k) + v_k$.
+Note that in order to be able to include item-$k$, it is required that $w_k \le a$.
+Hence, the recursion is
+\begin{displaymath}
+F(k,a) = 
+\left\{
+	\begin{array}{lllll}
+	 \max \left\{
+			\begin{array}{lllll}
+			F(k-1,a-w_k) + v_k\\
+			F(k-1,a)
+			\end{array}
+		\right. & \textrm{ if } w_k \le a \\
+	F(k-1,a) & \textrm{ if } w_k > a
+	\end{array}
+\right.
+\end{displaymath}
+
+The algorithm fills out the DP table of size $n(W + 1)$
+with above recursion. The running time is therefore $O(nW)$, as solving
+a single subproblem takes $O(1)$ time.
+Again this is a \emph{pseudo-polynomial time} algorithm. 
+
+\end{document}

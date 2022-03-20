@@ -1,0 +1,168 @@
+\section{Tramp Steamer Problem}
+
+\subsection*{Problem Description}
+
+This is about exercise 4.22, on page 125 of textbook~(read it for a real-world application from which the formulation below is abstracted).
+Formally, we are given a directed graph $G = (V, E)$,
+where each vertex $v\in V$ is associated with a \emph{profit} $p(v) > 0$,
+and each edge $e\in E$ is associated with a \emph{cost} $c(e) > 0$,
+and we seek a simple~(i.e., each vertex appears at most once) cycle $C$ of $G$
+such that the profit-cost ratio of $C$, defined as $r(C) := (\sum_{v\in C} p(v)) / (\sum_{e\in C} c(e))$
+is maximized.
+
+Let $r^* = \max_{C} r(C)$ be the maximized ratio, 
+and let $C^* = \arg\max_{C} r(C)$ be the corresponding optimal cycle.
+In fact, it's hard to calculate the optimal solution~(i.e., $C^*$ and $r^*$).
+Instead, we will approximate it, but with \emph{any given accuracy}.
+Specifically, for any given $\epsilon > 0$~(note: $\epsilon$ can be arbitrarily small),
+we will determine a cycle $C$ such that $r(C) < r^* \le r(C) + \epsilon$.
+In other words, we seek an interval of length $\epsilon$ that contains the optimal ratio.
+
+\subsection*{Binary Search}
+
+We will use \emph{binary search} to solve above problem. To do it, we need two components:
+\vspace*{-\topsep}
+\begin{enumerate}
+\item An algorithm to decide if a given ratio $r$ is a lower bound of $r^*$~(i.e., $r < r^*$). 
+In other words, to decide if $r$ is achievable~(i.e., if there exists a cycle $C$ such that $r(C) > r$).
+We will design this algorithm; its interface will be decide-lower-bound~($G$, $r$), which
+returns true if $r < r^*$ and returns false if $r \ge r^*$.
+\item Initial bounds $r_1$ and $r_2$ for $r^*$ to start search from, i.e., $r_1 < r^* \le r_2$.
+\end{enumerate}
+
+We will resolve about two components later on. Suppose they are available, we can design the following binary
+search algorithm. This algorithm, called binaray-search~($G$, $a$, $b$), is recursive.
+Whenever it is called, it is guaranteed that $a < r^* \le b$.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {6}{Algorithm binary-search~($G = (V, E)$, $a$, $b$)}\xxx
+	\aab {if $b - a \le \epsilon$: report interval $(a,b]$ and exit;}\xxx
+	\aab {let $m = (a + b) / 2$;}\xxx
+	\aab {let $z$ = decide-lower-bound~($G$, $m$);}\xxx
+	\aab {if $z$ = true: return binary-search~($G$, $m$, $b$);}\xxx
+	\aab {else: return binary-search~($G$, $a$, $m$);}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+With available bounds $r_1$ and $r_2$, we can call binary-search~($G$, $r_1$, $r_2$), which will return
+the desired interval of length at most $\epsilon$ that includes $r^*$.
+
+
+\subsection*{Algorithm to Decide Lower Bound}
+
+We now design an algorithm to decide if a given ratio $r$ is a lower bound of $r^*$.
+Note that $r < r^*$ if and only if there exists a cycle $C$ such that $r(C) > r$.
+(Proof: if $r < r^*$, then the optimal cycle $C^*$ satisfies that $r^* = r(C^*) > r$ and hence such $C = C^*$ exists;
+if there exists $r(C) > r$ then $r^* \ge r(C) > r$.)
+
+We can write
+\begin{eqnarray*}
+& & r < r^* \\
+& \Longleftrightarrow & \exists \textrm{ cycle } C \textrm{ s.t.\ } \textstyle r(C) = (\sum_{v\in C} p(v)) / (\sum_{e\in C} c(e)) > r \\
+& \Longleftrightarrow & \exists \textrm{ cycle } C \textrm{ s.t.\ } \textstyle r\cdot \sum_{e\in C} c(e) - \sum_{v\in C} p(v) < 0\\
+& \Longleftrightarrow & \exists \textrm{ cycle } C \textrm{ s.t.\ } \textstyle \sum_{e\in C} r\cdot c(e) + \sum_{v\in C} (-p(v)) < 0
+\end{eqnarray*}
+
+We transform the problem of deciding the last condition into the problem of deciding negative-cycle.
+Given $G = (V, E)$ and $r$, we build a new graph $G_1 = (V_1, V_2)$. See Figure~\ref{fig:cycle}.
+Each vertex $v$ in $G$ will be replaced by two vertices $v_1$ and $v_2$ in $G_1$, and $v_1$ and $v_2$ will be connected by an new
+edge $(v_1, v_2)$; this new edge will have a length of $-p(v)$. 
+Each edge $e = (u,v)$ in $G$ will be replaced by edge $(u_2, v_1)$ in $G_1$; this edge will have a length of $r\cdot c(e)$.
+Clearly, based on how $G_1$ is constructed, we have:
+\vspace*{-\topsep}
+\begin{enumerate}
+\item There exists a cycle $u \to v \to w \to \cdots \to u$ if and only if there exists a cycle $u_2 \to v_1 \to v_2 \to w_1 \to w_2 \to \cdots \to u_1 \to u_2$ in $G_1$.
+\item Let $C$ be a cycle in $G$ and let $C_1$ be its corresponding cycle in $G_1$. Then the length of $C_1$ in $G_1$ is 
+exactly $\sum_{e\in C} r\cdot c(e) + \sum_{v\in C} (-p(v))$.
+\end{enumerate}
+
+\begin{figure}[h]
+\centering{\input{cycle}}
+\vspace{-2.6cm}
+\caption{Constructing $G_1$ from $G$ and $r$.}
+\label{fig:cycle}
+\end{figure}
+
+
+Hence, we can keep writing above reasoning:
+\begin{eqnarray*}
+& & r < r^* \\
+& \Longleftrightarrow & \exists \textrm{ cycle } C \textrm{ in $G$ s.t.\ } \textstyle \sum_{e\in C} r\cdot c(e) + \sum_{v\in C} (-p(v)) < 0 \\
+& \Longleftrightarrow & \exists \textrm{ cycle } C_1 \textrm{ in $G_1$ s.t.\ the length of $C_1$ is smaller than 0 } \\
+& \Longleftrightarrow & \textrm{ $G_1$ contains negative cycle } \\
+\end{eqnarray*}
+
+We therefore successfully transformed the problem of deciding if $r < r^*$ into a problem of deciding if $G_1$ contains negative cycle,
+which we know how to solve.
+The pseudo-code is given below.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {5}{Algorithm decide-lower-bound~($G = (V, E)$, $r$)}\xxx
+	\aab {build $G_1 = (V_1, E_1)$;}\xxx
+	\aab {call an algorithm to decide if $G_1$ contains negative cycle;}\xxx
+	\aab {if $G_1$ contains negative cycle: return true~(i.e., $r < r^*$);}\xxx
+	\aab {else: return false~(i.e., $r \ge r^*$);}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+The running time of above algorithm is dominated by the procedure of deciding negativ cycles, which is $O(|V_1|\cdot |E_1|)$.
+Notice that $|V_1| = 2|V|$ and $|E_1| = |V| + |E|$. Hence, the running time of above algorithm is $O(|V|^2 + |V| \cdot |E|)$.
+
+
+\subsection*{Initial Bounds}
+
+We now find an initial bounds $r_1$ and $r_2$ for $r^*$.
+We can use a trivial lower bound, i.e., $r_1 = 0$.
+What is a possible upper bound of $r^*$?
+Notice that $r(C)$ is the ratio of the sum of vertex-profits and the sum of edge-costs,
+and the number of vertices and the number of edges in a cycle are the same.
+Hence, we have an upper bound: $r_2 = \max_{v\in V} p(v) / \max_{e\in E} c(e)$.
+A better upper bound can be obtained by realizing that in any cycle edge $e = (u,v)$ is always followed by vertex $v$.
+Hence, we have a better bound: $r_2 = \max_{e = (u,v) \in E} p(v) / c(e)$.
+
+\subsection*{Running Time Analysis}
+
+To see the running time, assume $t$ is the number of iterations in the binary search.
+We have $(r_2 - r_1) / 2^t = \epsilon$. Hence we have $t = \log (r_2 / \epsilon)$.
+The overall running time is therefore $O(\log (r_2 / \epsilon) (|V|^2 + |V||E|))$.
+Notice that this running time is a function of $\epsilon$, as expected.
+Notice too, that this running time involves numeric value, i.e., $r_2 / \epsilon$.
+The \emph{input-size} of any numeric value $x$ is $\log x$.
+Therefore $\log(r_2 / \epsilon)$ is linear in the input-size of $r_2/\epsilon$.
+Hence, the entire algorithm runs in polynomial-time.
+
+To comapre, consider the linear-search algorithm given below.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {5}{Algorithm linear-search~($G = (V, E)$, $a$, $b$)}\xxx
+	\aab {init $r = 0$;}\xxx
+	\aab {let $z$ = decide-lower-bound~($G$, $r$);}\xxx
+	\aab {if $z$ = true: $r = r + \epsilon$;}\xxx
+	\aab {else: return $(r - \epsilon, r]$;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+This algorithm is correct, but it may call decide-lower-bound $r_2 / \epsilon$ times.
+So its overall running time is $O(r_2 / \epsilon (|V|^2 + |V||E|))$.
+This is \emph{not} a polynomial-time algorithm,
+as $r_2 / \epsilon$ is exponential in its input-size, which is $\log(r_2/\epsilon)$.
+
+In conclusion, binary-search is essential to achieve an efficient algorithm for this problem.
+
+\subsection*{Finding A Negative Cycle}
+
+We know how to extend DP or BF algorithms to decide the existence of a negative cycle.
+If it exists, how to actually find one?
+Again, we can use the shortest-path graph, i.e., $G' = (V, \{(prev[v], v) \mid v\in V\})$ constructed
+from the $prev$ array. Note, this $prev$ array is associated with the row-$|V|$ in the DP algorithm,
+or associated with the $|V|$-th iterations of the BF algorithm.
+We can prove that, if $G$ contains negative cycle, then this graph $G'$ must contain cycle,
+and any cycle in $G'$ must be a negative cycle of $G$. See an example below.
+
+\begin{figure}[h]
+\centering{\input{nc}}
+\caption{Find a negative cycle using $prev$ array.}
+\label{fig:dpbf}
+\end{figure}
+
+

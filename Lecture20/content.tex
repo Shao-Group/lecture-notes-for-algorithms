@@ -1,0 +1,291 @@
+\section{Shortest Path Problem Revisited}
+
+%%%We will design two algorithms, namely a dynamic programming algorithm and the Bellman-Ford algorithm,
+%%%for shortest path problem in the presence of negative edge length.
+%%%
+%%%\subsection*{Negative Cycle}
+%%%
+%%%A negative cycle $C$ in a graph is a cycle with negative length, i.e., $l(C) := \sum_{e\in C} l(e) < 0$.
+%%%In the presence of negative cycle, if we don't limit the number of edges
+%%%in a path, then the length of a path could goes to negative infinity.
+%%%In other words, the shortest path may not exist.
+%%%Therefore, in a graph with negative edge length, we want to
+%%%detect if there exists negative cycle.
+%%%We will show that later on, both the dynamic programming algorithm
+%%%and Bellman-Ford algorithm can be extended to detect negative cycle.
+%%%
+%%%A path $p$ in a graph is \emph{simple} if $p$ does not have repeating vertices.
+%%%If a graph $G$ does not contain negative cycle, then 
+%%%for any pair of vertices $u$ and $v$, if $u$ can reach $v$,
+%%%then there always exists a {simple} shortest path from $u$ to $v$,
+%%%as otherwise we can skip the cycle in it to get a better or same-length path.
+%%%If all cycles in graph $G$ are positive then every shortest path is simple.
+%%%
+%%%\subsection*{Framework of Dynamic Programming Algorithm}
+%%%
+%%%A typical dynamic programming algorithm consists of following steps:
+%%%\vspace*{-\topsep}
+%%%\begin{enumerate}
+%%%\item Define subproblems~(or equivalently, partition the search space into sub-spaces),
+%%%$P_1, P_2, \cdots, P_n$; solving all these subproblems will solve the original problem.
+%%%\item Develop a recursion for these subproblems. Formally, let $opt(P_k)$ be the optimal
+%%%solution of $P_k$. A recursion is a function that calculates
+%%%$opt(P_{k+1})$ using $opt(P_1), opt(P_2), \cdots, opt(P_k)$.
+%%%\item Fill a \emph{dynamic programming table},
+%%%in which each entry stores the optimal solution of a subproblem, 
+%%%using above recursion.
+%%%\end{enumerate}
+%%%
+%%%
+%%%\subsection*{DP Algorithm for Shortest Path Problem}
+
+Let's revisit the shortest path problem with possibly negative edge length.
+Formally, given graph $G = (V, E)$ with edge length $l(e)$ for any $e\in E$~(note
+that it could be that $l(e) < 0$) and source vertex $v\in V$,
+to calculate the shortest path from $s$ to every $v\in V$.
+Here we assume that $G$ does not contain negative cycle~(so
+the shortest path exists for every vertex that is reachable from $s$).
+
+We first define subproblems: define $dist(k,v)$ as the length
+of the shortest path from $s$ to $v$ using at most $k$ edges;
+the ``subproblem'' is then to calculate $dist(k,v)$.
+These subproblems correspond to partition the ``search space''
+in this way: define $X(v)$ as the set of all paths from $s$ to $v$ in $G$.
+Define $X(k, v)$ as the set of all paths from $s$ to $v$ using
+at most $k$ edges. Therefore, $dist(k,v)$ is the length
+of the optimal path in $X(k,v)$.
+
+Here's connection of these subproblems with the original problem.
+\begin{fact}
+If $G$ does not contain negative cycle, then $dist(|V| - 1, v) = distance(s, v)$ for every $v\in V$.
+\end{fact}
+
+\begin{figure}[h]
+\centering{\input{space}}
+\caption{The illustration of partitioning the search space $X(v)$ into sub-spaces.
+Each point represents a path from $s$ to $v$ and the number next to it represents the
+number of edges in this path.}
+\label{fig:space}
+\end{figure}
+
+We now develop a recursion to calculate $dist(k,v)$ from $\{dist(i, u) \mid 0 \le i < k, u\in V\}$.
+We consider two cases. First, the shortest path from $s$ to $v$ using at most $k$ edges actually has $k - 1$ or less edges;
+in this case we have $dist(k, v) = dist(k - 1, v)$.
+Second, the shortest path from $s$ to $v$ has $k$ edges. In this case,
+we consider all possibilities of the last edge in the optimal path. (Enumerating
+all possible cases of the last step is a commonly-used approach in designing dynamic programming algorithms.)
+Such edge must be one of the in-edges of $v$. Once the last edge of the optimal path, say $(u,v)$, is fixed,
+then we know the remaining part of the optimal path must be the optimal path from $s$ to $u$ with at most $(k - 1)$ edges.
+With this analysis, if it is the second case, then $dist(k,v) = \min_{(u,v)\in E} (dist(k-1, u)  + l(u,v)$.
+Combined, the recursion is
+$$\textstyle dist(k,v) = \min\{dist(k-1, v), \min_{(u,v)\in E} (dist(k-1,u) + l(u,v)\}.$$
+
+(Think: would this recursion $dist(k,v) = \min_{(u,v)\in E} (dist(k-1,u) + l(u,v))$ work? Why?)
+
+With above recursion available, the algorithm is rather straightforward.
+The algorithm is simply to fill the dynamic programming table.
+In this case, the table is $|V| \times |V|$: each row is indexed by $k$, $0 \le k \le |V| - 1$, 
+and each column is indexed by $v\in V$. 
+
+\begin{figure}[h]
+\centering{\input{table}}
+\caption{Illustration of the dynamic programming table for shortest-path problem.}
+\label{fig:table}
+\end{figure}
+
+
+A typical dynamic programming algorithm can be organized into 3 steps.
+The \emph{initialization step}, in this case, fills the first row of the table:
+$dist(0,s) = 0$ and $dist(0,v) = \infty$ if $v\neq s$.
+The \emph{iteration step} fills all other rows of the table using above recursion.
+The \emph{termination step} answers the original question, in this case,
+reports that the last row gives the distance for every vertex.
+The pseudo-code is given below.
+Try run this algorithm~(fill the dynamic programming table) on the example below.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {14}{Algorithm DP-shortest-path~($G = (V, E)$, $l(e)$ for any $e\in E$, $s \in V$)}\xxx
+	\aab {init a 2D array $dist$ of size $|V|\times |V|$;}\xxx
+	\aab {$dist[0, s] = 0$; $dist[0, v] = \infty$ for any $v\neq s$;}\xxx
+	\aaB {9}{for $k = 1 \to |V| - 1$;}\xxx
+	\aaC {7}{for $v\in V$;}\xxx
+	\aad {$dist(k,v) = dist(k-1, v)$;}\xxx
+	\aaD {4}{for each $(u,v)\in E$;}\xxx
+	\aaE {2}{if~($dist(k,v) > dist(k-1,u) + l(u,v)$)}\xxx
+	\aaf {$dist(k,v) = dist(k-1,u) + l(u,v)$;}\xxx
+	\aae {end if;}\xxx
+	\aad {end for;}\xxx
+	\aac {end for;}\xxx
+	\aab {end for;}\xxx
+	\aab {$dist[|V|-1,v]$ gives $distance(s,v)$, for any $v\in V$;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+\begin{figure}[h]
+\centering{\input{dp}}
+\caption{An example of running above DP algorithm.}
+\label{fig:table}
+\end{figure}
+
+
+The second for-loop and the the third for-loop together take $O(|E|)$ time,
+as it examines, for each $v\in V$, the in-edges of $v$.
+Hence, the running time of this algorithm is $O(|V|\cdot |E|)$.
+
+\subsection*{Recursion Revisited}
+
+In the core recursion of the DP algorithm,
+$dist(k,\cdot)$ only depends on $dist(k - 1, \cdot)$.
+In other words, the calculation of next row of the DP table
+only relies on the value of the previous row.
+This property has the following two applications.
+
+{\bf Early Termination.} In any run of the DP algorithm, if we observe
+that the $k$-th row and $(k+1)$-th row are identical,
+then the algorithm can be terminated~(rather than keep running it until the $(|V|-1)$-th row),
+as we know that any of the future row will be identical to these two rows.
+
+{\bf Space Complexity.} It seems that the DP algorithm requires $|V|^2$ space,
+as the DP table is $|V|\times |V|$.
+In fact, this can be improved to $2|V|$,
+as we only need to maintain two rows, the current row and
+the previous row; the completion of the current row uses the values 
+in the previous row, and after the current row has been completed,
+copy it to the previous row.
+
+\subsection*{Characterization of Negative Cycle}
+
+We focus on this problem: given graph $G = (V,E)$ with edge length $l(e)$, $e\in E$, and
+a source vertex $s$, to decide if there exists a negative cycle in $G$ that is reachable from $s$.
+Before we design algorithm for it,
+we first derive an equivalent characterization.
+
+Recall that $dist(k,v)$ is defined as the length of the shortest path from $s$ to $v$ using
+at most $k$ edges. We emphasize that, this definition is still valid in the presence of negative cycles.
+Comparing with $distance(s,v)$, which may not be well-defined as the shortest path may use unlimited
+number of edges, the definition of $dist(k,v)$ limits the number of edges~(i.e., $k$) in the path.
+Hence, $dist(k,v)$ is well-defined for any $k\ge 0$ and any $v\in V$. See an example below.
+
+\begin{figure}[h]
+\centering{\input{def}}
+\caption{Example showing that $dist(k,v)$ is well-defined in the presence of negative cycle.
+In this example, $dist(1,a) = 1$, $dist(301,a) = -99$, $dist(3001,a) = -999$.}
+\label{fig:space}
+\end{figure}
+
+\begin{fact}
+Let $C$ be a negative cycle reachable from $s$;
+let $v\in C$. Then we have $\lim_{k\to\infty} dist(k,v) = -\infty$.
+\end{fact}
+\emph{Proof.} This is because, one can loop within $C$ to get shorter and shorter path from $s$ to $v$. \qed
+
+%On the other hand, if $C$ does not contain negative cycle, then $dist(|V| - 1, v) = distance(s,v)$.
+%Note that $dist(k + 1, v) \le dist(k, v)$, for any $k\ge 0$, as $dist(k+1,v)$ is the optimal solution of a larger sub-space than that of $dist(k,v)$.
+%Note that too $dist(k,v) \ge distance(s,v)$, for any $k\ge 0$, again because $distance(s,v)$ is the optimal solution of the entire search space~(and
+%$distance(s,v)$ is well-defined without negative cycle).
+%This leads to that, if $G$ does not contain cycle, when $k\ge |V| - 1$, we always have 
+%$dist(k, v) = dist(|V| - 1, v) = distance(s,v)$.
+%
+%Combined, we have the following chracterization of the existence of negative cycle reachable from $s$.
+%\begin{claim}
+%A graph $G$ contains a negative cycle reachable from $s$ if and only if there exists a vertex $v$ such that
+%$\lim_{k\to\infty} dist(k,v) = -\infty$.
+%\end{claim}
+
+\subsection*{DP Algorithm to Detect Negative Cycle}
+
+We will extend above DP algorithm to do it.
+Recall that the DP consists of initialization, iteration, and termination steps.
+We emphasize that, in the presence of negative cycles, the initialization and iteration
+steps are still correct~(simply because the proof of their correctness doesn't assume that $G$ does not contain negative cycle),
+i.e., we can still use them to calculate $dist(k,v)$, for \emph{any} $k\ge 0$, even if $G$ contains negative cycle.
+It's only that the termination step won't work in the presence of neagive cycle,
+as $dist(|V| - 1, v) = distance(s,v)$ needs the condition that $G$ does not contain negative cycle.
+Note too that the early-termination property is also correct in the presence of negative cycles.
+
+Here comes the algorithm to decide negative cycle reachable from $s$:
+it simply calculates one more row in the DP table and check if the last two rows are identical.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {7}{Algorithm detect-negagive-cycle~($G = (V, E)$, $l(e)$ for any $e\in E$, $s \in V$)}\xxx
+	\aab {fill one more row in the DP table, i.e., calculate $dist(|V|, v)$ for any $v\in V$;}\xxx
+	\aaB {2}{if~($dist(|V|,v) = dist(|V| - 1,v)$ for \emph{every} $v\in V$)}\xxx
+	\aac {report: ``$G$ does not contain negative cycle reachable from $s$'';}\xxx
+	\aaB {2}{else}\xxx
+	\aac {report: ``$G$ contains negative cycle reachable from $s$'';}\xxx
+	\aab {end if;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+We now prove the correctness of the above algorithm.
+The proof is a combination of the facts we have seen, namely Fact~1 in Lecture~19, the ``early-termination'' property,
+and Fact~1 in this lecture.
+
+\emph{Proof.} We first prove that, if $G$ does not contain negaive cycle reachable from $s$, then $dist(|V|, v) = dist(|V| - 1, v)$ for every $v\in V$.
+Following Fact~1 in Lecture~19, we have $dist(|V| - 1, v) = distance(s,v)$.
+Note that $dist(|V|, v) \le dist(|V| - 1, v)$, as $dist(|V|,v)$ is the optimal solution of a larger sub-space than that of $dist(|V|-1,v)$.
+Note too that $dist(|V|,v) \ge distance(s,v)$, as $distance(s,v)$ is the optimal solution of the entire search space~(and
+$distance(s,v)$ is well-defined without negative cycle).
+Combined, $dist(|V|, v) = dist(|V| - 1, v)$ for every $v\in V$.
+
+We then prove that, if $G$ contains negaive cycle reachable from $s$, then there exist $v\in V$ such that $dist(|V|, v) \neq dist(|V| - 1, v)$.
+Suppose conversely that $dist(|V|, v) = dist(|V| - 1, v)$ for every $v\in V$.
+Then following the early-termination property, any future row will be the same as $dist(|V|-1,v)$, i.e., $\lim_{k\to\infty} dist(k, v) = dist(|V| - 1, v)$, for every $v\in V$.
+This contradicts to the Fact~1 in this lecture. \qed
+
+\subsection*{Floyd-Warshall Algorithm}
+
+We consider the \emph{all-pairs shortest path problem}: given graph $G = (V, E)$ with edge length $l(e)$ for any $e\in E$,
+to compute $distance(u,v)$ for any $u,v\in V$. A straitforward algorithm is to run any algorithm for single-source shortest path problem
+$|V|$ times, in each of which starting from a different vertex as source. The running time will be $O(|V|^2|E|)$.
+
+We now introduce Floyd-Warshall algorithm, which takes $O(|V|^3)$ time.
+Instead of limiting the number of edges in the shortest paths as used in the DP algorithms for single-source shortest path problem,
+in Floyd-Warshall algorithm, we limit the \emph{largest index of the intermediate vertices} in the shortest paths.
+Specifically, we rename $V = \{v_1, v_2, \cdots, v_n\}$, where $n = |V|$.
+We define $dist(i,j,k)$ as the length of the shortest path from $v_i$ to $v_j$
+such that the intermediate vertices on the path is from $\{v_1, v_2, \cdots, v_k\}$.
+In other words, among all paths from $v_i$ to $v_j$ with 
+intermediate vertices being from $\{v_1, v_2, \cdots, v_k\}$,
+$dist(i,j,k)$ gives the length of the shortest one.
+Clearly, we have that $distance(v_i, v_j) = dist(i, j, n)$.
+
+Now let's develop a recursion.
+Let $p$ be the shortest path from $v_i$ to $v_j$ with 
+intermediate vertices being from $\{v_1, v_2, \cdots, v_k\}$.
+There are two possibilities: $p$ does not use $v_k$ and $p$ uses $v_k$.
+If it is the first case, we know that $dist(i,j,k) = dist(i,j,k-1)$.
+If it is the second case, $p$ is partitioned into two paths, one from $v_i$ to $v_k$ and the other is from $v_k$ to $v_j$,
+and in either path the 
+intermediate vertices must be from $\{v_1, v_2, \cdots, v_{k-1}\}$.
+Therefore, in this case, $dist(i,j,k) = dist(i,k,k-1) + dist(k,j,k-1)$.
+Combined, we have the following recursion:
+$$dist(i,j,k) = \min\{dist(i,j,k-1), dist(i,k,k-1) + dist(k,j,k-1)\}.$$
+
+\begin{figure}[h]
+\centering{\input{floyd}}
+\caption{The DP table of the Floyd-Warshall algorithm.}
+\label{fig:dag}
+\end{figure}
+
+The complete algorithm fills the table shown above. 
+The pseudo-code is given below.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {12}{Algorithm Floyd-Warshall~($G = (V, E)$, $l(e)$ for any $e\in E$}\xxx
+	\aab {init a 3D array $dist$ of size $|V|\times |V| \times |V|$, initialized as $\infty$;}\xxx
+	\aab {$dist[i, i, 0] = 0$, $1\le i \le n$;}\xxx
+	\aab {$dist[i, j, 0] = l(v_i,v_j)$, for any $(v_i,v_j) \in E$;}\xxx
+	\aaB {6}{for $k = 1 \to n$;}\xxx
+	\aaC {4}{for $i = 1 \to n$;}\xxx
+	\aaD {2}{for $j = 1 \to n$;}\xxx
+	\aae {$dist(i,j,k) = \min\{dist(i,j,k-1), dist(i,k,k-1) + dist(k,j,k-1)\}$;}\xxx
+	\aad {end for;}\xxx
+	\aac {end for;}\xxx
+	\aab {end for;}\xxx
+	\aab {report: $dist[i,j,n]$ gives $distance(v_i,v_j)$, for any pair $v_i,v_j \in V$;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+
+

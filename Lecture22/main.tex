@@ -1,0 +1,139 @@
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{geometry}
+\usepackage{pslatex}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{tikz}
+\usepackage{setspace}
+\geometry{ margin = 1.0in }
+
+\pagestyle{fancy}
+\lhead{{\bf Lecture 29}}
+\chead{{\bf CMPSC 465 Fall 2020}}
+\rhead{{\bf Mingfu Shao}}
+
+\setlength\parindent{0em}
+\setlength\parskip{8pt}
+%\setlength{\fboxsep}{6pt}
+
+\usepackage{amsthm}
+\newtheoremstyle{mytheorem}
+  {\parskip} % Space above
+  {0em} % Space below
+  {} % Body font
+  {} % Indent amount
+  {\bfseries} % Theorem head font
+  {.} % Punctuation after theorem head
+  {.5em} % Space after theorem head
+  {} % Theorem head spec (can be left empty, meaning `normal')
+
+\theoremstyle{mytheorem}
+\newtheorem{definition}{Definition}
+\newtheorem{property}{Property}
+\newtheorem{claim}{Claim}
+\newtheorem{fact}{Fact}
+\newtheorem{corollary}{Corollary}
+
+% for algorithms
+\newcommand{\aaa}[1]{\hspace{0.65cm}\parbox[t]{15.3cm}{#1}}
+\newcommand{\aab}[1]{\hspace{1.15cm}\parbox[t]{15.0cm}{#1}}
+\newcommand{\aac}[1]{\hspace{1.65cm}\parbox[t]{15.0cm}{#1}}
+\newcommand{\aad}[1]{\hspace{2.15cm}\parbox[t]{15.0cm}{#1}}
+\newcommand{\aae}[1]{\hspace{2.65cm}\parbox[t]{15.0cm}{#1}}
+\newcommand{\aaf}[1]{\hspace{3.15cm}\parbox[t]{15.0cm}{#1}}
+\newcommand{\aaA}[2]{\hspace{0.5cm} {\tikz[overlay] \draw (0.1, -0.1) -- (0.1, #1 * -1.5em + 0.6em);} \parbox[t]{15.0cm}{#2}}
+\newcommand{\aaB}[2]{\hspace{1.0cm} {\tikz[overlay] \draw (0.1, -0.1) -- (0.1, #1 * -1.5em + 0.6em);} \parbox[t]{15.0cm}{#2}}
+\newcommand{\aaC}[2]{\hspace{1.5cm} {\tikz[overlay] \draw (0.1, -0.1) -- (0.1, #1 * -1.5em + 0.6em);} \parbox[t]{15.0cm}{#2}}
+\newcommand{\aaD}[2]{\hspace{2.0cm} {\tikz[overlay] \draw (0.1, -0.1) -- (0.1, #1 * -1.5em + 0.6em);} \parbox[t]{15.0cm}{#2}}
+\newcommand{\aaE}[2]{\hspace{2.5cm} {\tikz[overlay] \draw (0.1, -0.1) -- (0.1, #1 * -1.5em + 0.6em);} \parbox[t]{15.0cm}{#2}}
+\newcommand{\xxx}{\par\vspace{0.1cm}}
+
+\begin{document}
+
+\section*{Why DP Table? Why not Recursive Programming?}
+
+In all the DP algorithms we've designed, we always use a table to store
+the optimal solution of subproblems; when solving larger
+subproblems, we simply query the table and fetch the optimal
+solutions as needed. 
+This leads to a bottom-up strategy, i.e., we start from solving
+smaller subproblems as they will be needed by larger ones.
+Is this strategy always necessary?
+Can we directly solve the original problem with recursive programming?
+
+Let's try.
+Consider the edit distance problem~(Lecture 26).
+The DP algorithm we designed there uses the recursion below.
+\begin{displaymath}
+F(i,j) = \min\left\{
+	\begin{array}{llll}
+	F(i-1,j-1) + \delta(X[i] \neq Y[j]) \\
+	F(i-1,j) + 1 \\
+	F(i,j-1) + 1 \\
+	\end{array}
+\right.
+\end{displaymath}
+
+We write a recursive procedure: define $F(i,j)$
+returns the edit distance between $X[1\cdots i]$ and $Y[1\cdots j]$.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {7}{function $F(i,j)$}\xxx
+	\aab {if $i = 0$: return $j$;}\xxx
+	\aab {if $j = 0$: return $i$;}\xxx
+	\aab {$z_1 = F(i-1,j-1) + \delta(X[i] \neq Y[j])$;}\xxx
+	\aab {$z_2 = F(i-1,j) + 1$;}\xxx
+	\aab {$z_3 = F(i,j-1) + 1$;}\xxx
+	\aab {return $\min\{z_1,z_2,z_3\}$;}\xxx
+	\aaa {end function;}\xxx
+\end{minipage}
+
+We then call $F(m,n)$, where $m=|X|$ and $n=|Y|$.
+This is a correct algorithm.
+How about its running time?
+We define $T(m,n)$ as the running time of $F(m,n)$.
+We have $T(m,n) = T(m-1,n-1) + T(m-1,n) + T(m,n-1) + 1$.
+To \emph{approximate} $T(m,n)$, assume that $m=n$.
+Notice also that $T(m-1,n) \ge T(m-1,n-1)$
+and $T(m,n-1) \ge T(m-1,n-1)$.
+We can write $T(n,n) \ge 3T(n-1,n-1) + 1$.
+Hence, $T(n,n) \ge \Theta(3^n)$.
+So, above algorithm runs in exponential-time!
+This suggests that recursive procedure is a bad strategy.
+
+\begin{figure}[b]
+\centering{\input{tree}}
+\caption{First 3 levels of the recursive tree of above procedure.
+Identical recursive calls are marked with the same color.}
+\label{fig:tree}
+\end{figure}
+
+
+Note that there are $\Theta(mn)$ distinct subproblems, i.e., $F(i,j)$, $0\le i
+\le m$, $0\le j \le n$. The reason why above
+algorithm runs in exponential time is that it keeps solving the \emph{same}
+subproblems. See Figure~\ref{fig:tree}. This again suggests the necessity
+of maintaining a table to store the optimal solutions so as to avoid
+repeating resolving the same ones.
+An alternative way to understand it is that, subproblems will be used
+multiple times by different larger subproblems, hence it's beneficial
+to store them.
+
+
+Both divide-and-conquer algorithms and dynamic programming algorithm
+rely on a recursive formula that reduces larger subproblems into smallers.
+Why for D\&C algorithm we don't maintain a table?
+There are two reasons.
+First, in (most) D\&C algorithms, subproblems don't overlap~(while in DP algorithms they do, as showed in Figure~\ref{fig:tree}), or in other words,
+each subproblem will be used only once. Therefore there is no difference between
+solving recursively or by using a table.
+Second, in (most) D\&C algorithms, the size of the subproblem is usually reduced by a \emph{fixed ratio}~(for example, $n\to n/2$),
+and consequently the height of the recursive tree is $\Theta(\log n)$. 
+Hence there is \emph{no need} to maintain a table, as solving all subproblems on the fly is still efficient.
+On the contrary, in (most) DP algorithms, the size of the subproblem is usually reduced by a \emph{constant}~(for example, $n\to n-1$),
+and consequently the height of the recursive tree is $\Theta(n)$;
+solving all subproblems on the fly will require exponential-time, as we just showed.
+
+\end{document}

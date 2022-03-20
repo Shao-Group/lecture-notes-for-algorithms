@@ -1,0 +1,172 @@
+\section{NP-complete and NP-hard}
+
+\subsection*{Polynomial-Time Reduction Revisit}
+
+Polynomial-time reduction can be used in two different ways. Suppose we have $X\le_p Y$.
+\vspace*{-\topsep}
+\begin{enumerate}
+\item If we know an algorithm to solve $Y$, then we know how to solve $X$. In this way
+we are making use of an (existing) algorithm for $Y$ to solve a (new) problem $X$. Such an example
+is we use the maximum flow problem~(problem $Y$) to solve the bipartite maximum matching problem~(problem $X$).
+\item If we know problem $X$ is \emph{hard}, then we know that problem $Y$ is \emph{hard}. 
+This is because $X\le_p Y$ means that $Y$ is at least as hard as $X$, as any algorithm of $Y$ can be used to solve $X$.
+In this way, we are making use of an (existing) hard problem $X$
+to prove that a (new) problem $Y$ is hard.  Below we will formally define ``hard''.
+Informally, it means a polynomial-time algorithm does not exist~(unless P{}~$=${}~NP).
+\end{enumerate}
+
+
+\subsection*{NP-complete}
+
+\begin{definition}[NP-complete]
+Let $X$ be a decision problem. We say $X$ is NP-complete, if $X$ is in NP, and for every problem $X'$ in NP, we have $X'\le_p X$.
+\end{definition}
+
+NP-complete problems are the ``hardest'' problems in NP. It's not obvious that
+NP-complete problems even exist.  
+Thanks to the pioneers of computer science: in 1971 Cook and Levin proved the first
+NP-complete problem by showing that the circuit satisfiability problem is NP-complete.
+This builds the foundation of complexity theory.
+
+One side of application of NP-complete relates to the connection between P and NP.
+Clearly, P is a subset of NP, i.e., P{}~$\subset${}~NP.
+But is the case that P{}~$\neq${}~NP~(i.e., P is a strict subset of NP),
+or P{}~$=${}~NP?  This question remains open,
+and is perhap \emph{the} most important open question in computer science.
+(It is also one of the seven Millennium Prize Problems selected by the Clay Mathematics Institute.)
+The existence of NP-complete problems gives a way to prove that P{}~$=${}~NP, by just showing
+one NP-complete problem is polynomial-time solvable. This is easy to understand: NP-complete
+problems are the hardest problems in NP; if one of them is polynomial-time solvable,
+then every problem must be polynomial-time solvable. We formally state it and prove it below.
+
+\begin{claim}
+Let $X$ be a NP-complete problem. If $X$ is in P, then we have P{}~$=${}~NP.
+\end{claim}
+
+\emph{Proof.} 	
+In order to show P{}~$=${}~NP, we only need to prove NP{}~$\subset${}~P, as we already have P{}~$\subset${}~NP. 
+Let $X'$ be an arbitrary problem in NP.  
+Since $X$ is NP-complete, by definition, we know that $X'\le_p X$. Because
+$X$ is in P, then we have that $X'$ is in P as well~(see Fact~1 in Lecture~40).
+This proves that NP{}~$\subset${}~P, as $X'$ is arbitrary.  \qed
+
+Above claims suggests the two possible cases between P, NP, and NPC---here we use ``NPC''
+to represent the set of all NP-complete problems. See Figure~\ref{fig:PvsNP}.
+
+\begin{figure}[!h]
+\centering{\input{PvsNP}}
+\caption{Two possibilities among P, NP, and NPC.}
+\label{fig:PvsNP}
+\end{figure}
+
+\vspace*{-\topsep}
+\begin{enumerate}
+\item P{}~$\neq${}~NP. In this case, we must have P{}~$\cap${}~NPC{}~$=\emptyset$. This is
+because otherwise, if there exists a problem $X\in \textrm{ P } \cap \textrm{ NPC}$, P will be equal to NP according to above Claim). 
+\item P{}~$=${}~NP. In this case, we must have P{}~$=${}~NP{}~$=${}~NPC. 
+This is because in this case \emph{any} two problems $X$ and $Y$ in NP~(and therefore in P)
+must satisfy that $X\le_p Y$ and $Y\le_p X$, as both $X$ and $Y$ can be solved in polynomial-time.
+This proves that every problem in NP is NP-complete.
+\end{enumerate}
+
+Another side of application of NP-complete problems is to use existint NP-complete problems
+to prove new problems are NP-complete~(i.e., hard). This is based on the following claim.
+
+\begin{claim}
+Let $X$ be a problem in NP. If there exists an NP-complete problem $Y$ such that $Y\le_p X$,
+we we have $X$ is NP-complete.
+\end{claim}
+
+This is easy to understand: $Y$ is NP-complete, i.e., it is (one of) the hardest problem
+in NP; of course $Y$ is at least as hard as $X$ because $X$ is in NP.
+Now we have $Y\le_p X$, i.e., $X$ is at least as hard as $Y$. Combined, $X$ is (one of) the
+hardest problem in NP as well. Below we give a formal proof.
+
+\emph{Proof.} Let $X'$ an arbitrary problem in NP. Since problem $Y$ is NP-complete,
+by definition, we have $X' \le_p Y$. Since $Y\le_p X$, we must have that $X'\le X$.
+(Here we use the property that the polynomial-time reduction is transitive.)
+Combining that $X$ is in NP, we know that $X$ is NP-complete.\qed
+
+Above Claim suggest a procedure to prove that a decision problem $X$ is NP-complete.
+\vspace*{-\topsep}
+\begin{enumerate}
+\item show that $X$ is in NP;
+\item pick an existing NP-complete problem $Y$;
+\item show that $Y$ is polynomial-time reducible to $X$. 
+\end{enumerate}
+
+Using above procedure, lots of problems have been proved to be NP-complete.
+These includes the 3SAT problem, the decision-version of the vertex cover problem, i.e., $VC(G,k)$.
+Other well-known NP-complete problems include, the decision-version of independenet set problem,
+the Hamiltonian path problem, 
+the Hamiltonian cycle problem, 
+3D matching problem, $k$-coloring problem when $k\ge 3$, the subset-sum problem, decision-version of TSP~(traveling salesman problems), etc.
+Below we give some details for the independent set problem.
+
+\subsection*{The Independent Set Problem}
+
+An \emph{independent set} of an undirected graph $G = (V, E)$
+is a subset of vertices $V_1\subset V$ satisfying that no two vertices in it is connected by an edge, i.e.,
+for any $u,v\in V_1$, we have $(u,v)\not\in E$. We define two versions of the independent set problem.
+\vspace*{-\topsep}
+\begin{enumerate}
+\item optimization-version: given an undirected graph $G = (V, E)$, to seek an independent set $V_1$ of $G$ such that $V_1$ is maximized; we denote this problem as $IS(G)$;
+\item decision-version: given an undirected graph $G = (V, E)$ and integer $k\ge 0$, to decide if there exists an independent set $V_1$ of $G$ such that $|V_1| \ge k$;
+we denote this problem as $IS(G,k)$.
+\end{enumerate}
+
+There is a simple connection between independent set and vertex cover, stated below. Can you spot why?
+See Figure~\ref{fig:is} for an example.
+
+\begin{claim}
+Let $G = (V, E)$ be an undirected graph. We have $V_1\subset V$ is an independent set of $G$ if and only if $V\setminus V_1$ is a vertex cover of $G$.
+\end{claim}
+
+\begin{figure}[!h]
+\centering{\input{is}}
+\caption{Relationship between independent set and vertex cover.}
+\label{fig:is}
+\end{figure}
+
+Above claim immediately suggests the following corollaries.
+\begin{corollary}
+$V_1^*\subset V$ is one maximum independent set of an undirected graph $G$ if and only if $V\setminus V_1^*$ is one minimum vertex cover of $G$.
+\end{corollary}
+\begin{corollary}
+$G$ has an independent set with $k$ vertices if and only if $G$ has a vertex cover with $|V|-k$ vertices.
+\end{corollary}
+
+According to Corollary~2, we have $VC(G, k) \le_p IS(G, k)$, as we can design an algorithm for $VC(G,k)$ with one statement ``return solver-for-$IS(G,|V|-k)$''.
+Note that, this actually proves that $IS(G,k)$ is NP-complete, given that $VC(G,k)$ is NP-complete and $IS(G,k)$ is in NP.
+%Symmetrically we have $IS(G,k)\le_p VC(G,k)$.
+%Similarly, according to Corollary~1, we can write $IS(G) \le_p VC(G)$ and $VC(G) \le_p IS(G)$.
+%Recall that we also proved that $VC(G,k)\le_p VC(G)$ and $VC(G)\le_p VC(G,k)$ in Lecture~41.
+%We conclude that all the four problems are equivalent, i.e., any two of them are polynomial-time reducible to each other.
+
+\subsection*{NP-hard}
+
+\begin{definition}[NP-hard]
+Let $X$ be a problem. We say $X$ is NP-hard, if there exists an NP-complete problem $Y$ such that $Y\le_p X$.
+\end{definition}
+
+Intutively, a problem is said to be NP-hard, if it is at least as hard as the hardest problem in NP~(i.e., an NP-complete problem).
+Note that NP-hard problems are not restricted to decision problems. This makes it convinent to use. For examples, 
+we can say the (optimization-version of) vertex cover problem is NP-hard,
+the (optimization-version of) independent set problem is NP-hard,
+the TSP problem is NP-hard, etc.
+Of course, all NP-complete problems are also NP-hard. In fact, by definitions, we have
+
+\begin{fact}
+NP{}~$\cap${}~NP-hard{}~$=${}~NPC, where we also use ``NP-hard'' to represent the set of all NP-hard problems.
+\end{fact}
+
+Above fact suggests the following two possibilities among P, NP, NPC, and NP-hard. See Figure~\ref{fig:nphard}.
+
+\begin{figure}[!h]
+\centering{\input{nphard}}
+\vspace*{-0.1cm}
+\caption{Two possibilities among P, NP, NPC, and NP-hard.}
+\label{fig:nphard}
+\end{figure}
+
+
