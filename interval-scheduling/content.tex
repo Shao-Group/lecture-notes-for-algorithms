@@ -75,7 +75,7 @@ the finish-time of the $i$-th interval in the greedy solution
 is always no latter than the finish-time of the $i$-th interval of the optimal solution,
 formally stated below.
 
-\begin{fact} \label{fact1}
+\begin{fact} \label{int-fact1}
 For any $1 \le i \le k$, we have $t(x_i) \le t(x_i^*)$.
 \end{fact}
 
@@ -97,7 +97,7 @@ in either case, we have $t(x_{i+1}) \le t(x_{i+1}^*)$, as desired. \qed
 
 \begin{figure}[h]
 \centering{\input{inductive}}
-\caption{Illustrating of proving Fact~\ref{fact1}.}
+\caption{Illustrating of proving Fact~\ref{int-fact1}.}
 \label{fig:inductive}
 \end{figure}
 
@@ -107,7 +107,7 @@ We have $k = m$.
 
 \emph{Proof.} We prove it by contradiction.
 See Figure~\ref{fig:fact2}.  Suppose conversely that $m \ge k + 1$.
-Using the same reasong in proving Fact~\ref{fact1},
+Using the same reasong in proving Fact~\ref{int-fact1},
 we know that after picking $\{A[x_1], A[x_2], \cdots, A[x_k]\}$ in the greedy algorithm,
 $A[x^*_{i+1}]$ remains legitimate, as it does not overlap with any of these $k$ intervals that are already picked.
 Hence, the greedy algorithm won't terminate and will continue to pick at least one more interval.

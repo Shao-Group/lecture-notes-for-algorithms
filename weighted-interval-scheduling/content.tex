@@ -7,18 +7,18 @@ Given an array of \emph{intervals} $A[1\cdots n]$, where $A[i] = (s(i),t(i))$ is
 \emph{start-time} $s(i)$ and \emph{finish-time} $t(i)$, and value $v(i)$ associated with $A[i]$, we seek a \emph{compatible} subset $X\subset A$
 such that the total value of the intervals in $X$, i.e., $\sum_{A[i]\in X} v(i)$,
 is maximized. Again, $X$ is \emph{compatible} is defined as that intervals in $X$
-are disjoint~(i.e., any two intervals in $X$ don't overlap).  See an instance in Figure~\ref{fig:interval}.
+are disjoint~(i.e., any two intervals in $X$ don't overlap).  See an instance in Figure~\ref{fig:weighted-interval}.
 Clearly, this weighted interval scheduling problem is a generalization
 of the interval scheduling problem introduced in last lecture,
 for which each interval is associated with unit value, i.e., $v(i) = 1, 1\le i \le n$.
 
 
 \begin{figure}[h]
-\centering{\input{interval}}
+\centering{\input{weighted-interval}}
 \caption{An instance of the weighted interval scheduling problem.
 The optimal solution includes 3 intervals $\{1, 2, 3\}$,
 and the (optimal) total value is 18.}
-\label{fig:interval}
+\label{fig:weighted-interval}
 \end{figure}
 
 Can we also design a greedy algorithm like we did for the interval scheduling problem?
@@ -29,10 +29,10 @@ We now explore different greedy strategies.
 \vspace*{-\topsep}
 \begin{enumerate}
 \item In each iteration, pick the interval with the earliest finish-time that is compatible with $X$---which has been proved optimal for the unit-value version.
-However, this strategy isn't optimal here---Figure~\ref{fig:interval} is an counter-example, where this greedy strategy finds intervals $\{1, 2, 5, 6\}$ with a total value of 14.
+However, this strategy isn't optimal here---Figure~\ref{fig:weighted-interval} is an counter-example, where this greedy strategy finds intervals $\{1, 2, 5, 6\}$ with a total value of 14.
 \item In each iteration, pick the interval with largest value that is compatible with $X$.
 This strategy isn't optimal either.
-Figure~\ref{fig:interval} is again a counter-example, where this greedy strategy finds intervals $\{3, 4\}$ with a total value of 16.
+Figure~\ref{fig:weighted-interval} is again a counter-example, where this greedy strategy finds intervals $\{3, 4\}$ with a total value of 16.
 \end{enumerate}
 
 As you can see, all these greedy strategies fail. In fact, it's unlikely to design a greedy algorithm for this problem.
@@ -42,7 +42,7 @@ We therefore seek other techniques. Below we will design a dynamic programming a
 
 Recall that in order to design a DP algorithm, we need to figure out its \emph{optimal substructure}.
 Does this problem satisfy the optimal substructure property?
-Let's check Figure~\ref{fig:interval} to try to get some clue.
+Let's check Figure~\ref{fig:weighted-interval} to try to get some clue.
 In that example, the \emph{optimal solution} is a set of intervals, namely $X = \{A[1], A[2], A[3]\}$.
 Naturally, the \emph{substructure} of this optimal solustion is one of its subset, say, $X' = \{A[1], A[2]\}$, by removing one element $A[3]$.
 Then we ask: is $X'$ the \emph{optimal solution} of certain subproblem?

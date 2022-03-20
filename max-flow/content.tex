@@ -127,12 +127,12 @@ as the \emph{cut-edges} w.r.t.\ the $s$-$t$ cut $(S, T)$.
 
 Let $(S, T)$ be an $s$-$t$ cut of a network $G = (V, E)$ with source $s$, sink $t$, and capacity $c(e)$ for any $e\in E$.
 We define the \emph{capacity} of $(S, T)$, denoted as $c(S, T)$, as the sum of the capacities of its cut-edges. Formally
-as $c(S, T) := \sum_{e\in E(S, T)} c(e)$. See Figure~\ref{fig:cut}.
+as $c(S, T) := \sum_{e\in E(S, T)} c(e)$. See Figure~\ref{fig:flow-cut}.
 
 \begin{figure}[h]
-\centering{\input{cut}}
+\centering{\input{flow-cut}}
 \caption{Three different $s$-$t$ cuts and their capacities of the same network.}
-\label{fig:cut}
+\label{fig:flow-cut}
 \end{figure}
 
 We now introduce the so-called \emph{minimum-cut problem}: given network $G = (V, E)$ with source $s$, sink $t$ and capacity $c(e)$ for any $e\in E$,
@@ -224,17 +224,17 @@ is larger or equal to the value of \emph{any} $s$-$t$ flow.
 Consequently, if there exists an $s$-$t$ flow $f$ and an $s$-$t$ cut $(S,T)$
 satisfies that $|f| = c(S, T)$, then this $f$ must be a maximum-flow,
 and this $(S, T)$ must be a minimum-cut.
-An illustration of this property is given in Figure~\ref{fig:meet},
+An illustration of this property is given in Figure~\ref{fig:flow-meet},
 where each red point represents the value of an $s$-$t$ flow
 while each blue point represents the capacity of an $s$-$t$ cut.
 So all red points lie to the left side of all blue points,
 and if a red point and a blue point meet, they are maximum-flow and minimum-cut.
 
 \begin{figure}[h]
-\centering{\input{meet}}
+\centering{\input{flow-meet}}
 \caption{Illustration of the relationship between capacity of any $s$-$t$ cut
 and value of \emph{any} $s$-$t$ flow.  Do they always meet in the middle?}
-\label{fig:meet}
+\label{fig:flow-meet}
 \end{figure}
 
 Does there \emph{always} exist $f$ and $(S,T)$ such that $|f| = c(S,T)$?

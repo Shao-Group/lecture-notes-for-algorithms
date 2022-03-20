@@ -291,7 +291,7 @@ is marked next to each vertex.
 DFS-with-timing algorithm gives an interval $[pre,post]$ for each vertex.
 For two vertices $v_i,v_j\in V$, their corresponding intervals can either be
 \emph{disjoint}, i.e., the two intervals do not overlap, or \emph{nested}, i.e.,
-one interval is within the other. See Figure~\ref{fig:interval}.
+one interval is within the other. See Figure~\ref{fig:dfs-interval}.
 But two intervals cannot be \emph{partially overlapping}. Why? This is because
 the explore funtion is recursive. There are only two possiblities
 that $pre[i] < pre[j]$. The first one is that explore $v_j$ is \emph{within} explore $v_i$;
@@ -302,9 +302,9 @@ The second one is that explore $v_j$ starts after explore $v_i$ finishes;
 this case corresponds to that the two intervals are disjoint.
 
 \begin{figure}[h!]
-\centering{\input{interval}}
+\centering{\input{dfs-interval}}
 \caption{Relations between two $[pre,post]$ intervals.}
-\label{fig:interval}
+\label{fig:dfs-interval}
 \end{figure}
 
 We now show and prove a key claim that relates the post values and the meta-graph.
@@ -574,7 +574,6 @@ and the definition of postlist: the postlist is a linearization of $G$.
 \centering{\input{dfs-dag}}
 \caption{Example of running DFS~(with timing) on a DAG $G$. The $[pre,post]$ interval for each vertex
 is marked next to each vertex. The $postlist$ for this run is $(v_1, v_5, v_2, v_4, v_6, v_3)$, which is a linearization of $G$.}
-\label{fig:meta-graph}
 \end{figure}
 
 

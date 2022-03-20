@@ -173,7 +173,7 @@ In the bipartite graph, there does not exist any edge between $(X\cap S^*)$ and 
 \end{fact}
 \emph{Proof.} Suppose conversely that there exists an edge $(u,v)\in E$ with $u\in X\cap S^*$ and $v\in Y\cap T^*$.
 Consider $f^*(u,v)$, i.e., the amount of flow carried by this edge in the maximum flow $f^*$.
-There are two possibilities~(as all capacities are 1): either $f^*(u,v) = 0$ or $f^*(u,v) = 1$. See Figure~\ref{fig:proof}.
+There are two possibilities~(as all capacities are 1): either $f^*(u,v) = 0$ or $f^*(u,v) = 1$. See Figure~\ref{fig:matching-proof}.
 \vspace*{-\topsep}
 \begin{enumerate}
 \item Suppose that $f^*(u,v) = 0$. Then in the residual graph $G'_{f^*}$ this edge becomes a forward edge $(u,v)$.
@@ -192,9 +192,9 @@ because this breaks the capacity condition of edge $(s,u)$. \qed
 \end{enumerate}
 
 \begin{figure}[t]
-\centering{\input{proof}}
+\centering{\input{matching-proof}}
 \caption{Illustrating the two cases in proving Fact~\ref{noedges}.}
-\label{fig:proof}
+\label{fig:matching-proof}
 \end{figure}
 
 Above fact immediately gives that $V_1$ is a vertex cover of the bipartite graph.

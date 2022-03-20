@@ -47,7 +47,7 @@ to solve this formulated problem, and prove that it always returns the optimal s
 
 We again want to design a dynamic programming algorithm.
 We first check if it satisfies certain optimal substructure.
-See Figure~\ref{fig:optimal}.
+See Figure~\ref{fig:rna-optimal}.
 Suppose that we know the optimal pairing of $X$,
 then its (nested) substructure must be the optimal
 pairing of the corresponding substring of $X$.
@@ -68,13 +68,13 @@ the coressponding portion of $P$ to
 get a better pairing of $X$. The same for $X[k + 1\cdots n - 1]$.)
 An inductive statement leads to that smaller nested substructure
 is optimal w.r.t.\ the corresponding substring too~(for example, 
-		$ACGCU$, $CGC$, etc, in Figure~\ref{fig:optimal}).
+		$ACGCU$, $CGC$, etc, in Figure~\ref{fig:rna-optimal}).
 
 \begin{figure}[h]
-\centering{\input{optimal}}
+\centering{\input{rna-optimal}}
 \caption{Left: an optimal pairing; Middle: an optimal pairing of sustring $ACGCUA$; Right: 
 an optimal pairing of substring $GUC$.}
-\label{fig:optimal}
+\label{fig:rna-optimal}
 \end{figure}
 
 So, this problem indeed satisfies optimal substructure property.
@@ -84,7 +84,7 @@ Clearly, the number of pairs in the optimal pairing of $X$ is $P(1,n)$ where $n 
 
 We now develop a recursion, which again is the reverse process of reasoning the optimal substructure
 but with necessary enumerations.
-See Figure~\ref{fig:recursion}
+See Figure~\ref{fig:rna-recursion}
 Specifically, to calculate $P(i,j)$, the optimal pairing over substring $X[i\cdots j]$,
 we enumerate all possibilities of the last step, i.e., how $X[j]$ is paired.
 The first case is that $X[j]$ is not paired, and in this case $P(i,j) = P(i, j-1)$.
@@ -108,15 +108,15 @@ P(i,j) = \max\left\{
 \end{displaymath}
 
 \begin{figure}[h]
-\centering{\input{recursion}}
+\centering{\input{rna-recursion}}
 \caption{Two cases in developing the recursion.}
-\label{fig:recursion}
+\label{fig:rna-recursion}
 \end{figure}
 
 
 We now complete the algorithm by filling the DP table.
 Note that for this problem we \emph{cannot} fill the table row-by-row with increasing row-index.
-See Figure~\ref{fig:table}.
+See Figure~\ref{fig:rna-table}.
 This is because, the the calculation of $P(i,j)$ relies on subproblems $P(k + 1, j - 1)$ where $k \ge i$.
 A feasible way is to fill the table following the diagnals.
 This is essentially to solve subproblems in increasing order of the length of the substrings, i.e.,
@@ -126,10 +126,10 @@ then solving substrings of length 3~(i.e., $(X[i], X[i + 2])$, $1\le i \le n - 2
 and so on. 
 
 \begin{figure}[h]
-\centering{\input{table}}
+\centering{\input{rna-table}}
 \caption{Left: the DP table showing the entries~(in red triangles) needed by the current entry~(in black dot).
 Right: the order to fill the table.}
-\label{fig:table}
+\label{fig:rna-table}
 \end{figure}
 
 The pseudo-code is given below. 

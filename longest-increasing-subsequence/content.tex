@@ -86,7 +86,7 @@ a longer, than $[1, 3, 4, 7]$, increasing subsequence of $A$, contradicting
 to the optimality of $[1, 3, 4, 7]$.
 
 We summarize above example with the following optimal substructure statement.
-\begin{fact}\label{fact1}
+\begin{fact}\label{lis-fact1}
 If $(A[i_1], A[i_2], \cdots, A[i_k])$ be the longest increasing subsequence of $A[1\cdots i_k]$,
 then among all increasing subsequences of $A[1\cdots i_{k-1}]$ with last number being $A[i_{k-1}]$,
 $(A[i_1], A[i_2], \cdots, A[i_{k-1}])$ is (one of) the longest one. 
@@ -109,7 +109,7 @@ Again we enumerate the last step. By definition of the subproblem, $A[k]$ is the
 We therefore enumerate its second last number, which must be one of $A[j]$ satisfying $1\le j < k$ and $A[j] < A[k]$.
 We don't know which one is correct so we enumerate all possibilities.
 (And once we enumerate, we can assume we know it.)
-Suppose that $A[j]$ is the second last number of $opt(k)$, then according to Fact~\ref{fact1},
+Suppose that $A[j]$ is the second last number of $opt(k)$, then according to Fact~\ref{lis-fact1},
 $opt(k)$ can be obtained by calculating $opt(j)$ followed by $A[k]$.
 Formally, the recursion is:
 $$\textstyle L(k) = 1 + \max_{1 \le j < k, A[j] < A[k]} L[j].$$

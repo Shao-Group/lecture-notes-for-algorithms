@@ -1,0 +1,166 @@
+\setcounter{definition}{0} \setcounter{property}{0} \setcounter{claim}{0} \setcounter{fact}{0} \setcounter{corollary}{0} \setcounter{figure}{0}
+\setcounter{definition}{0} \setcounter{property}{0} \setcounter{claim}{0} \setcounter{fact}{0} \setcounter{corollary}{0}
+\section{The 2SAT Problem}
+
+\subsection*{Boolean Satisfiability Problem}
+
+The SAT problem~(Boolean Satisfiability Problem) is 
+to decide if a given boolean formula can be satisfied
+by assigning values to boolean variables.
+Let's define it. The \emph{variables}, $x_1, x_2, \cdots, x_m$, involved are
+boolean~(or binary), taking value of either true or false.
+A \emph{literal} is either a variable itself~(e.g., $x_3$, $x_5$, etc) or the negation of a variable~(e.g., $\overline{x_3}$, $\overline{x_5}$, etc).
+A \emph{clause} is a disjunction of literals~(e.g., $x_2 \vee \overline{x_4}$, $\overline{x_3} \vee \overline{x_5} \vee x_2$, $\overline{x_1}$, etc).
+A \emph{CNF~(conjunctive normal form) formula} is a conjunction of clauses, such as  
+$(x_2 \vee \overline{x_4})\wedge (\overline{x_3} \vee \overline{x_5} \vee x_2) \wedge (\overline{x_1})$.
+
+Given a CNF formula with $n$ clauses $C_1, C_2, \cdots, C_n$ involving $m$ variables
+$x_1, x_2, \cdots, x_m$, the SAT problem is to decide if there exists an
+\emph{assignment}~(i.e., assigning true or false value to each variable) such
+that all $n$ clauses are true~(i.e., the CNF formula is true).
+
+If each clause is restricted to have exactly 3 literals, then the above problem becomes the so-called 3SAT problem.
+3SAT has been proved to be NP-hard, i.e., there doesn't exist any efficient algorithm for it unless P~=~NP.
+(We will introduce NP-completeness later this course; you don't need to know that these mean now.)
+
+If each clause is restricted to have exactly 2 literals, then the above problem becomes the 2SAT problem.
+2SAT can be solved efficiently, actually in $\Theta(m + n)$ time.
+Below we will design an algorithm for 2SAT, in which the core part is to use the algorithm of identifying connected componenets of directed graphs.
+
+\subsection*{Implication Graph and Algorithm}
+
+A clause with 2 literals represents two implication relationship.
+For example, consider clause $\overline{x_1} \vee x_2$.
+In order to satisfy it, if $\overline{x_1}$ is false then $x_2$ must be true, and  
+if $x_2$ is false then $\overline{x_1}$ must be true.  
+Formally, we have
+
+\begin{fact}
+Clause $A\vee B$ is equivalent to $\overline{A} \Rightarrow B$ and $\overline{B} \Rightarrow A$.
+Here $A$ or $B$ represents any literal~(i.e., either a variable or the negation of a variable),
+and $\Rightarrow$ represents logic ``implication''.
+\end{fact}
+
+\begin{figure}[b!]
+\centering{\input{instance1}}
+\caption{Graph and its reverse graph, and the corresponding meta-graphs.}
+\label{fig:instance1}
+\end{figure}
+
+We can then use a directed graph $G = (V,E)$, called implication graph, to represent all such implications of the given $n$ clauses~(with $m$ variables).
+The graph contains $2m$ vertices, corresponding to all possible literals, i.e.,
+$V = \{x_1, \overline{x_1}, x_2, \overline{x_2}, \cdots, x_n, \overline{x_n}\}$.
+And the graph contains $2n$ edges: each clause $A\vee B$ corresponds to 2 edges in $G$, which are $(\overline{A}, B)$ and $(\overline{B}, A)$.
+Intuitively, an edge $(u,v)\in E$ represents, if literal $u$ is true then literal $v$ must be true.
+An example of implication graph is given in Figure~\ref{fig:instance1}.
+
+%\begin{fact}
+%In an implication graph $G = (V,E)$ there exists an edge $(u,v)$ if and only if there exists edge $(\overline{v}, \overline{u})$.
+%\end{fact}
+
+The implication can be carrying forward following any path in the implication graph. For example, path
+$u\to v \to w$ implies that if literal $u$ is true then literal $w$ must be
+true. What if there is path from $u$ to $\overline{u}$?
+This means that: if literal $u$ is true then $\overline{u}$ must be true, which is a contradiction.
+Hence, if such path exists then literal $u$ can't be true.
+What if there is path from $u$ to $\overline{u}$ \emph{and}
+there is path from $\overline{u}$ to $v$?
+Then this means that $u$ can't be true \emph{and} $\overline{u}$ can't be true.
+In other words, the instance is not satisfiable.
+We summarize as the following statement. 
+
+\begin{fact}
+If in the implication graph there is a path from literal $u$ to literal $\overline{u}$ and there is a
+path from literal $\overline{u}$ to literal $u$, then the instance is not satisfiable.
+\end{fact}
+
+The above fact gives a sufficient condition to decide if an 2SAT instance is not satisfiable.
+In fact, this condition is also necessary. We will prove it later on.
+Before that, let's design an algorithm to implement this condition, i.e., to decide if there
+exists a pair of literals $\{u,\overline{u}\}$ such that $u$ can reach $\overline{u}$ and $\overline{u}$ can reach $u$.
+
+A straightforward algorithm is to explore~($G$, $u$) and explore~($G$, $\overline{u}$), for every pair of literals.
+This takes $O(|V|\cdot |E|)$ time, as a single run of explore takes $O(|E|)$ time. Can we do better?
+
+Note that the condition that $u$ can reach $\overline{u}$ and $\overline{u}$ can reach $u$
+is equivalent to that $u$ and $\overline{u}$ are in the same connected component of $G$.
+Therefore, we can use the algorithm introduced in previous lecture to determine all connected components of $G$, which takes $\Theta(|V| + |E|)$ time.
+Then we can simply check the resulting $visited$ array: if a pair of literals satisfies $visited[u] = visited[\overline{u}]$ then the 2SAT instance is not satisfiable.
+The pseudo-code is given below.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {7}{Algorithm decide-2SAT ($C_1, C_2, \cdots, C_n$)}\xxx
+	\aab {build implication graph $G = (V, E)$;}\xxx
+	\aab {run the DFS algorithm to find all connected components of $G$; this gives $visited$ array;}\xxx
+	\aaB {2}{for each pair of literals $\{u, \overline{u}\}$}\xxx
+	\aac {if ($visited[u] = visited[\overline{u}]$): return false;}\xxx
+	\aab {end for;}\xxx
+	\aab {return true;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+We showed that if there exists $u$ and $\overline{u}$ that are in the same connected
+component, then the 2SAT instance is not satisfiable, i.e., the above
+algorithm is correct when returning false.  We now show that if such
+pair does not exists, then the 2SAT instance is satisfiable, i.e., the
+above algorithm is correct when returning true.
+The proof is constructive, i.e., when such pair does not exist, we can
+build an assignment that satisfies all clauses.
+The algorithm to find such an assignment is as follows. %~(see Figure~\ref{fig:instance2}).
+%We find a linearization $X$ of the meta-graph of $G$. (Think: how?)
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {8}{Algorithm build-assignment~($C_1, C_2, \cdots, C_n$)}\xxx
+	\aab {run above decide-2SAT algorithm and assume it returns true;}\xxx
+	\aab {build a linearization $X$ of the meta-graph $G^M$ of the implication graph $G$;}\xxx
+	\aaB {4}{for each pair of literals $\{u, \overline{u}\}$}\xxx
+	\aac {let $C(u) = visited[u]$ and  $C(\overline{u}) = visited[\overline{u}]$ be the components that include $u$ and $\overline{u}$, respectively;}\xxx
+	\aac {if $C(u)$ is before $C(\overline{u})$ in $X$: set literal $u$ to false and $\overline{u}$ to true;}\xxx
+	\aac {if $C(u)$ is after $C(\overline{u})$ in $X$: set literal $u$ to true and $\overline{u}$ to false;}\xxx
+	\aab {end for;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+%Before proving that above algorithm gives an assignment that satisfies all clauses,
+Try to run above algorithm on the example given in Figure~\ref{fig:instance2}.
+
+\begin{figure}[h!]
+\centering{\input{instance2}}
+\caption{An instance of 2SAT, implication graph $G = (V, E)$, and the meta-graph $G^M$ of $G$. 
+A possible linearization of $G^M$ is $X = (C_1, C_2, C_6, C_3, C_5, C_4)$.
+Using $X$ above algorithm gives assignment $x_1 = F$, $x_2 = F$, $x_3 = F$, and $x_4 = T$.}
+\label{fig:instance2}
+\end{figure}
+
+\begin{claim}
+The assignment given in above algorithm satisfies all clauses.
+\end{claim}
+
+\emph{Proof.} Suppose, by contradiction, that there exists a clause $u\vee v$ that is not satisfied,
+i.e., both literals $u$ and $v$ are set to false.
+According to above algorithm, we know that 
+$C(u)$ is before $C(\overline{u})$ in $X$
+and $C(v)$ is before $C(\overline{v})$ in $X$.
+(Note, $C(u) \neq C(\overline{u})$ and $C(v) \neq C(\overline{v})$; otherwise the decide-2SAT algorithm will return false.)
+Consider the construction of the implication graph $G$:
+this clause $u\vee v$ adds to $G$ two edges $(\overline{u}, v)$ and edge $(\overline{v}, u)$.
+Think about the components $C(\overline{u})$ and $C(v)$.
+The existence of edge $(\overline{u}, v)$ in $G$ implies that 
+either $C(\overline{u}) = C(v)$, i.e., $\overline{u}$ and $v$ is in the same connected component,
+or there exists an edge from $C(\overline{u})$ to $C(v)$ in the meta-graph $G^M = (V^M, E^M)$.
+Hence, in any linearization $X$ of $G^M$, $C(\overline{u})$ is equal to or before $C(v)$ in $X$.
+Similarly, edge $(\overline{v}, u)$ in $G$ implies that 
+either $C(\overline{v}) = C(u)$ or $(C(\overline{v}), C(u))\in E^M$.
+Hence $C(\overline{v})$ is equal to or before $C(u)$ in linearization $X$.
+
+We have four ordering constraints for $X$: 
+$C(u)$ is before $C(\overline{u})$,
+$C(\overline{u})$ is equal to or before $C(v)$,
+$C(v)$ is before $C(\overline{v})$,
+and $C(\overline{v})$ is equal to or before $C(u)$.
+It's not possible to have $X$ to satisfy all of them. \qed
+
+This claim completes the proof of the correctness of the decide-2SAT algorithm.
+And both decide-2SAT and build-assignment algorithms runs in $\Theta(m + n)$ time.
+
+

@@ -10,7 +10,7 @@ In fact, any two of these three properties~(i.e., connected, acyclic, and $|E| =
 implies the other one, formally stated below. Play with some examples
 to fully understand these properties.
 
-\begin{fact}\label{fact1}
+\begin{fact}\label{mst-fact1}
 Let $T = (V, E)$ be an undirected graph. The following statements are equivalent.
 \vspace*{-\topsep}
 \begin{enumerate}
@@ -28,18 +28,18 @@ of $G$ if $V_1 = V$ and $E_1\subset E$.
 As $T$ is a tree, clearly we have $|E_1| = |V_1| - 1 = |V| - 1$.
 Note that a spanning tree is always w.r.t.\ a graph, i.e., we always
 say a spanning tree of a graph. Note too, that for an undirected graph $G$, 
-its spanning tree may not be unqiue. See Figure~\ref{fig:spanning}
+its spanning tree may not be unqiue. See Figure~\ref{fig:mst-spanning}
 for an example.  (Think: when an undirected graph has a unique spanning tree?)
 
 \begin{figure}[h]
-\centering{\input{spanning}}
+\centering{\input{mst-spanning}}
 \caption{Two spanning trees~(middle and right) of an undirected graph~(left).}
-\label{fig:spanning}
+\label{fig:mst-spanning}
 \end{figure}
 
 By above definition, a spanning tree of $G = (V,E)$ is a tree that uses $(|V| - 1)$ edges
 of $G$ that connects all vertices of $G$.
-Following Fact~\ref{fact1}, we can construct a spanning tree of $G$
+Following Fact~\ref{mst-fact1}, we can construct a spanning tree of $G$
 in the following two ways:
 \vspace*{-\topsep}
 \begin{enumerate}

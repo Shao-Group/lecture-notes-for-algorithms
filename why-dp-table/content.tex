@@ -51,17 +51,17 @@ So, above algorithm runs in exponential-time!
 This suggests that recursive procedure is a bad strategy.
 
 \begin{figure}[b]
-\centering{\input{tree}}
+\centering{\input{search-tree}}
 \caption{First 3 levels of the recursive tree of above procedure.
 Identical recursive calls are marked with the same color.}
-\label{fig:tree}
+\label{fig:search-tree}
 \end{figure}
 
 
 Note that there are $\Theta(mn)$ distinct subproblems, i.e., $F(i,j)$, $0\le i
 \le m$, $0\le j \le n$. The reason why above
 algorithm runs in exponential time is that it keeps solving the \emph{same}
-subproblems. See Figure~\ref{fig:tree}. This again suggests the necessity
+subproblems. See Figure~\ref{fig:search-tree}. This again suggests the necessity
 of maintaining a table to store the optimal solutions so as to avoid
 repeating resolving the same ones.
 An alternative way to understand it is that, subproblems will be used
@@ -73,7 +73,7 @@ Both divide-and-conquer algorithms and dynamic programming algorithm
 rely on a recursive formula that reduces larger subproblems into smallers.
 Why for D\&C algorithm we don't maintain a table?
 There are two reasons.
-First, in (most) D\&C algorithms, subproblems don't overlap~(while in DP algorithms they do, as showed in Figure~\ref{fig:tree}), or in other words,
+First, in (most) D\&C algorithms, subproblems don't overlap~(while in DP algorithms they do, as showed in Figure~\ref{fig:search-tree}), or in other words,
 each subproblem will be used only once. Therefore there is no difference between
 solving recursively or by using a table.
 Second, in (most) D\&C algorithms, the size of the subproblem is usually reduced by a \emph{fixed ratio}~(for example, $n\to n/2$),

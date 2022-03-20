@@ -20,7 +20,7 @@ proving the max-flow min-cut theorem. Let $f$ be an $s$-$t$ flow of a network
 $(G = (V,E),s,t,c)$. We denote by $G_f =(V,E_f)$ the residual graph w.r.t.\ $f$. 
 We emphasize that a residual graph is always associated with (i.e., w.r.t.) a flow of a network.
 Each edge $e\in E_f$ in the residual graph is also associated with a capacity, denoted as $c_f(e)$. 
-The construction of the residual graph is given below.  See Figure~\ref{fig:residual}.
+The construction of the residual graph is given below.  See Figure~\ref{fig:residual-graph}.
 \vspace*{-\topsep}
 \begin{enumerate}
 \item The residual graph has the same set of vertices with the network.
@@ -30,9 +30,9 @@ and the \emph{backward-edge} $(v, u)$ with capacity $c_f (v, u) = f(u,v)$.
 \end{enumerate}
 
 \begin{figure}[h]
-\centering{\input{residual}}
+\centering{\input{residual-graph}}
 \caption{Definition of edges and capacities of the residual graph.}
-\label{fig:residual}
+\label{fig:residual-graph}
 \end{figure}
 
 Edges in the residual graph with capacity of 0 will be removed. In other words,

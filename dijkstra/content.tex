@@ -100,13 +100,17 @@ Then we have
 $$distance(s, v_{k+1}^*) = \textstyle \min_{v\in V\setminus R_k} dist_k(v).$$
 Intuitively, $dist_k(v)$ gives the length of the shortest path from $s$ to $v$ by only using vertices in $R_k$.
 
-\begin{figure}[h]
-\centering{\input{extension}}
-\caption{Try above formulas in Figure~\ref{fig:extension}.
+Try above formulas in Figure~\ref{fig:extension}.
 Answer: $dist_5(b) = \min\{8, 13\} = 8$, $dist_5(c) = \min\{7, 14\} = 7$, $dist_5(h) = 17$, $dist_5(k) = \infty$, $dist_5(j) = \infty$;
-hence $v_6^* = c$ and $distance(s,v_6^*) = dist_5(c) = 7$.}
-\label{fig:extension}
-\end{figure}
+hence $v_6^* = c$ and $distance(s,v_6^*) = dist_5(c) = 7$.
+
+%%\begin{figure}[h]
+%%\centering{\input{extension}}
+%%\caption{Try above formulas in Figure~\ref{fig:extension}.
+%%Answer: $dist_5(b) = \min\{8, 13\} = 8$, $dist_5(c) = \min\{7, 14\} = 7$, $dist_5(h) = 17$, $dist_5(k) = \infty$, $dist_5(j) = \infty$;
+%%hence $v_6^* = c$ and $distance(s,v_6^*) = dist_5(c) = 7$.}
+%%\label{fig:extension}
+%%\end{figure}
 
 With $dist_k$ available, the next closest vertex, i.e., $v_{k+1}^*$ can be easily calculated
 by picking the one with smallest $dist_k$ value.
@@ -192,7 +196,7 @@ Finally, the algorithm don't explicitly maintain an index $k$: this index implic
 
 Here are some facts about Dijkstra's algorithm.
 First, $dist[v]$ is always an upper bound of the distance.
-\begin{fact} \label{fact1}
+\begin{fact} \label{dijk-fact1}
 At any time of the algorithm, $dist[v] \ge distance(s,v)$.
 \end{fact}
 
@@ -206,7 +210,7 @@ Second, once $v$ is removed from $PQ$, $dist[v]$ won't change and remain as $dis
 At any time of the algorithm, if $v$ is not in $PQ$, then $dist[v] = distance(s,v)$.
 \end{fact}
 This is because, at the time $v$ is deleted from $PQ$, $dist[v] = distance(s,v)$.
-Following Fact~\ref{fact1}, it will remain this minimized value.
+Following Fact~\ref{dijk-fact1}, it will remain this minimized value.
 Notice though, in Dijkstra's algorithm, a vertex $v$ not in $PQ$ might be ``touched''
 by an edge $(v^*_{k+1}, v)$, where $v^*_{k+1}$ is the newly determined closest vertex,
    but the actual update will not happen.

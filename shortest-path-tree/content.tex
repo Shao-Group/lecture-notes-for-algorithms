@@ -120,7 +120,7 @@ See their pseudo-codes below.
 We now show the corresponding graph $T = (V, \{(pre[v], v)\mid v\in V\})$ is a shortest path tree of $G$.
 
 \begin{fact}
-\label{fact2}
+\label{tree-fact2}
 At any time of the algorithm, for any $v\in V$, let $u = prev[v]$, if $u\neq null$ then $dist[v] = dist[u] + l(u,v)$;
 in particular, when the algorithm terminates, we have $distance(s,v) = distance(s,u) + l(u,v)$.
 \end{fact}
@@ -153,7 +153,7 @@ We just showed that $T$ is a rooted tree with $s$ being the root.
 It's clear that vertices of $T$ is $V$ and edges of $T$ are subset of edges of $G$.
 Now we prove condition 4. Let $p: s = v_0 \to v_1 \to v_2 \to \cdots \to v_k$ be the path from $s$ to $v_k$ in $T$.
 By the construction of $T$, we know that $prev[v_i] = v_{i - 1}$, $1\le i \le k$.
-Therefore, using Fact~\ref{fact2}, we have $distance(s, v_i) = distance(s, v_{i-1}) + l(v_{i-1}, v)$.
+Therefore, using Fact~\ref{tree-fact2}, we have $distance(s, v_i) = distance(s, v_{i-1}) + l(v_{i-1}, v)$.
 Hence, the length of this path is exactly $distance(s,v_k)$, i.e., a shortest path from $s$ to $v_k$. \qed
 
 

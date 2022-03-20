@@ -66,7 +66,6 @@ If $G$ does not contain negative cycle, then $dist(|V| - 1, v) = distance(s, v)$
 \caption{The illustration of partitioning the search space $X(v)$ into sub-spaces.
 Each point represents a path from $s$ to $v$ and the number next to it represents the
 number of edges in this path.}
-\label{fig:space}
 \end{figure}
 
 We now develop a recursion to calculate $dist(k,v)$ from $\{dist(i, u) \mid 0 \le i < k, u\in V\}$.
@@ -91,7 +90,6 @@ and each column is indexed by $v\in V$.
 \begin{figure}[h]
 \centering{\input{table}}
 \caption{Illustration of the dynamic programming table for shortest-path problem.}
-\label{fig:table}
 \end{figure}
 
 
@@ -125,7 +123,6 @@ Try run this algorithm~(fill the dynamic programming table) on the example below
 \begin{figure}[h]
 \centering{\input{dp}}
 \caption{An example of running above DP algorithm.}
-\label{fig:table}
 \end{figure}
 
 
@@ -171,7 +168,6 @@ Hence, $dist(k,v)$ is well-defined for any $k\ge 0$ and any $v\in V$. See an exa
 \centering{\input{def}}
 \caption{Example showing that $dist(k,v)$ is well-defined in the presence of negative cycle.
 In this example, $dist(1,a) = 1$, $dist(301,a) = -99$, $dist(3001,a) = -999$.}
-\label{fig:space}
 \end{figure}
 
 \begin{fact}
@@ -266,7 +262,7 @@ $$dist(i,j,k) = \min\{dist(i,j,k-1), dist(i,k,k-1) + dist(k,j,k-1)\}.$$
 \begin{figure}[h]
 \centering{\input{floyd}}
 \caption{The DP table of the Floyd-Warshall algorithm.}
-\label{fig:dag}
+\label{fig:floyd}
 \end{figure}
 
 The complete algorithm fills the table shown above. 

@@ -107,19 +107,19 @@ which can be solved based on this fact: let $v\in V$ be a vertex;
 there exists a minimum vertex cover that includes $v$
 if and only if the ``remaining-graph'' $G_{-v}$, defined as the graph by removing $v$ and adjacent edges of $v$ from $G$, can
 be covered by $(k^* - 1)$ vertices. 
-See Figure~\ref{fig:cover}.  
+See Figure~\ref{fig:vertex-cover}.  
 Note that, the solver for the decision-version can be used to answer 
 whether any graph, in this case the remaining graph $G_{-v}$, can be covered by $(k^* - 1)$ vertices. 
 
 \begin{figure}[h]
-\centering{\input{cover}}
+\centering{\input{vertex-cover}}
 \caption{Illustrating that a vertex $v$ is in one minimum vertex cover if and only if
 $G_{-v}$ can be covered by $k^* - 1$ vertices, where $k^*$ is defined as the cardinality of any minimum vertex cover of $G$.}
 %\emph{Proof.} If $G_{-v}$ can be covered by $k^* - 1$ vertices, i.e., there exists a vertex cover $V_2^*$
 %for $G_{-v}$ with $|V_2^*| = k^* - 1$, then $V_2^* \cup \{v\}$ is a vertex cover of $G$,
 %and its cardinality is $k^*$. This shows that that $V_2^* \cup \{v\}$ is a minimum vertex cover of $G$ 
 %as its size is minimized, and it includes $v$. On the other hand, 
-\label{fig:cover}
+\label{fig:vertex-cover}
 \end{figure}
 
 

@@ -112,7 +112,7 @@ In each example, in each round, we choose to update all edges in lexicographic o
 Now let's see why this algorithm is correct. We first show an invariant about the data structure $dist$ array: 
 
 \begin{fact}
-\label{fact1}
+\label{bf-fact1}
 Throughout the algorithm, if $dist[v] \neq \infty$ then $dist[v]$ represents the length of some path from $s$ to $v$.
 In other words, $dist[v] \ge distance(s,v)$ throughout the algorithm, as $dist[v]$ 
 represents the length of \emph{some} path from $s$ to $v$, while $distance(s,v)$ represents the
@@ -125,7 +125,7 @@ Now to show above fact is correct throughout the algorithm, we just need to show
 this invariant~(as this algorithm does nothing else but ``update'' operations).
 
 \begin{fact}
-\label{fact2}
+\label{bf-fact2}
 The update operation keeps the invariant that $dist[v]$ represents the length of some path from $s$ to $v$ when $dist[v] \neq \infty$, i.e., $dist[v] \ge distance(s,v)$, for every $v\in V$.
 \end{fact}
 \emph{Proof.} We prove this by induction w.r.t.\ the sequence of update operations. Assume that up to the $n$-th update opertion
@@ -157,7 +157,7 @@ In the initialization step we have $dist[s] = distance(s,s) = 0$.
 If at a later time, $update(s, v_1)$ is executed, then following above Fact~\ref{fact3}, 
 we know that $dist[v_1] = distance(s, v_1)$ after this update~(reasons: $dist[s] = distance(s,s)$,
 and $(s,v_1)$ is the last edge on one shortest path from $s$ to $v_1$ according to the optimal substrcture property).
-Once $dist[v_1]$ becomes $distance(s,v_1)$, $dist[v_1]$ will stay as $distance(s,v_1)$ according to Fact~\ref{fact1}.
+Once $dist[v_1]$ becomes $distance(s,v_1)$, $dist[v_1]$ will stay as $distance(s,v_1)$ according to Fact~\ref{bf-fact1}.
 If at a later time $update(v_1, v_2)$ happens 
 then following Fact~\ref{fact3}, we know that $dist[v_2] = distance(s, v_2)$.
 Note that it doesn't matter if additional updates happen between $update(s, v_1)$ and $update(v_1, v_2)$.
@@ -221,7 +221,7 @@ Let's show that above algorithm is correct.
 We first prove that, if $G$ does not contain negative cycle~(reachable from $s$), then in above additional round $dist[v] > dist[u] + l(u,v)$ will never happen,
 i.e., we will get the report that ``$G$ does not contain negative cycle''.
 As per Fact~\ref{fact5} and the assumption that $G$ does not contain negative cycle, we know that $dist[v] = distance(s,v)$ after $|V| -1 $ rounds.
-Also, according to Fact~\ref{fact2}, update function will never make $dist[v]$ smaller than $distance(s,v)$ when $G$ does not contain negative cycle.
+Also, according to Fact~\ref{bf-fact2}, update function will never make $dist[v]$ smaller than $distance(s,v)$ when $G$ does not contain negative cycle.
 Hence, during the $|V|$-th round in above algorithm, none of the $dist$ value can be further reduced.
 
 We then prove that, if $G$ contains negaive cycle~(reachable from $s$), then in above additional round, there must exist an edge $(u,v)$ such that $dist[v] > dist[u] + l(u,v)$.
