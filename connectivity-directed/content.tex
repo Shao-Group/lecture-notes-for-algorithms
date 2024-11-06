@@ -1,259 +1,32 @@
 \setcounter{definition}{0} \setcounter{property}{0} \setcounter{claim}{0} \setcounter{fact}{0} \setcounter{corollary}{0} \setcounter{figure}{0}
+
 \section{Connectivity of Directed Graphs}
-
-\subsection*{Directed Acyclic Graphs}
-
-Before we study the connectivity of directed graphs, we first
-introduce a special class of directed graph, named directed acyclic graph~(DAG).
-
-\begin{definition}[DAG]
-A directed graph $G = (V, E)$ is \emph{acyclic} if and only if $G$ does not contain cycles.
-\end{definition}
-
-\begin{definition}[Linearization / Topological Sorting]
-Let $G = (V,E)$ be a directed graph. Let $X$ be an ordering of $V$.
-If $X$ satisfies: if $(v_i, v_j)\in E$, then $v_i$ is before $v_j$ in $X$,
-then we say $X$ is a linearization~(or toplogical sorting) of $G$.
-\end{definition}
-
-
-See some examples below.
-
-\begin{figure}[h!]
-\centering{\input{linearization}}
-\caption{Examples of linearization.}
-\end{figure}
-
-If a directed graph $G$ admits a linearization, then we say $G$ can be \emph{linearized}.
-We now show that linearization is an \emph{equivalent} characterization of DAGs.
-
-\begin{claim}
-A directed graph $G$ can be linearized if and only if $G$ is a DAG.
-\label{claim:dag}
-\end{claim}
-
-\emph{Proof.}  Let's first prove that if $G$ can be linearized, then $G$ is a DAG.
-This is equivalent to proving its contraposition: if $G$ contains a cycle, then $G$ cannot be linearized.
-Suppose that there exists an cycle $v_{i_1} \to v_{i_2} \to \cdots \to v_{i_k} \to v_{i_1}$ in $G$.
-Then the linearization $X$ must satisfy that $v_{i_{j}}$ is before $v_{i_{j+1}}$ for all $j = 1, 2, \cdots, k-1$,
-and that $v_{i_{k}}$ is before $v_{i_1}$, in $X$. Clearly, this is not possible.
-
-The other side of the statement, i.e., if $G$ is a DAG, then $G$ can always be linearized, can be proved constructively.
-We will design an algorithm~(see below), that constructs a linearization for any DAG. \qed
-
-
-Let $G = (V, E)$ be a directed graph. 
-If a vertex $v\in V$ does not have any in-edges~(i.e., \emph{in-degree} is 0), we call it \emph{source vertex};
-if a vertex $v\in V$ does not have any out-edges~(i.e., \emph{out-degree} is 0), we call it \emph{sink vertex}.
-
-A directed graph may contain multiple source vertices or sink vertices,
-or may not have any source vertex or sink vertex. (Can you give such examples?)
-
-\begin{claim}
-A DAG $G=(V,E)$ always has source vertex and sink vertex.
-\end{claim}
-\emph{Proof.} Let's prove it by contradiction. Assume that $G$ does not contain any source.
-First, $G$ must not contain self-loop as otherwise $G$ won't be a DAG.
-Let $v$ be any vertex in $V$. As $v$ is not a source, we know that there exists some vertex $u$ points to $v$, i.e., $(u,v)\in E$.
-Now since $u$ is not a source then there must exist another vertex $w$ such that $(w,u)\in E$.
-Notice that $w \neq v$ as otherwise there will be a cycle: $v = w \to u \to v$.
-This means that $w$ is a new vertex. Again as $w$ is not a source, there must exist another \emph{new} vertex points to it.
-This process can be extended infinitely following the fact and assumption that $G$ is a DAG and all vertices not are sources,
-but this is not possible as the number of vertices is limited. 
-The existence of sink can be proved symmetrically. \qed
-
-
-Following above fact, we can design an algorithm to find a linearization of a DAG: it iteratively
-finds source vertex and removes it and its adjacent edges.
-
-\begin{minipage}{0.8\textwidth}
-	\aaA {7}{Algorithm find-linearization ($G = (V, E)$)}\xxx
-	\aab {init $X$ as empty list;}\xxx
-	\aaB {4}{while ($|X| < |V|$)}\xxx
-	\aac {arbitrarily find a source vertex $u$ of $G$;}\xxx
-	\aac {add $u$ to the end of $X$;}\xxx
-	\aac {remove $u$ and its adjacent edges;}\xxx
-	\aab {end while;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
-
-This algorithm is correct. First, when a vertex $u$ is added to $X$,
-it is a source vertex of the current graph, which means that
-$\{w\mid (w, u)\in E\}$ is either empty or all of them
-have been added to $X$. Second, $X$ will include all vertices.
-This is because, a source always exists in a DAG~(as we just proved).
-The above algorithm is more a framework, as how we update the graph
-is not given specifically, and which affects the running time.
-
-Above algorithm also gives a constructive proof that, a DAG can always
-be linearized. This completes the proof stated in previous lecture: a directed graph is a DAG if and only if it can be linearized.
-
-\begin{claim}
-Let $X$ be any linearization of a DAG. Then the first vertex of $X$ is a source vertex and 
-the last vertex of of $X$ is a sink vertex.
-\label{claim:source}
-\end{claim}
-
-\emph{Proof.} Let $v_1$ be the first vertex of $X$. Suppose that $v_1$ is not a source of $X$. 
-By definition of (not being a) source vertex, there exists $(u,v_1)\in E$. Then by the definition
-of linearization, we know that $u$ will be before $v_1$ in $X$, contradicting to the fact that
-$v_1$ is the first element of $X$.
-The other side can be proved symmetrically. \qed
-
-We can use above algorithm to constructively prove following statement.
-
-\begin{claim}
-Let $G = (V, E)$ be a DAG. A vertex $u\in V$ is a source if and only if 
-there exists a linearization $X$ of $G$ such that $u$ is the first vertex in $X$.
-\end{claim}
-
-\emph{Proof.} We first prove that, if $u$ is a source, then there exists a linearization
-where $u$ is the first vertex of $X$. We prove it by showing that,
-we can construct such a linearization $X$. We can use above algorithm,
-and in its first step, we simply pick $u$. The correctness of above algorithm
-explains the rest.  The other side is exactly Claim~\ref{claim:source}, which we have proved. \qed
-
-
-\subsection*{Meta-Graph}
-
-For a directed graph $G = (V,E)$, its structure of connectivity can be represented as a new
-directed graph, called \emph{meta-graph}, denoted as $G_M = (V_M, E_M)$.
-Each of the vertices of the meta-graph corresponds to a connected component of $G$,
-and two vertices $C_i, C_j  \in V_M$ are connected by edge $(C_i, C_j) \in E_M$
-if and only if there exists edge $(u,v)\in E$ such that $u\in C_i$ and $v\in C_j$.
-An example of meta-graph is given below.
-
-\begin{figure}[h!]
-\centering{\input{meta-graph}}
-\caption{Example of meta-graph.}
-\label{fig:meta-graph}
-\end{figure}
-
-Meta-graph has an important property: it does not contain cycles, i.e., it is a directed acyclic graph~(DAG).
-
-\begin{claim}
-The meta-graph $G_M$ of any directed graph $G$ is a directed acyclic graph.
-\end{claim}
-
-\emph{Proof.} Suppose conversely that $G_M$ contains a cycle, $C_1 \to C_2 \to C_k \to C_1$,
-then the union of the vertices in these connected components form a single connected component,
-contradicting to the \emph{maximal} property of connected component. \qed
-
-We now design algorithms to determine the connected components of directed graphs and then to construct
-the corresponding meta-graph.
-Recall that the DFS algorithm introduced in Lecture A9 can successfully determine all connected components in an undirected graph.
-Does this work also work for directed graph? Let's try. See Figure~\ref{fig:dfs-meta}.
-Recall that the (top-layer) of the DFS algorithm is to tranverse all vertices in some ordering,
-and if the current vertex $v$ is not yet visited, we will explore $v$.
-For the example in Figure~\ref{fig:dfs-meta}, let's try it with the (natrual) ordering $v_1, v_2, \cdots, v_{10}$.
-The resulting visited array is given in the figure~(please make sure you try it yourself).
-Unfortunately, it does not give all connected components. In fact, the vertices marked as ``1''s are the union of $C_3$ and $C_4$,
-and the vertices marked as ``2''s are the union of $C_1$ and $C_2$.
-The reason is quite clear: we start with explore $v_1$, and during it all vertices reachable from $v_1$ will be marked as ``1'' in the visted array.
-It turns out that $v_1$ is in connected component $C_4$, and $C_4$ can reach $C_3$ in the meta-graph.
-Therefore, all vertices in $C_4$ and $C_3$ are reachable from $v_1$; consequently, the visited array is set as ``1'' for 
-vertices in $C_4$ and $C_3$ during explore $v_1$. 
-Similarly, we can also see why the vertices marked as ``2''s are the union of $C_1$ and $C_2$.
-After exploring $v_1$, $\{v_1,v_2,v_7\}$ are visited; the next unvisited vertex is $v_3$ according to above natural ordering,
-the the algorithm will explore $v_3$.
-Again, during it all (unvisited) vertices reachable from $v_3$ will be marked as ``2'' in the visted array.
-It turns out that $v_3$ is in connected component $C_1$, and $C_1$ can reach $C_2$ in the meta-graph.
-Therefore, all vertices in $C_1$ and $C_2$ are reachable from $v_2$;
-consequently, the visited array is set as ``2'' for 
-vertices in $C_1$ and $C_2$. 
-
-
-\begin{figure}[h!]
-\centering{\input{dfs-meta}}
-\caption{Run the DFS algorithm with an arbitrary ordering (introduced in Lecture A9) and a special ordering~(pseudo-code given below) on above example.}
-\label{fig:dfs-meta}
-\end{figure}
-
-How to fix this issue? The idea is to use a \emph{special ordering} of vertices, instead of an arbitrary ordering, in above DFS.
-This special ordering should allow us to determine connected component one by one. Hence, the first vertex we explore in DFS,
-should be one vertex in a \emph{sink} component of the meta-graph. In Figure~\ref{fig:dfs-meta}, the only sink component is $C_3$,
-and since there is only one vertex in $C_3$, we should start with exploring $v_2$.
-Clearly, exploring $v_2$ will exactly determine the single connected component $C_2$.
-Next, after $C_3$ is determined, the next component we can determine is again a sink component after removing $C_3$ from the meta-graph.
-It is $C_4$. So, the next vertex the DFS should explore must be $v_1$ or $v_7$. It does matter which one we pick; let's assume we pick $v_7$~(and it
-does not matter where $v_1$ is in the ordering as long as it is after $v_2$ and $v_7$).
-Clearly, exploring $v_2$ will exactly determine the single connected component $C_4$---see the visited array.
-The next component we can determine is again a sink component after removing $C_3$ and $C_4$ from the meta-graph.
-It is $C_2$. So, the next vertex the DFS should explore must be in $\{v_4, v_5,v_6,v_9\}$. 
-And it does matter which one we pick neither the ordering of remaining ones as long as they are behind the one we pick.
-Let's say we pick $v_4$. Clearly, exploring $v_4$ will exactly determine the single connected component $C_2$.
-Now the only component remaining is $C_1$ after removing $C_2$, $C_3$ and $C_4$ from the meta-graph.
-So, the next vertex the DFS should explore must be in $\{v_3, v_8, v_{10}\}$. 
-Let's say we pick $v_8$. Clearly, exploring $v_8$ will exactly determine the last connected component $C_1$.
-
-
-To abtract above observation, the determined connected components with above DFS
-forms a reverse-linearization of the meta-graph.
-Therefore, the special ordering of vertices should satisfy this condition:
-\emph{the ordering of connected components sorted by their first appearance in the special ordering of vertices
-should form a reverse-linearization of the meta-graph}.
-And if the special ordering of vertices satisfies this condition, the DFS algorithm will work---it will identify
-all connected components.
-
-Again see Figure~\ref{fig:dfs-meta}, the ordering 
-$( v_{2} ,v_{7} ,v_{4} ,v_{6} ,v_{8} ,v_{1} ,v_{3} ,v_{9} ,v_{10} ,v_{5})$ satisfies above condition.
-To see that, the corresponding list of connected components is 
-$(C_3, C_4, C_2, C_2, C_1, C_4, C_1, C_2, C_1, C_2)$,
-and hence the ordering of their first appearance is $(C_3, C_4, C_2, C_1)$ which is indeed a reviers-linearization of the meta-graph.
-
-\begin{minipage}{0.8\textwidth}
-	\aaA {8}{function DFS ($G = (V, E)$)}\xxx
-	\aab {num-cc = 0;}\xxx
-	\aaB {5}{for \textcolor{blue}{$v_i$ in a specific order}}\xxx
-	\aaC {3}{if ($visited[i] = 0$)}\xxx
-	\aad {num-cc = num-cc + 1;}\xxx
-	\aad {explore ($G, v_j$);}\xxx
-	\aac {end if;}\xxx
-	\aab {end for;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
-
-\begin{minipage}{0.8\textwidth}
-	\aaA {5}{function explore ($G = (V, E), v_i \in V$)}\xxx
-	\aab {$visited[i] = $ num-cc;}\xxx
-	\aaB {2}{for any edge $(v_i, v_j) \in E$}\xxx
-	\aac {if ($visited[j] = 0$): explore ($G, v_j$);}\xxx
-	\aab {end for;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
-
-To summarize, the algorithm to identify connected components of directed graphs
-is essentially the same with that for undirected graphs~(introduced in Lecture~A9, copied above), 
-except a single line of difference~(marked blue): for directed graphs,
-we need to explore vertices in a specific order that satisfy above condition,
-while for undirected graphs, we can explore all vertices in any arbitrary order.
-
-How to find an ordering of vertices that satisfy above condition?
-We need a combination of two techniques: DFS-with-timing and reverse-graph.
-
-
 
 \subsection*{DFS with Timing}
 
 %We now design another variant of DFS algorithm, which will be used to construct the linerization of DAGs, while also
 %can construct meta-graphs for (general) directed graphs. This variant of DFS, called 
-The DFS-with-timing is a variant of DFS, which uses the following
-data structures~(we assume $n = |V|$):
+The DFS-with-timing is a variant of DFS that records the time of starting and finishing the explore
+of each vertex. It uses the following data structures~(we assume $n = |V|$).
+These data structures are global variables, so that the explore function
+can get access to and edit them.
 
 \vspace*{-\topsep}
 \begin{enumerate}
 \item variable clock servers as a timer that stores the current time;
-\item binary array $visited[1..n]$, where $visited[i]$ indicates if $v[i]$ has been explored, $1 \le i \le n$;
+\item binary array $visited[1..n]$, where $visited[i]$ indicates if $v[i]$ has been explored/visited, $1 \le i \le n$;
 \item array $pre[1..n]$, where $pre[i]$ records the time of starting exploring $v_i$, $1 \le i \le n$;
 \item array $post[1..n]$, where $post[i]$ records the time of finishing exploring $v_i$, $1 \le i \le n$;
-\item array $postlist$, stores the vertices in \textcolor{blue}{decreasing} order of $post[\cdot]$.
+\item array $postlist$, stores the vertices in \textcolor{black}{decreasing} order of $post[\cdot]$.
 \end{enumerate}
 
 The pseudo-code of DFS with timing is given below.
 
 \begin{minipage}{0.8\textwidth}
-	\aaA {5}{function DFS-with-timing ($G = (V, E)$)}\xxx
+	\aaA {7}{function DFS-with-timing ($G = (V, E)$)}\xxx
 	\aab {$clock = 1$;}\xxx
+	\aab {$postlist=\emptyset$;}\xxx
+	\aab {$pre[i] = post[i] = -1$, for $1\le i \le n$;}\xxx
 	\aaB {2}{for $i = 1 \to |V|$}\xxx
 	\aac {if ($visited[i] = 0$): explore ($G, v_i$);}\xxx
 	\aab {end for;}\xxx
@@ -264,50 +37,144 @@ The pseudo-code of DFS with timing is given below.
 	\aaA {10}{function explore ($G = (V, E), v_i \in V$)}\xxx
 	\aab {$visited[i] = 1$;}\xxx
 	\aab {$pre[i] = clock$;}\xxx
-	\aab {$clock++$;}\xxx
+	\aab {$clock = clock + 1$;}\xxx
 	\aaB {2}{for any edge $(v_i, v_j) \in E$}\xxx
 	\aac {if ($visited[j] = 0$): explore ($G, v_j$);}\xxx
 	\aab {end for;}\xxx
 	\aab {$post[i] = clock$;}\xxx
-	\aab {$clock++$;}\xxx
-	\aab {add $v_i$ to the \textcolor{blue}{front} of $postlist$;}\xxx
+	\aab {$clock = clock + 1$;}\xxx
+	\aab {add $v_i$ to the {front} of $postlist$;}\xxx
 	\aaa {end algorithm;}\xxx
 \end{minipage}
 
 An example of running DFS with timing is given below.
-Notice that the DFS searching partitions all edges into two categories:
-solid edges $(u,v)$ implies that $v$ is visited for the first time~(and therefore explore $v$ will start right now),
-while dashed edges $(u,v)$ implies that at that time $v$ has been visited already~(and therefore $v$ will be skipped and the next adjacent
-vertex of $u$ will be examined in the for-loop). 
+Notice that this algorithm partitions all edges into two categories:
+solid edges $(u,v)$ implies that $v$ is visited for the first time~(and therefore explore $v$ will start right now, and after exploring
+$v$ the program will return to explore $u$),
+while dashed edges $(u,v)$ implies that at that time $v$ has been visited already~(and therefore $v$ will be skipped and the next 
+out-edge of $u$ will be examined in the for-loop). 
 
 \begin{figure}[h!]
 \centering{\input{dfs-directed}}
 \caption{Example of running DFS~(with timing) on a directed graph. 
 The $[pre,post]$ interval for each vertex
 is marked next to each vertex. 
-\textcolor{blue}{The $postlist$ for this run is $postlist = (v_4,v_7,v_1,v_3,v_6,v_2,v_5)$.}}
+\textcolor{black}{The $postlist$ for this run is $postlist = (v_4,v_7,v_1,v_3,v_6,v_2,v_5)$.}}
+\label{fig:dfs-directed}
 \end{figure}
 
-DFS-with-timing algorithm gives an interval $[pre,post]$ for each vertex.
+
+In explore $v_i$, the adjacent vertices $\{v_j \mid
+(v_i, v_j)\in E\}$ can be examined in any arbitrary order, i.e., all
+conclusions/properties we show hold regardless the order that $\{v_j\}$ gets examined.
+In practice though, we might follow a specific order;
+in Figure~\ref{fig:dfs-directed}, we examine $\{v_j\}$ in increasing order of their indexes.
+
+The above DFS-with-timing algorithm runs in $\Theta(|V| + |E|)$ time, since
+each vertex and each edge will be examined a constant number of times~(once for
+directed graph, twice for undirected graph).
+
+
+The above DFS-with-timing algorithm gives an interval $[pre,post]$ for each vertex.
 For two vertices $v_i,v_j\in V$, their corresponding intervals can either be
 \emph{disjoint}, i.e., the two intervals do not overlap, or \emph{nested}, i.e.,
-one interval is within the other. See Figure~\ref{fig:dfs-interval}.
+one interval is within the other. See Figure~\ref{fig:interval}.
 But two intervals cannot be \emph{partially overlapping}. Why? This is because
 the explore funtion is recursive. There are only two possiblities
 that $pre[i] < pre[j]$. The first one is that explore $v_j$ is \emph{within} explore $v_i$;
 in this case the recursive behaviour of explore leads to that $post[j] < post[i]$,
-as explore $v_j$ must return/terminate first and then explore $v_i$ will return/terminate.
+as explore $v_j$ must terminate first and return to explore $v_i$.
 This case corresponds to that the two intervals are nested.
 The second one is that explore $v_j$ starts after explore $v_i$ finishes;
 this case corresponds to that the two intervals are disjoint.
 
 \begin{figure}[h!]
-\centering{\input{dfs-interval}}
+\centering{\input{interval}}
 \caption{Relations between two $[pre,post]$ intervals.}
-\label{fig:dfs-interval}
+\label{fig:interval}
 \end{figure}
 
-We now show and prove a key claim that relates the post values and the meta-graph.
+\begin{claim}
+If the $[pre[j], post[j]]$ is nested within $[pre[i], post[i]]$, then $v_j$ is reachable from $v_i$.
+\label{claim:path}
+\end{claim}
+
+\emph{Proof.} 
+%Note that for the first case, if the inverval for $v_j$ is nested within the interval for $v_i$,
+%then we can conclude that $v_j$ is reachable from $v_i$. Why? 
+Consider when an explore will be called within another explore: 
+only if there is an edge $(v_i, v_j)\in E$~(and $visited[j] = 0$), explore $v_j$ will be called within explore $v_i$.
+Consequently, the time interval for $v_j$ will be within the interval for $v_i$.
+Note that explore $v_j$ might call explore other vertices, such as explore $v_k$.
+When this happens, the time interval for $v_k$ will be within the interval for $v_j$, and therefore within
+the interval for $v_i$.  
+But again this happens only if there exists edge $(v_j, v_k)$, and hence a path $v_i \to v_j \to v_k$.
+This argument can be extended to longer paths, proving the conclusion above. \qed
+
+
+\subsection*{Determine of Existence of Cycles}
+
+Let's see the first application of DFS-with-timing---to decide if a given (directed) graph contains cycles or not.
+We can simply modify the explore function, given below, and use the same DFS-with-timining function.
+Specifically, when the algorithm examines an edge $(v_i, v_j)$:
+if $v_j$ has been explored \emph{and} its post-number has not been set yet,
+then the algorithm reports that $G$ contains cycle.
+
+%%\begin{minipage}{0.8\textwidth}
+%%	\aaA {8}{function DFS ($G = (V, E)$)}\xxx
+%%	\aab {$clock = 1$;}\xxx
+%%	\aab {$visited[i] = 0, pre[i] = -1, post[i] = -1$, for $1\le i \le |V|$;}\xxx
+%%	\aaB {4}{for $i = 1 \to |V|$}\xxx
+%%	\aaC {2}{if ($visited[i] = 0$)}\xxx
+%%	\aad {explore ($G, v_j$);}\xxx
+%%	\aac {end if;}\xxx
+%%	\aab {end for;}\xxx
+%%	\aaa {end algorithm;}\xxx
+%%\end{minipage}
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {11}{function explore ($G = (V, E), v_i \in V$)}\xxx
+	\aab {$visited[i] = 1$;}\xxx
+	\aab {$pre[i] = clock$;}\xxx
+	\aab {$clock = clock + 1$;}\xxx
+	\aaB {3}{for any edge $(v_i, v_j) \in E$}\xxx
+	\aac {if ($visited[j] = 0$): explore ($G, v_j$);}\xxx
+	\aac {\textcolor{red}{else if ($post[j] = -1$): report ``$G$ contains cycle''};}\xxx
+	\aab {end for;}\xxx
+	\aab {$post[i] = clock$;}\xxx
+	\aab {$clock = clock + 1$;}\xxx
+	\aab {add $v_i$ to the {front} of $postlist$;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+
+Now let's prove this algorithm is correct.
+We first prove that if $G$ contains cycle then the algorithm will always report at some time.
+Let $C$ be the cycle.
+Let $v_j \in C$ be the first vertex that is explored in $C$.
+Let $(v_i, v_j) \in E$ be an edge in $C$.
+As $v_j$ can reach $v_i$~(reason: both in cycle $C$), 
+within exploring $v_j$ there will be a time that $v_i$ gets explored.
+In explore $v_i$, consider the time of examining edge $(v_i,v_j)$: at this time $visited[j]$ has been set as 1,
+but its post-number has not been set, as now the algorithm is still within exploring $v_j$.
+Therefore, the algorithm will report that $G$ contains cycle. 
+
+We then prove that if the algorithm reports, then $G$ must contain cycles.
+Consider that the algorithm is exploring $v_i$, examining edge $(v_i, v_j)$ and 
+finds $visited[j] = 1$ \emph{and} $post[j] = -1$.
+The fact that $post[j]$ has not been set implies that the algorithm is within exploring $v_j$.
+Therefore the interval for $v_i$ must be nested within the interval for $v_j$.
+Following Claim~\ref{claim:path}, we know that $v_j$ can reach $v_i$.
+In addition, there exists edge $(v_i, v_j)$. Combined, $G$ contains cycle.
+
+Note that this algorithm is essentially determining if there exists edge $(v_i, v_j) \in E$
+such that the interval $[pre[i], post[i]]$ is within interval $[pre[j], post[j]]$.
+(Such edges are called \emph{back edges} in textbook~[DPV], page 95.)
+
+\subsection*{Key Property of Meta-Graph}
+
+Before seeing more applications, we prove an important property that relates the
+post values and meta-graph.
 
 \begin{claim}
 Let $C_i$ and $C_j$ be two connected components of directed graph $G = (V, E)$, i.e., $C_i$ and $C_j$ are two
@@ -320,13 +187,12 @@ Before seeing a formal proof, please see an example in Figure~\ref{fig:dfs}:
 the largest post values for $C_1$, $C_2$, $C_3$, and $C_4$ are 9, 6, 10, and 14,
 and you may verify that following any edge in the meta-graph, the largest post value always decreases.
 
-\begin{figure}[h!]
+\begin{figure}[!h]
 \centering{\input{dfs}}
 \caption{Example of running DFS~(with timing) on a directed graph. The $[pre,post]$ interval for each vertex
-is marked next to each vertex.  The $postlist$ for this run is \textcolor{blue}{$postlist = (v_4,v_7,v_1,v_2,v_3,v_5,v_6)$}.  }
+is marked next to each vertex. }
 \label{fig:dfs}
 \end{figure}
-
 
 
 \emph{Proof.} Let $u^* := \arg\min_{u\in C_i\cup C_j} pre[u]$, i.e., $u^*$ is the first explored vertex in $C_i\cup C_j$.
@@ -355,125 +221,121 @@ we also have $\max_{v\in C_j} post[v] = post[u^*]$ as all vertices in $C_j\setmi
 Combined, we have that $\max_{u\in C_i} post[u] > \max_{v\in C_j} post[v]$.
 \qed
 
-The above key claim directly suggest a property about the structure of the meta-graph, given below.
+
+\subsection*{Finding a Linearization of a DAG}
+
+The above key property holds for all directed graphs.
+We now consider DAGs. Note that each connected component of a DAG $G$ contains exactly one vertex, i.e., each vertex in a DAG $G$
+forms the connected component of its own. (Can you spot this using Figure~\ref{fig:meta-graph}?)
+This is because, if a connected component contains at least two vertices $u$
+and $v$ then $u$ can reach $v$ and $v$ can reach $u$ so a cycle must exist.
+Consequently, the meta-graph $G_M$ of any DAG $G$ is also itself, i.e., $G= G_M$. % for any DAG $G$.
+
+Now let's interpret above key conclusion in the context of DAGs.
+For a DAG $G = (V, E)$, components $C_i$ and $C_j$ will degenerate into two vertices, say $v_i$ and $v_j$,
+edge $(C_i, C_j)\in E_M$ becomes $(v_i, v_j)\in E$, and $\max_{u\in C_i} post[u] = post[i]$, and 
+$\max_{v\in C_j} post[v] = post[j]$. We have
 
 \begin{corollary}
-The list of all connected components in $V_M$ sorted in decreasing order of $\max_{u\in C_i} post[u]$, $1\le i \le k$,
-is a linearization of $G_M$.
-\label{col1}
+Let $G = (V, E)$ be a DAG. If $(v_i, v_j)\in E$, then $post[i] > post[j]$.
 \end{corollary}
 
-Verify this is the case in Figure~\ref{fig:dfs}. Answer: such list is $(C_4, C_3, C_1, C_2)$, and it is a linearization of $G_M$.
-
-Above property also suggests us to consider an \emph{ordering of vertices} in descending post values.
-Specifically, we define \emph{postlist} as such ordering of vertices.
-Notice that postlist can be stored in an array and can be efficiently constructed in DFS-with-time.
-Please refer to Lecture A10 for its pseudo-code.
-See Figure~\ref{fig:dfs} for an example.
-
-As a direct consequence of Corollary~\ref{col1} and the definition of postlist, we have the following property.
-This is true as ``the first appearance'' exactly gives the ``largest post value'' since the postlist is sorted 
-in descending order of post values.
+Now recall the definition of linearization: $X$ is a linearization if and only if
+for every edge $(v_i, v_j)\in E$, $v_i$ is before $v_j$ in $X$.
+Since it is guaranteed above that, 
+for every edge $(v_i, v_j)\in E$, $post[i] > post[j]$,
+we can immediately conclude that vertices sorted in decreasing order of post-values
+is a linearization! This order is nothing else but the postlist.
 
 \begin{corollary}
-The list of all connected components in $V_M$
-sorted by their first appearance of in the postlist is a linearization of $G_M$.
-\label{col2}
+Let $G = (V, E)$ be a DAG. The postlist generated in the DFS-with-timing algorithm is a linearization of $G$.
 \end{corollary}
 
-Verify this is the case in Figure~\ref{fig:dfs}. Answer: following $postlist$ the corresponding list of 
-connected components is $(C_4, C_4, C_3, C_1, C_3, C_2, C_3)$.
-The first appearance of each component is $(C_4, C_3, C_1, C_2)$, which is a linearization of $G_M$
-and exactly the one that is sorted by their largest post value.
 
-%%
-%%How about the first vertex of $postlist$? Does it in a sink vertex of $G_M$?
-%%No. And Figure~\ref{fig:dfs} gives such an example: $v_6$ is the first vertex of $postlist$
-%%and it is not in a sink vertex of $G_M$.
-%%Note though, if $G$ is a DAG, then the first vertex of $postlist$ must be a sink of $G$,
-%%as we prove that in DAGs, reverse of $postlist$ is a linearization of $G$ and the last vertex of a linearization must be a sink.
-
-To summarize, now we can build a postlist that satisfies above Corollary~\ref{col2}.
-This almost achieves the desired property of the special ordering:
-``the ordering of connected components sorted by their first appearance in the
-special ordering should form a reverse-linearization of the meta-graph.''
-The only difference is that postlist implies a \emph{linearization} of the meta-graph
-while special ordering requires a \emph{reverse-linearization} of the meta-graph.
-Below, we introduce \emph{reverse graph} to fill this gap.
-
-\subsection*{Reverse Graph}
-
-\begin{definition}
-Let $G = (V,E)$ be a directed graph. The \emph{reverse graph} of $G$, denoted as $G_R = (V, E_R)$,
-has the same set of vertices and edges with reversed direction, i.e., $(u,v) \in E$ if and only if $(v,u)\in E_R$.
-\end{definition}
 
 \begin{figure}[h!]
-\centering{\input{reverse}}
-\caption{Graph and its reverse graph, and the corresponding meta-graphs.}
-\label{fig:reverse}
+\centering{\input{dfs-dag}}
+\caption{Example of running DFS~(with timing) on a DAG $G$. The $[pre,post]$ interval for each vertex
+is marked next to each vertex. The $postlist$ for this run is $(v_1, v_5, v_2, v_4, v_6, v_3)$, which is a linearization of $G$.}
+\label{fig:meta-graph}
 \end{figure}
 
-Following properties can be easily proved using above definition.
+\subsection*{Finding Connected Components of Directed Graphs}
 
-\begin{property}
-There is a path from $u$ to $v$ in $G$ if and only if there is a path from $v$ to $u$ in $G_R$.
-In other words, $u$ can reach $v$ in $G$ if and only if $u$ can be reached from $v$ in $G_R$.
-\end{property}
+We now design algorithms to determine the connected components of directed graphs~(i.e., the vertices of its meta-graph).
+Recall that the DFS algorithm introduced in Lecture 08 can successfully determine all connected components in an undirected graph.
+Does this algorithm also work for directed graph? And if not, where is the problem? 
+Let's run it on an example to find a clue. See Figure~\ref{fig:dfs-meta}.
+Recall that the (top-layer) of the DFS algorithm is to tranverse all vertices in some ordering,
+and if the current vertex $v$ is not yet visited, we will explore $v$.
+For the example in Figure~\ref{fig:dfs-meta}, we run it with the (natrual) ordering $v_1, v_2, \cdots, v_{10}$.
 
-\begin{property}
-$(G_R)_R = G$.
-\end{property}
+\begin{figure}[h!]
+\centering{\input{dfs-meta}}
+\caption{Run the DFS algorithm with an natural~(arbitrary) order
+and a special order~(pseudo-code given below) on above example.}
+\label{fig:dfs-meta}
+\end{figure}
 
-\begin{property}
-A vertex $v$ of DAG $G$ is a source vertex if and only if $v$ is a sink vertex of $G_R$.
-\end{property}
+The resulting visited array is given in the figure~(please make sure you try it yourself).
+Unfortunately, it does not give all connected components. In fact, the vertices marked as ``1''s are the union of $C_3$ and $C_4$,
+and the vertices marked as ``2''s are the union of $C_1$ and $C_2$.
+The reason is quite clear: we start with explore $v_1$, and during it all vertices reachable from $v_1$ will be marked as ``1'' in the visited array.
+It turns out that $v_1$ is in connected component $C_4$, and $C_4$ can reach $C_3$ in the meta-graph.
+Therefore, all vertices in $C_4$ and $C_3$ are reachable from $v_1$; consequently, the visited array is set as ``1'' for 
+vertices in $C_4$ and $C_3$ during explore $v_1$. 
+Similarly, we can also see why the vertices marked as ``2''s are the union of $C_1$ and $C_2$.
+After exploring $v_1$, $\{v_1,v_2,v_7\}$ are visited; the next unvisited vertex is $v_3$ according to above natural ordering,
+then the algorithm will explore $v_3$.
+Again, during it all (unvisited) vertices reachable from $v_3$ will be marked as ``2'' in the visited array.
+It turns out that $v_3$ is in connected component $C_1$, and $C_1$ can reach $C_2$ in the meta-graph.
+Therefore, all vertices in $C_1$ and $C_2$ are reachable from $v_2$;
+consequently, the visited array is set as ``2'' for 
+vertices in $C_1$ and $C_2$. 
 
+How to fix this issue? The idea is to use a \emph{special ordering} of vertices, instead of an arbitrary ordering, in above DFS.
+This special ordering should allow us to determine connected component one by one. Hence, the first vertex we explore in DFS,
+should be one vertex in a \emph{sink} component of the meta-graph. In Figure~\ref{fig:dfs-meta}, the only sink component is $C_3$,
+and since there is only one vertex in $C_3$, we should start with exploring $v_2$.
+Clearly, exploring $v_7$ will exactly determine the single connected component $C_2$.
+Next, after $C_3$ is determined, the next component we can determine is again a sink component after removing $C_3$ from the meta-graph.
+It is $C_4$. So, the next vertex the DFS should explore must be $v_1$ or $v_7$. It does matter which one we pick; let's assume we pick $v_7$~(and it
+does not matter where $v_1$ is in the special ordering as long as it is after $v_2$ and $v_7$).
+Clearly, exploring $v_2$ will exactly determine the single connected component $C_4$---see the visited array.
+The next component we can determine is again a sink component after removing $C_3$ and $C_4$ from the meta-graph.
+It is $C_2$. So, the next vertex the DFS should explore must be in $\{v_4, v_5,v_6,v_9\}$. 
+And it does matter which one we pick neither the ordering of remaining ones as long as they are behind the one we pick.
+Let's say we pick $v_4$. Clearly, exploring $v_4$ will exactly determine the single connected component $C_2$.
+Now the only component remaining is $C_1$ after removing $C_2$, $C_3$ and $C_4$ from the meta-graph.
+So, the next vertex the DFS should explore must be in $\{v_3, v_8, v_{10}\}$. 
+Let's say we pick $v_8$. Clearly, exploring $v_8$ will exactly determine the last connected component $C_1$.
+In Figure~\ref{fig:dfs-meta}, we give such a special order that follows above analysis.
+You should try it---run DFS following this special order correctly identifies all connected components, as shown in the Figure.
 
-\begin{property}
-$G$ and $G_R$ has the same set of connected components. %In other words the meta-graph of $G$ has the same set of vertices with the meta-graph of $G_R$.
-\end{property}
+Let's summarize above observation/analysis, aiming for characterizing/constructing the special order.
+First, it should be clear now that, the identified connected components,
+following the special order, forms a reverse-linearization of the
+meta-graph.  (Verify this with the Figure: the revealed connected components is
+$(C_3, C_4, C_2, C_1)$ which is a reverse-linearization of the meta-graph.)
+Second, the first appearance of a vertex in a connectec component matters, as exploring it identifies the entire connected component.
+Combined, the special ordering of vertices should satisfy this condition:
+\emph{the first appearance of connected components in the special ordering
+should form a reverse-linearization of the meta-graph}.
+Again see Figure~\ref{fig:dfs-meta}, the ordering 
+$( v_{2} ,v_{7} ,v_{4} ,v_{6} ,v_{8} ,v_{1} ,v_{3} ,v_{9} ,v_{10} ,v_{5})$ satisfies above condition.
+To see that, the corresponding list of connected components is 
+$(C_3, C_4, C_2, C_2, C_1, C_4, C_1, C_2, C_1, C_2)$,
+and hence the ordering of their first appearance is $(C_3, C_4, C_2, C_1)$ which is indeed a reviers-linearization of the meta-graph.
 
-
-\begin{property}
-The meta-graph of $G_R$ is the reverse graph of the meta-graph of $G$. Formally, $(G_R)^M = (G^M)_R$.
-\end{property}
-
-\begin{property}
-$X$ is a linearization of DAG $G$ if and only if the reverse of $X$ is a linearization of $G_R$~(or, $X$ is a reverse-linearization of $G_R$).
-In particular, since any meta-graph is a DAG, we have that 
-$X$ is linearization of $G^M$ if and only if $X$ is a reverse-linearization of $(G^M)_R = (G_R)^M$,
-and that $X$ is a linearization of $(G_R)^M = (G^M)_R$ if and only if $X$ is a reverse-linearization of $G^M$.
-\end{property}
-
-
-\subsection*{Algorithm to Determine Connected Components in Directed Graphs}
-
-Combining above DFS-with-timing and reverse graph, here is the pseudo-code we use to obtain a special ordering.
-The key is that we run DFS-with-timing on the reverse graph $G_R$, instead of on the given graph $G$.
+If the special ordering satisfies this condition, the DFS algorithm will
+work---it will identify all connected components. See the pseudo-code below. 
+It is the same with that for undirected graphs 
+except a single line of difference~(marked blue).
 
 \begin{minipage}{0.8\textwidth}
-	\aaA {4}{Algorithm to determine the \textcolor{blue}{specific order}}\xxx
-	\aab {build $G_R$ of $G$;}\xxx
-	\aab {run DFS with timing on $G_R$ to get $postlist$;}\xxx
-	\aab {return $postlist$;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
-
-We now show that, above $postlist$, i.e., the $postlist$ obtained by running DFS-with-timing on $G_R$,
-satisfies the condition that ``the ordering of connected components sorted by their first appearance in above
-$postlist$ forms a reverse-linearization of the meta-graph $G_M$''.
-In fact, since above $postlist$ is obtained by running DFS-with-timing on $G_R$,
-according to Corollary~\ref{col2}, 
-the list of all connected components sorted by their first appearance of in above $postlist$ is a linearization of $(G_R)^M$.
-According to Property~6 of reverse graph, we know that a linearization of $(G_R)^M$ is a reverse-linearization of $G_M$.
-
-Above $postlist$ can then be used by the DFS algorithm as a special order to obtain all connected components, with pseudo-code copied below.
-
-\begin{minipage}{0.8\textwidth}
-	\aaA {8}{function DFS ($G = (V, E)$)}\xxx
+	\aaA {8}{function DFS ($G = (V, E)$) \emph{it identifies connected components for directed graphs}}\xxx
 	\aab {num-cc = 0;}\xxx
-	\aaB {5}{for \textcolor{blue}{$v_i$ in the $postlist$ obtained above}}\xxx
+	\aaB {5}{for \textcolor{blue}{$v_i$ in a specific order}}\xxx
 	\aaC {3}{if ($visited[i] = 0$)}\xxx
 	\aad {num-cc = num-cc + 1;}\xxx
 	\aad {explore ($G, v_j$);}\xxx
@@ -492,88 +354,48 @@ Above $postlist$ can then be used by the DFS algorithm as a special order to obt
 \end{minipage}
 
 
-The entire algorithm runs in $\Theta(|V| + |E|)$ time.
+The remaining question is therefore how to find an ordering of vertices that satisfy above condition.
+Recall the key property we proved in Lecture 10: for any two connected components $C_i$ and $C_j$, if $(C_i, C_j) \in E_M$ then
+$\max_{u\in C_i} post[u] > \max_{v\in C_j} post[v]$.
+%Hence, connected components sorted by the largest post-value in descending order forms a linearization of the meta-graph.
+Consider the postlist, i.e., the list of vertices in descending order of post-values.
+The \emph{first} appearance of (a vertex in) connected component $C_i$ in the postlist
+is the vertex with \emph{largest} post-value in $C_i$, simply because postlist sorts vertices in descending order of post-values.
+According to the key property, if $(C_i, C_j)\in E_M$, then the first appearance of $C_i$ is before the first appearance of $C_j$.
+This implies the following fact.
+\begin{claim}
+Let $G$ be a directed graph. After running DFS-with-timing on $G$,
+the first appearance of connected components in the resulting postlist forms a linearization of $G_M$.
+\end{claim}
 
-\subsection*{Deciding Directed Acyclic Graphs}
-
-How to decide if a given directed graph is DAG or not?
-The following variant of DFS~(with timing) gives an algorithm.
-Specifically, when the algorithm examines an edge $(v_i, v_j)$:
-if $v_j$ has been explored \emph{and} its post-number hasn't been set yet,
-then the algorithm reports that $G$ is not a DAG.
+We are close. The desired special order requires 
+``the first appearance of connected components in the special ordering form a reverse-linearization of the meta-graph'',
+while the postlist yields 
+``the first appearance of connected components in the postlist form a linearization of the meta-graph'',
+How to close this last gap? The answer is the reverse-graph!
+We can build the reverse graph $G_R$ of the given directed graph $G$,
+and then run DFS-with-timing on $G_R$ to get a postlist.
+This postlist will be the desired, magic special order!
+See the pseudo-code below.
 
 \begin{minipage}{0.8\textwidth}
-	\aaA {8}{function DFS ($G = (V, E)$)}\xxx
-	\aab {$clock = 1$;}\xxx
-	\aab {$visited[i] = 0, pre[i] = -1, post[i] = -1$, for $1\le i \le |V|$;}\xxx
-	\aaB {4}{for $i = 1 \to |V|$}\xxx
-	\aaC {2}{if ($visited[i] = 0$)}\xxx
-	\aad {explore ($G, v_j$);}\xxx
-	\aac {end if;}\xxx
-	\aab {end for;}\xxx
+	\aaA {4}{Algorithm to determine the \textcolor{blue}{specific order}}\xxx
+	\aab {build $G_R$ of $G$;}\xxx
+	\aab {run DFS with timing on $G_R$ to get $postlist_R$;}\xxx
+	\aab {return $postlist_R$;}\xxx
 	\aaa {end algorithm;}\xxx
 \end{minipage}
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {10}{function explore ($G = (V, E), v_i \in V$)}\xxx
-	\aab {$visited[i] = 1$;}\xxx
-	\aab {$pre[i] = clock$;}\xxx
-	\aab {$clock++$;}\xxx
-	\aaB {3}{for any edge $(v_i, v_j) \in E$}\xxx
-	\aac {if ($visited[j] = 0$): explore ($G, v_j$);}\xxx
-	\aac {\textcolor{red}{else if ($post[j] = -1$): report ``$G$ is not a DAG''};}\xxx
-	\aab {end for;}\xxx
-	\aab {$post[i] = clock$;}\xxx
-	\aab {$clock++$;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
-
-Now let's prove this algorithm is correct.
-We first prove that if $G$ is not a DAG then the algorithm will always give that report at some time.
-Assume that $G$ contains a cycle $C$ as it is not a DAG.
-Let $v_j \in C$ be the first vertex that is explored in $C$.
-Let $(v_i, v_j) \in E$ be an edge in $C$.
-As $v_j$ can reach $v_i$, within exploring $v_j$ there will be a time that $v_i$ will be explored.
-Consider the time of examining edge $(v_i,v_j)$ within exploring $v_i$: at this time $visited[j]$ has been set as 1,
-but its post-number hasn't been set, as now the algorithm is still within exploring $v_j$.
-Therefore, the algorithm will report that $G$ dis not a DAG. 
-
-We then prove that if the algorithm gives that report then $G$ indeed is not a DAG.
-Consider that the algorithm is exploring $v_i$, examining edge $(v_i, v_j)$ and 
-finds $visited[j] = 1$ \emph{and} $post[j] = -1$.
-The fact that $post[j]$ hasn't been set implies that the algorithm is within exploring $v_j$.
-So we have that $v_j$ can reach $v_i$, as now we are exploring $v_i$.
-In addition, there exists edge $(v_i, v_j)$. Combined, $G$ contains cycle.
-
-Note that this algorithm is essentially determining if there exists edge $(v_i, v_j) \in E$
-such that the interval $[pre[i], post[i]]$ is within interval $[pre[j], post[j]]$.
-(Such edges are called \emph{back edges} in textbook~[DPV], page 95.)
-
-
-\subsection*{Finding a Linearization of a DAG}
-
-DFS-with-timing can also be used to find a linearization of a DAG: we simply run DFS-with-timing on the given DAG $G$
-and get the postlist~(the list of vertices in decreasing order of post value); the postlist will be a linearization of $G$.
-
-Why? First, observe that each connected component of a DAG $G$ contains exactly one vertex, i.e., each vertex in a DAG $G$
-forms the connected component of its own. (Can you spot this using Figure~\ref{fig:meta-graph}?)
-This is because, if a connected component contains at least two vertices $u$ and $v$ then $u$ can reach $v$ and $v$ can reach $u$ so a cycle must exist.
-Consequently, the meta-graph $G_M$ of any DAG $G$ is also itself, i.e., $G= G_M$. % for any DAG $G$.
-
-Now let's interpret the conclusions for general directed graphs we obtained in  Lecture A11 in the context of DAGs.
-Consider Claim~1 in Lecture A11: \emph{Let $C_i$ and $C_j$ be two connected components of directed graph $G = (V, E)$, i.e., $C_i$ and $C_j$ are two
-vertices in its coresponding meta-graph $G_M = (V_M, E_M)$. If we have $(C_i, C_j) \in E_M$ then
-we must have that $\max_{u\in C_i} post[u] > \max_{v\in C_j} post[v]$.}
-As in a DAG, components $C_i$ and $C_j$ will degenerate into two vertices, say $v_i$ and $v_j$, and
-its meta-graph $G_M$ is the same as $G$, we can translate this claim for DAG as: 
-if in a DAG we have $(v_i, v_j) \in E$ then we must have $post[i] > post[j]$.
-This immediately gives the desired conclusion following the definition of linearization
-and the definition of postlist: the postlist is a linearization of $G$.
-
-\begin{figure}[h!]
-\centering{\input{dfs-dag}}
-\caption{Example of running DFS~(with timing) on a DAG $G$. The $[pre,post]$ interval for each vertex
-is marked next to each vertex. The $postlist$ for this run is $(v_1, v_5, v_2, v_4, v_6, v_3)$, which is a linearization of $G$.}
-\end{figure}
-
-
+We now show that, above $postlist_R$, i.e., the one obtained by running DFS-with-timing on $G_R$,
+satisfies the condition that ``the first appearance of connected components in 
+this $postlist_R$ forms a reverse-linearization of the meta-graph $G_M$''.
+In fact,  since this $postlist_R$ is obtained by running DFS-with-timing on $G_R$,
+applying Claim~\ref{fig:claim1},
+we know that the first appearance of connected components in $postlist_R$ forms a linearization of meta-graph of $G_R$,
+which is $(G_R)_M$.
+According to the properties of reverse graph, we know that $(G_R)_M = (G_M)_R$.
+We also know that a linearization of $(G_M)_R$ is a reverse-linearization of $G_M$.
+Hence, we have that, 
+the first appearance of connected components in $postlist_R$ forms a reverse-linearization $G_M$, proving
+that $postlist_R$ is the desired special order.
+%This $postlist$ can therefore be used by the DFS algorithm as a special order to obtain all connected components.

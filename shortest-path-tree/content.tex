@@ -2,19 +2,27 @@
 \section{Shortest Path Tree}
 
 So far we have designed three algorithms, BFS, Dijkstra's algorithm, and Bellman-Ford algorithm
-to solve shortest path problems for unit edge length, positive edge length, and possible negative edge length, respectively.
+to solve shortest path problems for unit edge length, positive edge length, and possible negative edge length.
 In these algorithm, $dist[v]$ will give the \emph{length} of the
 shortest path from $s$ to $v$. How to find the actual shortest path?
 Before designing algorithm to find paths~(we will do it by modifying all three algorithm),
 let's think about how to store them first.
 Recall that we want to store $|V|$ paths, ones from $s$ to each vertex in $V$.
-If we implicitly store these $|V|$ paths in a naive way, it may take $O(|V|^2)$ space.
+If we explicitly store these $|V|$ paths in a naive way, it may take $O(|V|^2)$ space.
 Can we do better?
 
 In fact, we can use linear space to store these $|V|$ shortest paths from a single source $s$.
-Let $G = (V, E)$ be a graph with edge length $l(e)$ for any $e \in E$.
-Here we allow negative edge length, but not allow \emph{negative cycle}. %~(we will come back to negative cycle later on).
-Let $s \in V$ be a source vertex.  Without loss of generality, assume that $s$ can reach all vertices in $V$.
+How is that possible? The reason is the \emph{optimal substructure} property that the shortest path problem satisfies.
+Assume $s = v_0 \to v_1 \to v_2\cdots v_k$ be the shortest path from $s$ to $v_k$. Then $s \to v_i$, for any $0 \le i < k$,
+is also the one shortest path from $s$ to $v_i$. This implies that storing the path from $s$ to $v_k$ is enough to
+represent the shortest paths from $s$ to each $v_i$. 
+
+But one such path is not enough to represent all shortest paths from $s$. In fact, all shortest paths
+can be represented as a tree, called \emph{shortest path tree}.
+%Let $G = (V, E)$ be a graph with edge length $l(e)$ for any $e \in E$.
+%Here we allow negative edge length, but not allow \emph{negative cycle}. %~(we will come back to negative cycle later on).
+%Let $s \in V$ be a source vertex in graph $G = (V, E)$.  
+Without loss of generality, assume that source $s$ can reach all vertices in $V$.
 We say $T$ is a \emph{shortest path tree} of $G$ w.r.t.\ source vertex $s$ if:
 \vspace*{-\topsep}
 \begin{enumerate}
@@ -24,8 +32,8 @@ We say $T$ is a \emph{shortest path tree} of $G$ w.r.t.\ source vertex $s$ if:
 \item for every $v\in V$, the unique path from $s$ to $v$ in $T$ is one shortest path from $s$ to $v$ in $G$.
 \end{enumerate}
 
-A shortest path tree always exists. (Think how to prove it.) 
-The underlying reason is the optimal substructure property.
+We will show later that, a shortest path tree always exists. %(Think how to prove it.) 
+%The underlying reason is the optimal substructure property.
 Such tree may not be unique though~(see Figure~\ref{fig:tree}).
 As in the shortest path tree, each vertex, except $s$, has exactly one in-edge, we can use an array $prev$ of size $|V|$
 to store this tree. Array $prev$ is indexed by the vertices, and for each $v\in V$, $prev[v]$ stores the parent of $v$
@@ -40,12 +48,12 @@ for the first tree is $prev[s,a,b,c,f,h,j,k] = [null, s, a, f, s, c, c, b]$.}
 \end{figure}
 
 
-\subsection*{Determining Shortest Path Tree}
+%\subsection*{Determining Shortest Path Tree}
 
-We now modify the three algorithms, namely BFS, Dijkstra's algorithm, and Bellman-Ford algorithm, to allow them to generate a shortest path tree.
-The idea is to keep track of its predecessor of each vertex~(essentially the parent of $v$ in the shortest path tree).
-We use array $prev$ of size $|V|$ to do it.
-Whenever $dist[v]$ gets updated as $dist[u] + l(u,v)$ we also update $prev[v]$ as $u$.
+We now modify the three algorithms, BFS, Dijkstra's algorithm, and Bellman-Ford algorithm, to allow them to generate a shortest path tree.
+The idea is that, %to keep track of its predecessor of each vertex~(essentially the parent of $v$ in the shortest path tree).
+%We use array $prev$ of size $|V|$ to do it.
+whenever $dist[v]$ gets updated as $dist[u] + l(u,v)$ we also immediately assign $prev[v]$ as $u$.
 See their pseudo-codes below.
 
 \begin{minipage}{0.8\textwidth}
@@ -68,7 +76,6 @@ See their pseudo-codes below.
 	\aab {end while;}\xxx
 	\aaa {end algorithm;}\xxx
 \end{minipage}
-
 
 
 \begin{minipage}{0.8\textwidth}
@@ -117,19 +124,28 @@ See their pseudo-codes below.
 \end{minipage}
 
 
-We now show the corresponding graph $T = (V, \{(pre[v], v)\mid v\in V\})$ is a shortest path tree of $G$.
+The resulting $prev$ array corresponds to a graph called $T$, in which the vertices are $V$
+and edges are $\{(prev[v], v)\mid v\in V\}$. We now prove that this graph is indeed one shortest path tree,
+by showing $T$ satisfying the 4 conditions in the definition. It is trivial to verify that the conditions (2)
+is satisfied, as the vertices are $V$; condition (3) is easy as well, as in any of the algorithm,
+assigning $u$ to $prev[v]$ already happens when examining edge $(u,v)\in E$.
+Below we then prove condition (1) and (4).
 
 \begin{fact}
 \label{tree-fact2}
 At any time of the algorithm, for any $v\in V$, let $u = prev[v]$, if $u\neq null$ then $dist[v] = dist[u] + l(u,v)$;
 in particular, when the algorithm terminates, we have $distance(s,v) = distance(s,u) + l(u,v)$.
 \end{fact}
-The first part of above fact is a direct consequence of each algorithm as we update $prev$ right after updating $dist$.
-The secon part also uses the that when each algorithm terminates, we have $dist[v] = distance(s,v)$.
+The first part of above fact is a direct consequence of each algorithm as we update $prev$ right after updating $dist[v]$ as $dist[u] + l(u,v)$.
+The secon part also uses the correctness of each algorithm, i.e., when each algorithm terminates, we have $dist[v] = distance(s,v)$.
 
-Note although we use $T$ but we haven't showed that $T$ is a tree.  Now we prove it. 
+We now prove condition (1), i.e., $T$ is a tree with root being $s$~(although we use $T$ but we have not showed that it is a tree).
+Since $T$ corresponds to array $prev$, it is obvious that in-degree of $s$ is 0 and that each vertex in $T$, except $s$,
+has in-degree of 1. We therefore just need to prove that $T$ does not contain cycle. 
+We need a stronger assumption to make it true. That is, the graph $G$ cannot contain negative nor length-zero cycles.
+
 \begin{fact}
-$T$ does not contain cycle, if all cycles in $G$ are positive cycles.
+$T$ does not contain cycle, if all cycles in $G$ are of positive length.
 \end{fact}
 \emph{Proof.} Suppose conversely that there exists a cycle $C = v_1\to v_2\to \cdots \to v_k\to v_1$ in $T$.
 Following above fact, we have $dist[v_i] = dist[v_{i-1}] + l(v_{i-1},v_i)$, for every $1 < i \le k$
@@ -137,86 +153,18 @@ and $dist[v_1] = dist[v_k] + l(v_k,v_1)$.
 Summing up both sides gives $\sum_{e\in C} l(e) = 0$, contradicting to the the assumption
 that all cycles have positive length.\qed
 
-\begin{fact}
-Graph $T$ is a rooted tree with $s$ being the root.
-\end{fact}
-\emph{Proof.} This is a direct consequence of the following facts: the in-degree of $s$ is 0; each vertex in $T$, except $s$
-has in-degree of 1; $T$ does not contain cycle. \qed
-
-% TODO
+Last, we prove condition (4):
 \begin{claim}
-$T$ is a shortest path tree, if all cycles in $G$ are positive cycles.
-
+For every $v\in V$, the unique path from $s$ to $v$ in $T$ is one shortest path from $s$ to $v$ in $G$,
+if all cycles in $G$ are positive cycles.
 \end{claim}
-\emph{Proof.} We verify the 4 conditions in the definition of the shortest path tree.
-We just showed that $T$ is a rooted tree with $s$ being the root.
-It's clear that vertices of $T$ is $V$ and edges of $T$ are subset of edges of $G$.
-Now we prove condition 4. Let $p: s = v_0 \to v_1 \to v_2 \to \cdots \to v_k$ be the path from $s$ to $v_k$ in $T$.
+\emph{Proof.} 
+Let $p: s = v_0 \to v_1 \to v_2 \to \cdots \to v_k$ be the path from $s$ to $v_k$ in $T$.
 By the construction of $T$, we know that $prev[v_i] = v_{i - 1}$, $1\le i \le k$.
-Therefore, using Fact~\ref{tree-fact2}, we have $distance(s, v_i) = distance(s, v_{i-1}) + l(v_{i-1}, v)$.
-Hence, the length of this path is exactly $distance(s,v_k)$, i.e., a shortest path from $s$ to $v_k$. \qed
+Therefore, using Fact~\ref{tree-fact2}, we have $distance(s, v_i) = distance(s, v_{i-1}) + l(v_{i-1}, v)$,
+for each $i = 1, 2, \cdots, k$. We sum up the left side and the right side of these $k$ equations.
+Canceling out $distance(s, v_i)$, $i = 1, 2, \cdots, k-1$, on both sides gives
+$distance(s,v_k) = distance(s, s) + \sum_{i=1}^k l(v_{i-1}, v_i) = \sum_{i=1}^k l(v_{i-1}, v_i)$, implying that
+the length of $p$ is equal to the distance from $s$ to $v_k$, i.e., it is one shortest path from $s$ to $v_k$. \qed
 
 
-
-%%Similar to what we did for Dijkstra's algorithm,
-%%we can add tracking back pointers, with $prev$ array, to find the shortest path for each vertex.
-%%
-%%The highlighted ``$>$'' is a key detail. It suggests we give higher priority to $dist(k-1,v)$ when
-%%there is a tie between the two cases in the recursion. In other words, whenever possible,
-%%the DP algorithm always keeps a path using smaller number of edges. 
-%%
-%%\begin{fact}
-%%If there are multiple shortest paths from $s$ to $v$, the DP algorithm~(using ``$>$'' to break tie)
-%%always keeps the one with smallest number of edges.
-%%\end{fact}
-%%
-%%The $prev$ array corresponds to a shortest-path graph, defined as $(V, \{(prev[v], v)\mid v\in V\})$.
-%%Is this graph still a shortest-path tree? 
-%%The answer is yes. We can try to prove it, using the same approach we used in proving it for Dijkstra's algorithm.
-%%But one issue comes out: in the proof for Dijkstra's algorithm, we show that above graph won't have any cycle
-%%because it's not possible to have that the length of a cycle is 0~(as Dijkstra's algorithm applies to graphs with positive edge length).
-%%However, in the presence of negative edge length, this is possible. See an example in Figure~\ref{fig:cycle1} and Figure~\ref{fig:cycle2}.
-%%(Note: if all cycles in $G$ are positive, then the same proof used there can be used here to show that the shortest-path graph is a tree.)
-%%
-%%Here, the way of breaking tie matters, and is needed in proving a shortest-path tree. With ``$>$'', we always keep the path with smallest number of edges, and hence
-%%a cycle of length 0 won't be included in the shortest path. And therefore the shortest-path graph must be a shortest-path tree. 
-%%See Figure~\ref{fig:cycle1}. If ``$\ge$'' is used to break tie, then the graph may not be a tree. See Figure~\ref{fig:cycle2}.
-%%
-%%
-%%\begin{minipage}{0.8\textwidth}
-%%	\aaA {16}{Algorithm DP-shortest-path~($G = (V, E)$, $l(e)$ for any $e\in E$, $s \in V$)}\xxx
-%%	\aab {init a 2D array $dist$ of size $|V|\times |V|$;}\xxx
-%%	\aab {$dist[0, s] = 0$; $dist[0, v] = \infty$ for any $v\neq s$;}\xxx
-%%	\aab {\textcolor{blue}{$prev[v] = null$, for any $v\in V$};}\xxx
-%%	\aaB {10}{for $k = 1 \to |V| - 1$;}\xxx
-%%	\aaC {8}{for $v\in V$;}\xxx
-%%	\aad {$dist(k,v) = dist(k-1, v)$;}\xxx
-%%	\aaD {5}{for each $(u,v)\in E$;}\xxx
-%%	\aaE {3}{if~($dist(k,v) \textcolor{red}{~>~} dist(k-1,u) + l(u,v)$)}\xxx
-%%	\aaf {$dist(k,v) = dist(k-1,u) + l(u,v)$;}\xxx
-%%	\aaf {\textcolor{blue}{$prev[v]= u$};}\xxx
-%%	\aae {end if;}\xxx
-%%	\aad {end for;}\xxx
-%%	\aac {end for;}\xxx
-%%	\aab {end for;}\xxx
-%%	\aab {$dist[|V|-1,v]$ gives $distance(s,v)$, for any $v\in V$;}\xxx
-%%	\aaa {end algorithm;}\xxx
-%%\end{minipage}
-%%
-%%\begin{figure}[h]
-%%\centering{\input{cycle1}}
-%%\caption{Using ``$>$'' to break tie. In this case the shortest-path graph constructed from $prev$ array is guaranteed to be a shortest path tree.
-%%	The $prev$ is next to $dist$ separated with $/$ in each entry.}
-%%\label{fig:cycle1}
-%%\end{figure}
-%%
-%%\begin{figure}[t]
-%%\centering{\input{cycle2}}
-%%\caption{Using ``$\ge$'' to break tie. In this case the shortest-path graph constructed from $prev$ array may not be a shortest path tree.
-%%	The $prev$ is next to $dist$ separated with $/$ in each entry.}
-%%\label{fig:cycle2}
-%%\end{figure}
-%%
-%%
-%%
-%%

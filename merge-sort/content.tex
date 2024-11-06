@@ -22,10 +22,11 @@ We now design a divide-and-conquer algorithm for it. For any recursive algorithm
 clearly define the recursion. In this case, we define function merge-sort~($S$) returns the
 sorted array~(in ascending order) of $S$.
 
-The idea is to sort the first half and second half of $S$, by recursively call the merge-sort function.
+The idea is to sort the first half and second half of $S$, by recursively calling the merge-sort function.
 How to obtain the sorted array of $S$ then with the two sorted half-sized arrays?
 We have introduced such an algorithm to merge two sorted arrays into a single sorted array.
 That's exactly the algorithm we need here in the combining step.
+The pseudo-code for the merge-sort function is given below.
 
 \begin{minipage}{0.8\textwidth}
 	\aaA {5}{Algorithm merge-sort~($S[1\cdots n]$)}\xxx
@@ -36,7 +37,8 @@ That's exactly the algorithm we need here in the combining step.
 	\aaa {end algorithm;}\xxx
 \end{minipage}
 
-We now analyze above algorithm.
+\subsection*{Analysis of Merge-Sort}
+
 The correctness of the algorithm can be proved by induction, as the natural structure of above algorithm is recursive.
 Specifically, we want to prove the statement that the merge-sort function with $A$ as input returns the sorted array of $A$ if $|A| = n$.
 The induction is w.r.t.\ $n$. The base case, i.e., $n = 1$, is clearly correct.
@@ -49,7 +51,7 @@ we have that merge-sort returns the sorted array of $S$.
 To see its runing time, we define $T(n)$ as the running time of merge-sort~($S$) when $|S| = n$.
 Clearly, both merge-sort~($S[1\cdots n/2]$) and
 merge-sort~($S[n/2+1\cdots n]$) take $T(n/2)$ time.
-As merge-two-sorted-arrays takes linear time, we have the recurrence $T(n) = 2T(n/2) + \Theta(n)$.
+As merge-two-sorted-arrays takes $\Theta(|S'_1| + |S'_2|) = \Theta(n)$ time, we have the recurrence $T(n) = 2T(n/2) + \Theta(n)$.
 We will use \emph{master's theorem} to get the closed form for $T(n)$, described below.
 
 \subsection*{Master's Theorem}
@@ -65,8 +67,8 @@ aT(n/b) + \Theta(n^d)  & \textrm{ if } n \ge 2 \\
 \end{displaymath}
 
 Master's theorem is widely used to analyze the running time of divide-and-conquer algorithms. 
-Recall that a divide-and-conquer algorithm
-first partitions the original problems into subproblems, solve all subproblems recursively,
+Recall that a divide-and-conquer algorithms
+first partition the original problems into subproblems, solve all subproblems recursively,
 and then combine them to answer the original question.
 Hence, above recurrence precisely describes the running time of such algorithms.
 Specifically, $a$ refers to the number of subproblems that the original problem is partitioned,
@@ -76,7 +78,7 @@ In merge-sort, $a = 2$, as it calls merge-sort twice in the algorithm,
 $b = 2$, as the input-size of each subproblem becomes $n/2$,
 and $d = 1$, as the merge-two-sorted-arrays takes $\Theta(n)$ time.
 Note that, it is not always the case that $a = b$~(in merge-sort though, $a = b$).
-Such example includes matrix multiplication.
+Such example includes matrix multiplication, where $a = 4$ and $b = 2$.
 
 We now solve above recurrence. Without loss of generality, we assume that $n$ is a power of $b$, i.e., $n = b^k$ for some $k$.
 To further simplify, we use $n^d$ instead of $\Theta(n^d)$.
@@ -127,8 +129,9 @@ $T(n) = aT(n/b) + n^d \log^s n$ with $T(1) = 1$. The closed form is given below:
 T(n) = \left\{
 \begin{array}{llll}
 \Theta(n^d \log^{s+1} n) & \textrm{ if } d = \log_b a \\
-\textcolor{blue}{\Theta(n^d \log^s n)} & \textrm{ if } d > \log_b a \\
+\Theta(n^d \log^s n) & \textrm{ if } d > \log_b a \\
 \Theta(n^{\log_b a}) & \textrm{ if } d < \log_b a \\
 \end{array}
 \right.
 \end{displaymath}
+

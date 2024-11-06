@@ -1,6 +1,7 @@
 \setcounter{definition}{0} \setcounter{property}{0} \setcounter{claim}{0} \setcounter{fact}{0} \setcounter{corollary}{0} \setcounter{figure}{0}
 \section{Graph: Definitions and Representations}
 
+
 A graph is usually denoted as $G = (V, E)$, where $V$ represents vertices, and $E$ represents edges.
 There are two types of graphs, directed ones and undirected ones~(see Figures below).
 
@@ -40,6 +41,7 @@ The number of ``1''s in $M$ is exactly $|E|$ for directed graph.
 Adjacency list maintains a list/array $A_i$ for each vertex $v_i \in V$, where
 $A_i$ stores $\{v_j \in V \mid (v_i, v_j) \in E\}$, i.e., the adjacent edges/vertices of $v_i$.
 A pointer is usually maintained for each vertex $v_i$ that points to the array $A_i$.
+And we can use an array of size $|V|$ to store these pointers.
 Clearly, for undirected graph, $\sum_{v_i \in V} |A_i| = 2|E|$, assuming that there is no ``self-loop'' edges.
 For directed graph, $\sum_{v_i \in V} |A_i| = |E|$.
 
@@ -70,14 +72,16 @@ If $G$ is represented with an adjacency list, to check if $(v_i,v_j)\in E$, one 
 $A_i$ and see if $v_j$ is in $A_i$ or not, and clearly this takes $\Theta(|A_i|)$ time.
 Note that, if we assume that the vertices in $A_i$ are sorted, then searching for the appearance of $v_j$
 in $A_i$ can be done through \emph{binary search} which takes $\Theta(\log |A_i|)$ time.
-In any case, adjacency matrix is better in fastly querying.
+In any case, adjacency matrix is better for fast querying.
 
-\item Listing adjacent vertices of a vertex. Given $v_i$, one needs to tranverse the entire row~(the $i$-th row) of the adjacency matrix
+\item Listing adjacent (out) vertices of a vertex. Given $v_i$, one needs to tranverse the entire row~(the $i$-th row) of the adjacency matrix
 to find all adjacent vertices of $v_i$ which takes $\Theta(|V|)$ time.
-In case of adjacency list, one just needs to return the list $A_i$ which takes $\Theta(|A_i|)$ time.
+In case of adjacency list, one just needs to return the pointer to $A_i$ which takes $\Theta(1)$ time.
 Hence, adjacency list is better in listing adjacent vertices.
 
 \end{itemize}
 
 In practice, adjacency list is usually the first choice, for an obvious reason that, for huge graphs, it is not possible
 to store an $|V|\times |V|$ matrix in memory.
+
+

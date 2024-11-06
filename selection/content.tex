@@ -1,7 +1,7 @@
 \setcounter{definition}{0} \setcounter{property}{0} \setcounter{claim}{0} \setcounter{fact}{0} \setcounter{corollary}{0} \setcounter{figure}{0}
 \section{Selection Problem}
 
-The \emph{selection} problem is formally defined as follows: given an array $A = [a_1,a_2, \cdots, a_n]$ and
+The \emph{selection} problem is formally defined as follows: given an array $A[1\cdots n]$ and
 an integer $k$, $1 \le k \le n$, to find the $k$-th smallest number in $A$.
 Here we assume that all numbers in $A$ are distinct. The following algorithm
 we design can be easily extended to allow duplicated numbers in $A$.
@@ -11,7 +11,8 @@ the $k$-th smallest number of $A$. This algorithm runs in $\Theta(n\log n)$ time
 Notice that, when $k = 1$, this problem is to seek the smallest number in $A$;
 when $k = n$, this problem is to seek the largest number in $A$.
 In either case, we know that it can be done in linear time.
-In fact, the general case can also be solved in linear time, using a divide-and-conquer approach.
+In fact, the general case can also be solved in linear time, using a divide-and-conquer approach, which is the focus of this lecture.
+Note also that, when $k = n/2$ the selection problem seeks the \emph{medain} of $A$.
 
 \subsection*{Pivot-based Divide-and-Conquer Algorithm}
 
@@ -20,8 +21,8 @@ The idea is to first choose a number in $A$, called pivot, denoted as $x$.
 We then partition $A$, using $x$, into 3 parts, $(A_1, x, A_2)$, where $A_1$~(resp.\ $A_2$) stores the numbers in $A$
 that are smaller~(resp.\ larger) than $x$.
 Specifically, we initialize two empty lists $A_1$ and $A_2$,
-we then examine all numbers $a_1, a_2, \cdots, a_n$: for each $1\le i \le n$, we put $a_i$ to $A_1$ if $a_i < x$,
-and we put $a_i$ to $A_2$ if $a_i > x$.
+we then examine all numbers: for each $1\le i \le n$, we put $A[i]$ to $A_1$ if $A[i] < x$,
+and we put $A[i]$ to $A_2$ if $A[i] > x$.
 
 Now, with $A_1$ and $A_2$ in hand, we can locate which part contains the $k$-th smallest number of $A$~(and therefore discard the other two parts).
 Specifically, if $k \le |A_1|$, then we know that the $k$-th smallest number of $A$ must be in $A_1$,
@@ -39,9 +40,13 @@ must be the 2nd~(i.e, $7-5$) smallest number of $A_2$.
 The above analyis is illustrated with the following pseudo-code.
 
 \begin{minipage}{0.8\textwidth}
-	\aaA {6}{Algorithm selection~($A$, $k$)}\xxx
+	\aaA {9}{Algorithm selection~($A$, $k$)}\xxx
 	\aab {\textcolor{blue}{$x$ = find-pivot~($A$)};}\xxx
-	\aab {partition $A$ into $A_1, x, A_2$;}\xxx
+%	\aab {partition $A$ into $A_1, x, A_2$;}\xxx
+	\aaB {3}{for $i=1$ to $|A|$}\xxx
+	\aac {if $A[i] < x$: add $A[i]$ to $A_1$}\xxx
+	\aac {if $A[i] > x$: add $A[i]$ to $A_2$}\xxx
+	\aab {end}\xxx
 	\aab {if $k \le |A_1|$: return selection~($A_1$, $k$);}\xxx
 	\aab {else if $k = |A_1| + 1$: return $x$;}\xxx
 	\aab {else: return selection~($A_2$, $k - |A_1| - 1$);}\xxx
@@ -63,7 +68,7 @@ We use $P(n)$ to denote the running time of find-pivot~($A,k$) with $|A| = n$.
 Partitioning $A$ into $A_1,x,A_2$ clearly takes $\Theta(n)$ time.
 For the remaining if-else-if-else part, again we assume the \emph{worst-case} scenario, i.e.,
 the larger array among $A_1$ and $A_2$ will always be chosen.
-Combined, we have this recurrence: $T(n) = P(n) + \Theta(n) + T\max\{|A_1|, |A_2|\})$.
+Combined, we have this recurrence: $T(n) = P(n) + \Theta(n) + T(\max\{|A_1|, |A_2|\})$.
 
 \subsection*{Finding a Good Pivot}
 
@@ -103,21 +108,22 @@ The pseudo-code for find-pivot function is given below.
 	\aab {calculate the median of each subarray;}\xxx
 	\aab {let $M$ be the array that includes all medians;}\xxx
 	\aab {return selection~($M$, $|M|/2$);}\xxx
-	\aaa {end algorithm;}\xxx
+	\aaa {end}\xxx
 \end{minipage}
 
 \subsection*{Running Time of the Selection Algorithm}
 
-By definition, the find-pivot functions takes time $\Theta(n) + T(|M|)$.
-Therefore, the total running time of the selection problem, in the form of a recurrence,
-is $T(n) = \Theta(n) + T(|M|) + \max\{T(|A_1|), T(|A_2|)\}$.
+By definition, the find-pivot functions takes time $\Theta(n) + T(|M|) = \Theta(n) + T(n/5)$,
+as $|M| = n/5$. %as the number of subarrays is $n/5$.
+Therefore, the total running time, in the form of a recurrence,
+is $T(n) = \Theta(n) + T(n/5) + \max\{T(|A_1|), T(|A_2|)\}$.
 
-We now bound the size of $|M|$ and $\max\{|A_1|, |A_2|\}$.
-Clearly, $|M| = n/5$, as the number of subarrays is $n/5$.
+We now bound $\max\{|A_1|, |A_2|\}$.
+%Clearly, $|M| = n/5$, as the number of subarrays is $n/5$.
 Think: how many numbers in $A$ are \emph{guaranteed} smaller than $x$~(this number then gives a lower bound of $|A_1|$)?
 First, in these $n/5$ medians, half of them, i.e., $n/10$ numbers, are smaller than $x$, as $x$ is the median of these medians.
 Second, consider these $n/10$ subarrays whose median is smaller than $x$: clearly in each of these subarrays, at least
-two numbers are smaller than $x$. This is because the median of this subarray is smaller than $x$ and there are two numbers
+two numbers are smaller than $x$. This is because the median of this subarray~(with 5 numbers) is smaller than $x$ and there are two numbers
 in this subarray that are smaller than its median. Combined, we have a lower bound of $|A_1|$: $|A_1| \ge n/10 + 2 \cdot n/10 = 3n/10$.
 This gives an upper bound of $|A_2|$: $|A_2| = n - |A_1| \le 7n/10$.
 
@@ -126,12 +132,18 @@ This is because, in these $n/5$ medians, $n/10$ of them are larger than $x$,
 and in these corresponding $n/10$ subarrays whose median is larger than $x$, there are in total $2\cdot n/10$ numbers larger than $x$.
 
 Combined, we have $\max\{|A_1|, |A_2|\} \le 7n/10$.  The above recurrence becomes $T(n) \le \Theta(n) + T(n/5) + T(7n/10)$.
-How to solve this recurrence? Here is the conclusion~(you will see its prove via assignment).
-For a more generalized version is this recurrence: $T(n) = \Theta(n) + T(c_1n) + T(c_2n)$, where $0 < c_1, c_2 < 1$, 
-we have $T(n) = \Theta(n)$ if $c_1 + c_2 < 1$;
-$T(n) = \Theta(n\log n)$ if $c_1 + c_2 = 1$.
-For the selection problem we have $c_1 + c_2 = 1/5 + 7/10 < 1$. Hence
-its running time $T(n) = \Theta(n)$.
+Note that the recurrence is $T(n) \le \cdots$ instead of $T(n) = \cdots$, as we only have an upper bound for $\max\{|A_1|, |A_2|\}$.
+(In other words, we don't have that $\max\{|A_1|, |A_2|\} = 7n/10$.)
+How to solve this recurrence? %Here is the conclusion~(see proof below). %you will see its prove via assignment).
+First, we can use a conclusion stated and proved in the next subsection. %this recurrence: $T(n) = \Theta(n) + T(c_1n) + T(c_2n)$, where $0 < c_1, c_2 < 1$, 
+%we have $T(n) = \Theta(n)$ if $c_1 + c_2 < 1$;
+%$T(n) = \Theta(n\log n)$ if $c_1 + c_2 = 1$.
+Suppose the recurrence is ``$=$'', i.e., $T'(n) \le \Theta(n) + T'(n/5) + T'(7n/10)$.
+Applying the conclusion given below, we have $c_1 + c_2 = 1/5 + 7/10 < 1$. Hence its running time $T'(n) = \Theta(n)$.
+Now come back to $T(n)$. Since $T(n) \le T'(n)$, we know that $T(n) = O(n)$.
+To show that $T(n) = \Omega(n)$, we need the fact that the algorithm requires
+the partition step which takes $\Theta(n)$ time. Hence, $T(n) = \Omega(n)$.
+Combined, we have $T(n) = \Theta(n)$.
 
 %Therefore, $T(n) = \Theta(n)$ as $1/5 + 7/10 = 9/10 < 1$.
 
@@ -158,10 +170,81 @@ its running time $T(n) = \Theta(n)$.
 %%Formally, consider recurrence $T(n) = \Theta(n) + T(cn)$, where $c < 1$. By master's theorem, we know that
 %%$T(n) = \Theta(n)$. 
 
+\subsection*{Solving the Recurrence}
+
+Consider recurrence relation $T(n) = \Theta(n) + T(a\cdot n) + T(b\cdot n)$, $T(1) = 1$, {$0 < a < 1$, $0< b< 1$}.
+We now prove the following:
+\begin{enumerate}
+\item $T(n) = \Theta(n)$, if $a + b < 1$.
+\item $T(n) = \Theta(n\cdot \log n)$, if $a + b = 1$.
+\end{enumerate}
+
+Assume that the term $\Theta(n)$ in the recursion admits a lower bound of $d_1 n$ and upper bound of $d_2 n$, for large enough $n$.
+That is $T(n) \ge d_1n + T(an) + T(bn)$ and $T(n) \le d_2n + T(an) + T(bn)$.
+
+\begin{enumerate}
+\item
+We first prove that $T(n) = O(n)$, by induction.
+Assume that $T(n) \le c_2n$ for large enough $n$, where $c_2 = d_2/(1-a-b)$.
+Now we prove that $T(n + 1) \le c_2(n+1)$.
+We can write
+$$T(n + 1) \le d_2(n+1) + T(a(n+1)) + T(b(n+1)).$$
+We have $a(n+1) \le n$ and $b(n+1) \le n$ for large enough $n$ as $a < 1$ and $b < 1$.
+By the inductive assumption we have
+\begin{eqnarray*}
+T(n + 1) & \le & d_2(n+1) + c_2a(n+1) + c_2b(n+1) \\
+	      & \le & d_2(n+1) + c_2(a+b)(n+1) \\
+	      & =   & (d_2 + c_2(a+b))(n+1) \\
+		  & =   & c_2(n+1).
+\end{eqnarray*}
+It's easy to verify the last equation, i.e., $d_2 + c_2(a+b) = c_2$ with $c_2 = d_2 / (1 - a - b)$.
+In fact this is where we determine the value of $c_2$. You can also see why
+$a + b < 1$ is required here.
+We then prove that $T(n) = \Omega(n)$, by induction.
+Assume that $T(n) \ge c_1n$ for large enough $n$, where $c_1 = d_1/(1-a-b)$.
+Now we prove that $T(n + 1) \ge c_1(n+1)$.
+We can write
+\begin{eqnarray*}
+T(n + 1) &\ge & d_1(n+1) + T(a(n+1)) + T(b(n+1)) \\
+          & \ge & d_1(n+1) + c_1a(n+1) + c_1b(n+1) \\
+	      & \ge & d_1(n+1) + c_1(a+b)(n+1) \\
+	      & =   & (d_1 + c_1(a+b))(n+1) \\
+		  & =   & c_1(n+1).
+\end{eqnarray*}
+The last equation holds as $d_1 + c_1(a+b) = c_1$ with $c_1 = d_1 / (1 - a - b)$.
+
+\item
+We first prove that $T(n) = O(n\log n)$, by induction.
+Assume that $T(n) \le c_2n\log n$ for large enough $n$, where $c_2 = -d_2 / (a\log a + b\log b)$.
+Now we prove that $T(n + 1) \le c_2(n+1)\log (n+1)$.
+We can write
+\begin{eqnarray*}
+T(n + 1)  & \le & d_2(n+1) + T(a(n+1)) + T(b(n+1)) \\
+          & \le & d_2(n+1) + c_2a(n+1)\log (a(n+1)) + c_2b(n+1) \log (b(n+1))\\
+          & \le & d_2(n+1) + c_2(a\log a + b\log b)(n+1) + c_2(a+b)(n+1)\log (n+1)\\
+          & = & (d_2 + c_2(a\log a + b\log b))(n+1) + c_2(n+1)\log (n+1)\\
+		  & =   & c_2(n+1)\log (n+1).
+\end{eqnarray*}
+The last equation holds as $d_2 + c_2(a\log a+b\log b) = 0$ with $c_2 = -d_2 / (a\log a + b\log b)$.
+We then prove that $T(n) = \Omega(n\log n)$, by induction.
+Assume that $T(n) \ge c_1n\log n$ for large enough $n$, where $c_1 = -d_1 / (a\log a + b\log b)$.
+Now we prove that $T(n + 1) \ge c_1(n+1)\log (n+1)$.
+We can write
+\begin{eqnarray*}
+T(n + 1)  & \ge & d_1(n+1) + T(a(n+1)) + T(b(n+1)) \\
+          & \ge & d_1(n+1) + c_1a(n+1)\log (a(n+1)) + c_1b(n+1) \log (b(n+1))\\
+          & \ge & d_1(n+1) + c_1(a\log a + b\log b)(n+1) + c_1(a+b)(n+1)\log (n+1)\\
+          & = & (d_1 + c_1(a\log a + b\log b))(n+1) + c_1(n+1)\log (n+1)\\
+		  & =   & c_1(n+1)\log (n+1).
+\end{eqnarray*}
+The last equation holds as $d_1 + c_1(a\log a+b\log b) = 0$ with $c_1 = -d_1 / (a\log a + b\log b)$.
+\end{enumerate}
+
 
 \subsection*{Choices of the Size of Subarrays}
 
-How about we partition $A$ into subarrays of size 3?
+Why partitioning $A$ into subarrays of size 5?  Does other size work~(i.e., leading to a $\Theta(n)$ algorithm)?
+Let's consider being of size 3.
 Note, in this case the algorithm is still correct.
 But will the algorithm still run in linear time?
 Let's analyze it.
@@ -176,7 +259,6 @@ In sum, choosing subarrays of size 3 won't give a linear time algorithm.
 (Note: by using the idea of ``median-of-median-of-medians'', a linear-time
 algorithm can still be obtained in this case; see assignment.)
 
-
 How about we partition $A$ into subarrays of size 7?
 Now we have $|M| = n/7$, as the number of subarrays is $n/7$.
 In these $n/7$ medians, half of them, i.e., $n/14$ numbers, are smaller than $x$,
@@ -190,7 +272,7 @@ But bigger size will result in bigger factor in sorting these subarrays.
 For example, compare size of 7 and size of 5: it takes $n/7 \cdot 7 \cdot \log 7 = \log 7 \cdot n$ time to sort in the case of size 7,
 which is larger than $\log 5 \cdot n$ in the case of size 5.
 
-\subsection*{Randomized Algorithm for Selection Problem}
+\subsection*{A Randomized Algorithm for Selection Problem}
 
 We now design a \emph{randomized algorithm} for selection problem.
 The idea is simply pick the pivot uniformly at random from $A$.
@@ -240,3 +322,4 @@ Hence, now we have $T(n) \le \Theta(n) + T(3n/4)/2 + T(n)/2$, which gives $T(n) 
 We now take expectation, over $T(n)$, on both sides:
 $\mathcal{E}_T [T(n)] = \Theta(n) + \mathcal{E}_T [T(3n/4)]$.
 By using master's theorem, we have that $\mathcal{E}_T [T(n)] = \Theta(n)$.
+

@@ -5,7 +5,7 @@
 
 \begin{definition}[Big-O]
 Let $f = f(n)$ and $g=g(n)$ be two positive functions over integers $n$.
-We way $f = O(g)$, if there exists positive number $c > 0$ and integer $N \ge 0$
+We say $f = O(g)$, if there exists positive number $c > 0$ and integer $N \ge 0$
 such that $f(n) \le c\cdot g(n)$ for all $n\ge N$.
 \end{definition}
 
@@ -13,11 +13,12 @@ Similarly, we can define Big-O for multiple-variable functions.
 
 \begin{definition}[Big-O]
 Let $f = f(m,n)$ and $g=g(m,n)$ be two positive functions over integers $m$ and $n$.
-We way $f = O(g)$, if there exists positive number $c > 0$ and integers $M\ge 0$ and $N \ge 0$
+We say $f = O(g)$, if there exists positive number $c > 0$ and integers $M\ge 0$ and $N \ge 0$
 such that $f(m,n) \le c\cdot g(m,n)$ for all $m\ge M$ and $n\ge N$.
 \end{definition}
 
 Intuitively, Big-O is analogous to ``$\le$''.
+$f=O(g)$ means ``$f$ grows no faster than $g$''.
 
 \emph{Example.} Let $f(m,n) = 4m + 4n + 5$ and $g(m,n) = m + n$. We now show that $f = O(g)$,
 using above definition. To show it, we need to find $c$, $M$, and $N$. What are good choices for them?
@@ -27,7 +28,7 @@ where we use that $m \ge M = 1$ and $n \ge N = 1$. This proves that $f = O(g)$.
 
 \begin{definition}[Big-Omega]
 Let $f = f(n)$ and $g=g(n)$ be two positive functions over integers $n$.
-We way $f = \Omega(g)$, if there exists positive number $c > 0$ and integer $N \ge 0$
+We say $f = \Omega(g)$, if there exists positive number $c > 0$ and integer $N \ge 0$
 such that $f(n) \ge c\cdot g(n)$ for all $n\ge N$.
 \end{definition}
 
@@ -35,11 +36,12 @@ Similarly, we can define Big-Omega for multiple-variable functions.
 
 \begin{definition}[Big-O]
 Let $f = f(m,n)$ and $g=g(m,n)$ be two positive functions over integers $m$ and $n$.
-We way $f = \Omega(g)$, if there exists positive number $c > 0$ and integers $M\ge 0$ and $N \ge 0$
+We say $f = \Omega(g)$, if there exists positive number $c > 0$ and integers $M\ge 0$ and $N \ge 0$
 such that $f(m,n) \ge c\cdot g(m,n)$ for all $m\ge M$ and $n\ge N$.
 \end{definition}
 
 Intuitively, Big-Omega is analogous to ``$\ge$''.
+$f=\Omega(g)$ means ``$f$ grows at least as fast as $g$''.
 
 \emph{Example.} Let $f(m,n) = 4m + 4n + 5$ and $g(m,n) = m + n$. We now show that $f = \Omega(g)$,
 using above definition. To show it, we need to find $c$, $M$, and $N$. 
@@ -68,29 +70,80 @@ We say $f = \Theta(g)$ if and only if $f = O(g)$ and $f = \Omega(g)$.
 \end{definition}
 
 Intuitively, Big-Theta is analogous to ``$=$''.
+$f=\Theta(g)$ means ``$f$ grows at the same rate as $g$''.
 
 \emph{Example.} Let $f(m,n) = 4m + 4n + 5$ and $g(m,n) = m + n$. We have $f = \Theta(g)$ as 
-we proved that $f = O(g)$ and that $f = \Omega(g)$.
+we proved that both $f = O(g)$ and $f = \Omega(g)$.
 
-Below we give an equivalent description of Big-Theta.
+%Below we give an equivalent description of Big-Theta.
+%\begin{fact}
+%Let $f$ and $g$ be two positive functions. Then $f = \Theta(g)$ if and only if $\lim_{n\to\infty} f(n) / g(n) = c > 0$.
+%\end{fact}
 
-\begin{fact}
-Let $f$ and $g$ be two positive functions. Then $f = \Theta(g)$ if and only if $\lim_{n\to\infty} f(n) / g(n) = c > 0$.
-\end{fact}
-
-\emph{Example.} Let $f(m,n) = 4m + 4n + 5$ and $g(m,n) = m + n$. We now show $f = \Theta(g)$ using above fact.
-$\lim_{m\to\infty, n\to\infty} f / g = \lim_{m\to\infty, n\to\infty} (4m + 4n + 5)/(m + n) = 4 > 0$.
-Hence, $f = \Theta(g)$.
+%\emph{Example.} Let $f(m,n) = 4m + 4n + 5$ and $g(m,n) = m + n$. We now show $f = \Theta(g)$ using above fact.
+%$\lim_{m\to\infty, n\to\infty} f / g = \lim_{m\to\infty, n\to\infty} (4m + 4n + 5)/(m + n) = 4 > 0$.
+%Hence, $f = \Theta(g)$.
 
 \begin{definition}[small-o]
-Let $f = f(n)$ and $g = g(n)$ be two positive functions. We say $f = o(g)$ if and only if $\lim_{n\to\infty} f(n) / g(n) = 0$.
+Let $f = f(n)$ and $g=g(n)$ be two positive functions over integers $n$.
+We say $f = o(g)$, if for every $c > 0$ there exists integer $N_c \ge 0$, where $N_c$ can be dependent on $c$,
+such that $f(n) \le c\cdot g(n)$ for all $n\ge N_c$.
+%Let $f = f(n)$ and $g = g(n)$ be two positive functions. We say $f = o(g)$ if and only if $\lim_{n\to\infty} f(n) / g(n) = 0$.
 \end{definition}
 
-Intuitively, small-o is analogous to ``$<$''.
+\emph{Example.} Let $f(n) = n$ and $g(n) = n^2$. We now show that $f = o(g)$,
+using above definition. 
+To prove it, we need to show that for any possible $c>0$ there exists $N_c \ge 0$ such that $f(n) -c\cdot g(n) \le 0$ when $n \ge N_c$. 
+We write $f(n) - c\cdot g(n) = n - cn^2 = n(1-cn)$. To let it be $\le 0$, since $n\ge 0$, we can require $1-cn \le 0$, leading to $n \ge 1/c$.
+Therefore, we can choose $N_c = \lceil 1/c \rceil$. This completes the proof.
 
-\emph{Example.} Let $f(n) = n$ and $g(n) = n^2$. We now show $f = o(g)$ using above definition.
-$\lim_{n\to\infty} f / g = \lim_{n\to\infty} n/n^2 = \lim_{n\to\infty} 1 / n = 0$.
+Intuitively, small-o is analogous to ``$<$''.
+$f=o(g)$ means $f$ grows (strictly) slower than $g$.
+
+\begin{definition}[small-omega]
+Let $f = f(n)$ and $g=g(n)$ be two positive functions over integers $n$.
+We say $f = \omega(g)$, if for every $c > 0$ there exists integer $N_c \ge 0$, where $N_c$ can be dependent on $c$,
+such that $f(n) \ge c\cdot g(n)$ for all $n\ge N_c$.
+\end{definition}
+
+Intuitively, small-omega is analogous to ``$>$''.
+$f=\omega(g)$ means $f$ grows (strictly) faster than $g$.
+
+Obviously, if $f = o(g)$ then $f = O(g)$; if $f = \omega(g)$ then $f = \Omega(g)$.
+This is intuitive, as ``$<$'' implies ``$\le$''
+and ``$>$'' implies ``$\ge$''. To formally see this, compare the definitions of small-o and big-O.
+$f = o(g)$ requires that $f(n) \le c\cdot g(n)$, when $n \ge N_c$, for \emph{every} possible $c>0$. Therefore of course there exists
+\emph{one} $c$ and $N_c$ such that $f(n) \le c\cdot g(n)$, when $n \ge N_c$; this is all we need to prove $f = O(g)$. 
+The same argument can be used for small-omega and big-Omega.
+
+You might found that these asymptotic notations are similar to the (epsilon-delta)-defintions of limit.
+In fact, they are indeed closely related. Specifically, the limit of $f(n)/g(n)$, if exists~(i.e., $f(n)/g(n)$ coverges as $n\to\infty$),
+or goes to infinity~(i.e., $\lim_{n\to\infty} f(n)/g(n) = \infty)$, we can conclude a relationship between $f$ and $g$:
+
+\begin{displaymath}
+\lim_{n\to\infty} \frac{f(n)}{g(n)} = \left\{
+\begin{array}{llll}
+0 & \Rightarrow & f = o(g) \\
+c > 0 & \Rightarrow & f = \Theta(g) \\
+\infty & \Rightarrow & f = \omega(g) \\
+\textrm{oscillate} & \Rightarrow & \textrm{no conclusion}
+\end{array}
+\right.
+\end{displaymath}
+
+Above claim gives an convinent way to build asymptotic relationship.
+For the same example where $f(n) = n$ and $g(n) = n^2$. We now can show $f = o(g)$ by
+calculating $\lim_{n\to\infty} f(n)/g(n)$.
+In fact, $\lim_{n\to\infty} n/n^2 = \lim_{n\to\infty} 1 / n = 0$.
 Hence, $f = o(g)$.
+
+Another example: $f(n) = n^2$ and $g(n) = 2^n$. We calculate $\lim_{n\to\infty} f(n)/g(n) = \lim_{n\to\infty} n^2/2^n$.
+Using L-Hopital rule, we have  $\lim_{n\to\infty} n^2/2^n = \lim_{n\to\infty}
+2n/(2^n\cdot \ln 2) = 2/(2^n\cdot \ln 2\cdot \ln 2) =  0$.  Hence, $f=o(g)$.
+
+Note that when $f(n)/g(n)$ oscillates, as $n\to\infty$, then we cannot conclude anything.
+Note also that this reasoning is one-side. For example, if $f = \Theta(g)$ then we cannot guarantee that
+$\lim_{n\to\infty} f(n)/g(n) = c > 0$; for most functions this is correct but exceptions exist.
 
 
 \subsection*{Commonly-Used Functions in Algorithm Analysis}
@@ -108,3 +161,4 @@ In above lists, any logarithmic function is small-o of any polynomial function: 
 any polynomial function is small-o of any exponential function: for example, $n^2 = o(2^n)$;
 any exponential function is small-o of any factorial function: for example, $n2^n = o(n!)$.
 Within each category, a function to the left is small-o of a function to the right, for example $n\log n = o(n^{1.001})$.
+

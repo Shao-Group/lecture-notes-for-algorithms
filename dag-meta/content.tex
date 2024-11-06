@@ -1,0 +1,181 @@
+\setcounter{definition}{0} \setcounter{property}{0} \setcounter{claim}{0} \setcounter{fact}{0} \setcounter{corollary}{0} \setcounter{figure}{0}
+\section{Directed Acyclic Graphs}
+
+%For directed graphs, $\{v_j \mid visited[j] = k\}$
+%are not necessarily form a connected component~(although you can still run DFS on directed graphs). 
+To prepare revealing the connectivity-structure of directed graphs, we first introduce
+a spsecial class of directed graphs, directed acyclic graphs~(DAGs).
+
+\begin{definition}[DAG]
+A directed graph $G = (V, E)$ is \emph{acyclic} if and only if $G$ does not contain cycles.
+\end{definition}
+
+Let $G = (V, E)$ be a directed graph. 
+If a vertex $v\in V$ does not have any in-edges~(i.e., \emph{in-degree} is 0), we call it \emph{source vertex};
+if a vertex $v\in V$ does not have any out-edges~(i.e., \emph{out-degree} is 0), we call it \emph{sink vertex}.
+
+A directed graph may contain multiple source vertices or sink vertices,
+or may not have any source vertex or sink vertex. (Can you give such examples?)
+
+\begin{claim}
+A DAG $G=(V,E)$ always has source vertex and sink vertex.
+\end{claim}
+\emph{Proof.} Let's prove it by contradiction. Assume that $G$ does not contain any source.
+First, $G$ must not contain self-loop as otherwise $G$ won't be a DAG.
+Let $v$ be any vertex in $V$. As $v$ is not a source, we know that there exists some vertex $u$ points to $v$, i.e., $(u,v)\in E$.
+Now since $u$ is not a source then there must exist another vertex $w$ such that $(w,u)\in E$.
+Notice that $w \neq v$ as otherwise there will be a cycle: $v = w \to u \to v$.
+This means that $w$ is a new vertex. Again as $w$ is not a source, there must exist another \emph{new} vertex points to it.
+This process can be extended infinitely following the fact and assumption that $G$ is a DAG and all vertices not are sources,
+but this is not possible as the number of vertices is limited. 
+The existence of sink can be proved symmetrically. \qed
+
+
+\begin{definition}[Linearization / Topological Sorting]
+Let $G = (V,E)$ be a directed graph. Let $X$ be an ordering of $V$.
+If $X$ satisfies: if $(v_i, v_j)\in E$, then $v_i$ is before $v_j$ in $X$,
+then we say $X$ is a linearization~(or toplogical sorting) of $G$.
+\end{definition}
+
+See some examples below.
+
+\begin{figure}[h!]
+\centering{\input{linearization}}
+\caption{Examples of linearization.}
+\end{figure}
+
+If a directed graph $G$ admits a linearization, then we say $G$ can be \emph{linearized}.
+We now show that linearization is an \emph{equivalent} characterization of DAGs.
+
+\begin{claim}
+A directed graph $G$ can be linearized if and only if $G$ is a DAG.
+\label{claim:dag}
+\end{claim}
+
+\emph{Proof.}  Let's first prove that if $G$ can be linearized, then $G$ is a DAG.
+This is equivalent to proving its contraposition: if $G$ contains a cycle, then $G$ cannot be linearized.
+Suppose that there exists an cycle $v_{i_1} \to v_{i_2} \to \cdots \to v_{i_k} \to v_{i_1}$ in $G$.
+Then the linearization $X$ must satisfy that $v_{i_{j}}$ is before $v_{i_{j+1}}$ for all $j = 1, 2, \cdots, k-1$,
+and that $v_{i_{k}}$ is before $v_{i_1}$, in $X$. Clearly, this is not possible.
+
+The other side of the statement, i.e., if $G$ is a DAG, then $G$ can be linearized, can be proved constructively.
+We will design an algorithm~(see below), that constructs a linearization for any DAG. 
+The idea of the algorithm is to iteratively
+finds source vertex and removes it and its out-edges.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {7}{Algorithm find-linearization ($G = (V, E)$)}\xxx
+	\aab {init $X$ as empty list;}\xxx
+	\aaB {4}{while ($G$ is not empty)}\xxx
+	\aac {arbitrarily find a source vertex $u$ of $G$;}\xxx
+	\aac {add $u$ to the end of $X$;}\xxx
+	\aac {update $G$ by removing $u$ and its out-edges;}\xxx
+	\aab {end while;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+This algorithm is correct. First, when a vertex $u$ is added to $X$,
+it is a source vertex of the current graph, which means that
+$\{w\mid (w, u)\in E\}$ is either empty or all of them
+have been added to $X$. Second, $X$ will include all vertices.
+This is because, a source always exists in a DAG~(as we just proved).
+The above algorithm is more a framework, as how we update the graph
+is not given specifically, and which affects the running time.
+
+Above algorithm gives a constructive proof that, a DAG can always
+be linearized. This completes the proof for the fact that, a directed graph is a DAG if and only if it can be linearized.
+\qed
+
+%% \begin{claim}
+%% Let $X$ be any linearization of a DAG. Then the first vertex of $X$ is a source vertex and 
+%% the last vertex of of $X$ is a sink vertex.
+%% \label{claim:source}
+%% \end{claim}
+%% 
+%% \emph{Proof.} Let $v_1$ be the first vertex of $X$. Suppose that $v_1$ is not a source of $X$. 
+%% By definition of (not being a) source vertex, there exists $(u,v_1)\in E$. Then by the definition
+%% of linearization, we know that $u$ will be before $v_1$ in $X$, contradicting to the fact that
+%% $v_1$ is the first element of $X$.
+%% The other side can be proved symmetrically. \qed
+%% 
+%% We can use above algorithm to constructively prove following statement.
+%% 
+%% \begin{claim}
+%% Let $G = (V, E)$ be a DAG. A vertex $u\in V$ is a source if and only if 
+%% there exists a linearization $X$ of $G$ such that $u$ is the first vertex in $X$.
+%% \end{claim}
+%% 
+%% \emph{Proof.} We first prove that, if $u$ is a source, then there exists a linearization
+%% where $u$ is the first vertex of $X$. We prove it by showing that,
+%% we can construct such a linearization $X$. We can use above algorithm,
+%% and in its first step, we simply pick $u$. The correctness of above algorithm
+%% explains the rest.  The other side is exactly Claim~\ref{claim:source}, which we have proved. \qed
+
+\subsection*{Meta-Graph}
+
+For a directed graph $G = (V,E)$, its structure of connectivity can be represented as a new
+directed graph, called \emph{meta-graph}, denoted as $G_M = (V_M, E_M)$.
+Each of the vertices of the meta-graph corresponds to a connected component of $G$,
+and two vertices $C_i, C_j  \in V_M$ are connected by edge $(C_i, C_j) \in E_M$
+if and only if there exists edge $(u,v)\in E$ such that $u\in C_i$ and $v\in C_j$.
+An example of meta-graph is given below.
+
+\begin{figure}[h!]
+\centering{\input{meta-graph}}
+\caption{Example of meta-graph.}
+\label{fig:meta-graph}
+\end{figure}
+
+Meta-graph has an important property: it does not contain cycles, i.e., it is a directed acyclic graph~(DAG).
+
+\begin{claim}
+The meta-graph $G_M$ of any directed graph $G$ is a directed acyclic graph.
+\end{claim}
+
+\emph{Proof.} Suppose conversely that $G_M$ contains a cycle, $C_1 \to C_2 \to C_k \to C_1$,
+then the union of the vertices in these connected components form a single connected component,
+contradicting to the \emph{maximal} property of connected component. \qed
+
+\subsection*{Reverse Graph}
+
+\begin{definition}
+Let $G = (V,E)$ be a directed graph. The \emph{reverse graph} of $G$, denoted as $G_R = (V, E_R)$,
+has the same set of vertices and edges with reversed direction, i.e., $(u,v) \in E$ if and only if $(v,u)\in E_R$.
+\end{definition}
+
+\begin{figure}[!h]
+\centering{\input{reverse}}
+\caption{Graph and its reverse graph, and the corresponding meta-graphs.}
+\label{fig:reverse}
+\end{figure}
+
+Following properties can be easily proved using above definition.
+
+\begin{property}
+$(G_R)_R = G$.
+\end{property}
+
+\begin{property}
+$X$ is a linearization of DAG $G$ if and only if the reverse of $X$ is a linearization of $G_R$. %~(or, $X$ is a reverse-linearization of $G_R$).
+%In particular, since any meta-graph is a DAG, we have that 
+%$X$ is linearization of $G^M$ if and only if $X$ is a reverse-linearization of $(G^M)_R = (G_R)^M$,
+%and that $X$ is a linearization of $(G_R)^M = (G^M)_R$ if and only if $X$ is a reverse-linearization of $G^M$.
+\end{property}
+
+\begin{property}
+There is a path from $u$ to $v$ in $G$ if and only if there is a path from $v$ to $u$ in $G_R$.
+In other words, $u$ can reach $v$ in $G$ if and only if $u$ is reachable from $v$ in $G_R$.
+\end{property}
+
+%\begin{property}
+%A vertex $v$ of DAG $G$ is a source vertex if and only if $v$ is a sink vertex of $G_R$.
+%\end{property}
+
+\begin{property}
+$G$ and $G_R$ has the same set of connected components. %In other words the meta-graph of $G$ has the same set of vertices with the meta-graph of $G_R$.
+\end{property}
+
+\begin{property}
+The meta-graph of $G_R$ is the reverse graph of the meta-graph of $G$. Formally, $(G_R)_M = (G_M)_R$.
+\end{property}
+

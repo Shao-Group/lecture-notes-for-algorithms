@@ -1,13 +1,14 @@
 \setcounter{definition}{0} \setcounter{property}{0} \setcounter{claim}{0} \setcounter{fact}{0} \setcounter{corollary}{0} \setcounter{figure}{0}
 \section{Maximum-Matching and Minimum-Vertex Cover}
 
+
 \subsection*{Maximum-Matching vs.\ Minimum-Vertex Cover on General Undirected Graphs}
 
 Let $G = (V, E)$ be an undirected graph. A \emph{matching} $M \subset E$ 
 is a subset of edges of $G$ that does not have common vertices.
 A matching is also called an \emph{independent edge set}.
 See Figure~\ref{fig:matching} for an example.
-Given an undirected graph, the so-called \emph{maximum-matching problem}
+Given an undirected graph $G$, the so-called \emph{maximum-matching problem}
 seeks a matching $M$ of $G$ such that the number of edges in the matching, i.e., $|M|$, 
 is maximized.
 
@@ -18,8 +19,13 @@ Note that $M$ is also a \emph{maximum matching} of $G$ and $V_1$ is also a minim
 \label{fig:matching}
 \end{figure}
 
-Recall that a \emph{vertex cover} of an undirected graph $G = (V, E)$ is defined
-as a subset of vertices $V_1\subset V$ that \emph{covers} all edges~(see Lecture~34 and Lecture~35).
+A \emph{vertex cover} of an undirected graph $G = (V, E)$ is defined
+as a subset of vertices $V_1\subset V$ that \emph{covers} all edges, i.e., for every edge $(u, v)\in E$ either
+$u\in V_1$ or $v\in V_1$ or both.
+Given an undirected graph $G$, the so-called \emph{minimum-vertex cover problem}
+seeks a vertex cover $V_1$ of $G$ such that the number of verticesd in it, i.e., $|V_1|$, is minimized.
+
+
 There exists a connection between matchings and vertex covers of an undirected graph, stated below.
 
 \begin{claim}
@@ -28,7 +34,7 @@ Then we have $|M| \le |V_1|$.
 \end{claim}
 
 \emph{Proof.} Since $V_1$ is a vertex cover, it covers all edges of $G$, in particular, all edges of $M$.
-Since $M$ is a matching, all edges in $M$ don't share vertices, so it requires $|M|$ vertices to cover edges in $M$.
+Since $M$ is a matching, all edges in $M$ does not share vertices, so it requires $|M|$ vertices to cover edges in $M$.
 %as each edge in $M$ needs a new vertex to cover it.  
 Combined, we have $|M| \le |V_1|$. \qed
 
@@ -55,23 +61,14 @@ It seems that it's the odd-length cycles that results in a gap.
 In fact, this is true. Following we will show that, if an undirected
 graph $G$ does not contain odd-length cycle, then the size of its maximum matching
 must be equal to the size of its minimum vertex cover. The proof is again constructive:
-we will design an algorithm to find both, and show that they have equal size.
+we will design an algorithm to find both~(the algorithm is an application of max-flow), and show that they have equal size.
 
-
-\subsection*{Maximum Matching of Bipartite Graphs}
-
-We first give an equivalent~(and nice) characterization of an undirected graph without odd-length cycles.
-\begin{fact}
-An undirected graph $G$ does not contain odd-length cycle if and only if $G$ is a \emph{bipartite} graph.
-\end{fact}
+We give an equivalent~(and nice) characterization of an undirected graph without odd-length cycles.
 
 An \emph{bipartite} graph, usually written as $G = (X\cup Y, E)$, is an undirected graph
 whose vertices can be separated into two disjoint subsets $X$ and $Y$ such that all its edges
 must span $X$ and $Y$~(i.e., every edge $e = (u,v)\in E$ must satisfy $u\in X$ and $v\in Y$).
 See Figure~\ref{fig:bipartite}.
-Clearly, any cycle in a bipartite graph~(for example, the cycle $(b,h,c,f)$ in Figure~\ref{fig:bipartite})
-must be of even-length, as it need to visit $X$ and $Y$ alternately.
-(We skip the proof of the other side of this fact.)
 
 \begin{figure}[h]
 \centering{\input{bipartite}}
@@ -80,10 +77,68 @@ a maximum matching $M$, and a minimum vertex cover $V_1$ of $G$.  }
 \label{fig:bipartite}
 \end{figure}
 
-We now design an algorithm to find one maximum matching $M$ of a given bipartite graph $G = (X\cup Y, E)$.
+
+\begin{fact}
+An undirected graph $G$ does not contain odd-length cycle if and only if $G$ is a \emph{bipartite} graph.
+\end{fact}
+
+\begin{figure}[!b]
+\centering{\input{spt}}
+\caption{The shortest path tree $T$ where vertices are assigned to $X$ or $Y$
+based on the parity of the distance from $s$. Left: an edge $(u,v)\in E$ is part of the tree.
+Right: an edge $(u,v)\in E$ is not part of the tree.}
+\label{fig:spt}
+\end{figure}
+
+
+
+\emph{Proof.} We first prove that if $G$ is bipartite then
+any cycle in it must be even-length. (See cycle $(b,h,c,f)$ in Figure~\ref{fig:bipartite}.)
+This is because any cycle need to visit $X$ and $Y$ alternately so its length must be even.
+
+For the other side, assume that every cycle of undirected graph $G$ is even
+and we now prove that $G$ is bipartite. 
+We assume that $G$ consists of one connected component; otherwise all connected components of $G$
+can be processed separately in the same way below.
+Let $s$ be any vertex in $G$.  Let $distance(s,v)$ as
+the length of the shortest path from $s$ to $v$. 
+Let $T$ be the shortest path tree wrt $s$, i.e.,
+the number of edges on the path from $s$ to $v$ is exactly $distance(s,v)$.
+See Figure~\ref{fig:spt}.
+We now put $v\in V$ into $X$ if $distance(s,v)$ is even, 
+and put $v\in C$ into $Y$ if $distance(s,v)$ is odd. 
+%We do the same for each connected component of $G$. 
+Clearly, $X$ and $Y$ is a partition of all vertices.
+We now show that, any edge $(u,v)\in E$ must span $X$ and $Y$.
+There are two cases. The first one is that $(u,v)$ is also an edge in $T$.
+In this case we must have that $distance(s,v) = distance(s,u) + 1$ so $u$ and $v$ must be assigned differently.
+(See Figure~\ref{fig:spt}, Left.)
+The second case is that $(u,v)\not\in T$.
+Suppose conversely that $distance(s,u)$ and $distance(s,v)$ have the same parity. 
+Consider the $s$-$u$ path and the $s$-$v$ path in $T$.
+Let $b$ be the branching point of these two paths~(also called the least common ancestor of $u$ and $v$).
+Then the $b$-$u$ path and the $b$-$v$ path are edge-disjoint and their lengths must also have the same parity.
+Now these two paths combined with edge $(u,v)$ must form a cycle of odd-length in $G$, a contradiction. 
+(See Figure~\ref{fig:spt}, Right.) \qed
+
+
+
+\section*{Maximum Matching and Minimum Vertex Cover of Bipartite Graphs}
+
+We design an algorithm to find one maximum matching $M$ of a given bipartite graph $G = (X\cup Y, E)$.
 This algorithm will also give a vertex cover $V_1$ of $G$, and we will prove $|M| = |V_1|$.
 This will therefore proves that $M$ is a maximum matching, $V_1$ is a minimum vertex cover, and that
 for every bipartite graph the size of its maximum matching and minimum vertex cover are equal.
+
+\begin{figure}[!b]
+\centering{\input{transform}}
+\caption{Solving the maximum-matching problem of bipartite graph using network flow.
+In the upper right network $G'$, every edge $e$ has a capacity of $c(e) = 1$.
+In the lower right figure which shows the maximum flow $f^*$, red edges indicate $f^*(e)=1$. 
+The maximum-matching of the bipartite graph $G$ is given by $M = \{e\in E\mid f^*(e) = 1\}$.}
+\label{fig:transform}
+\end{figure}
+
 
 We will not design new algorithm for this bipartite maximum matching problem, although this has
 been a classical problem in computer science and many algorithms exist~(check wikipedia).
@@ -91,14 +146,16 @@ To solve it, we will \emph{transform this problem into a maximum-flow problem}.
 This typically consists of three steps:
 \vspace*{-\topsep}
 \begin{enumerate}
-\item construct an instance of the maximum-flow problem, i.e., a network, based on the given instance, i.e., a bipartite graph;
-\item solve the maximum-flow instance constructed in step 1~(using any existing algorithm);
-\item construct the maximum matching of the given bipartite graph based on the optimal solution~(i.e., the maximum flow
-of the constructed network) obtained in step~2.
+\item construct an input for the maximum-flow problem, i.e., a network, based
+on the given input, i.e., a bipartite graph;
+\item obtain the maximum flow and/or the minimum $s$-$t$ of the constructed
+network, using any existing algorithm such as Ford-Fulkson algorithm;
+\item construct the maximum matching of the given bipartite graph based on the
+optimal solution in step~2.
 \end{enumerate}
 
 Step 2 can be done simply by calling an existing solver. Steps 1 and 3 are closely related.
-How to construct the instance is another ``art'' part of algorithm design: usually it requires
+How to construct the network is another ``art'' part of algorithm design: usually it requires
 trying and observing.
 
 Here is a working approach. Given a bipartite graph $G = (X\cup Y, E)$, we construct
@@ -115,11 +172,6 @@ For every edge $(x,y)\in E$ with $x\in X$ and $y\in Y$ in the bipartite graph,
 we then copy it to $G'$ and assign it with a direction pointing from $x$ to $y$.
 Last, we set the capacity as 1 for every edge in $G'$, i.e., $c(e) = 1$ for every $e\in E'$.
 
-\begin{figure}[h]
-\centering{\input{transform}}
-\caption{Solving the maximum-matching problem of bipartite graph using network flow.}
-\label{fig:transform}
-\end{figure}
 
 In step 2, we use any max-flow algorithm to find a maximum flow, denoted as $f^*$,
 of the constructed network $G'$. As all capacities of the network are integers,
@@ -128,7 +180,7 @@ In particular, since all capacities are 1s, we know that $f^*(e) \in \{0, 1\}$.
 Therefore, edges in the constructed network with $f^*(e) = 1$ forms a set of \emph{edge-disjoint paths}
 from $s$ to $t$, and the number of such paths is $|f^*|$, as each such path
 carries 1 unit of flow. We collect those edges in the bipartite graph with $f^*(e) = 1$
-as the matching of the bipartite graph~(although we haven't proved them a matching yet).
+as the matching of the bipartite graph~(although we have not proved them a matching yet).
 Formally, step 3 finds: $M := \{e\in E\mid f^*(e) = 1\}$.
 
 
@@ -148,23 +200,25 @@ edge of each path to $M$.  Therefore, if a matching $M'$ with more edges than $M
 we can use $M'$ to build $|M'|$ such edge-disjoint $s$-$t$ paths and thus 
 give a flow with value of $|M'|$, which contradicts to the fact that $f^*$ is a maximum flow.
 
-\subsection*{Minimum Vertex Cover of Bipartite Graphs}
+%\subsection*{Minimum Vertex Cover of Bipartite Graphs}
 
-We continue to use above algorithm to find a (minimum) vertex cover of the bipartite graph $G$.
-The code, like the minimum-cut, again hides in the residual graph $G'_{f^*}$ w.r.t.\ the maximum flow $f^*$.
+\begin{figure}[!b]
+\centering{\input{residual}}
+\caption{Constructing the minimum vertex cover using the residual graph w.r.t.\ the maximum flow.}
+\label{fig:residual}
+\end{figure}
+
+
+We continue above algorithm to find a (minimum) vertex cover of the bipartite graph $G$.
+The code, like the minimum $s$-$t$ cut, again hides in the residual graph $G'_{f^*}$ w.r.t.\ the maximum flow $f^*$.
 See Figure~\ref{fig:residual}. Let $(S^*, T^*)$ be the minimum $s$-$t$ cut found using $G'_{f^*}$.
-(Recall that $S^* := \{v\in V'\mid s \textrm{ can reach $v$ in } G'_{f^*} \}$, and $T^* = V'\setminus S^*$.)
+Recall that $S^* := \{v\in V'\mid s \textrm{ can reach $v$ in } G'_{f^*} \}$, and $T^* = V'\setminus S^*$.
 This $s$-$t$ cut partitions all vertices in the bipartite graph into 4 categories:
 $X\cap S^*$, $X\cap T^*$, $Y\cap S^*$, and $Y\cap T^*$.
 See the sketch of the network in the middle of Figure~\ref{fig:residual}.
 We collect two of them: we define $V_1 := (X\cap T^*)\cup (Y\cap S^*)$ 
 and we will prove that $V_1$ is a minimum vertex cover of the bipartite graph.
 
-\begin{figure}[h]
-\centering{\input{residual}}
-\caption{Constructing the minimum vertex cover using the residual graph w.r.t.\ the maximum flow.}
-\label{fig:residual}
-\end{figure}
 
 We first show that $V_1$ is a vertex cover of the bipartite graph. This is equivalent to show
 the following fact.  Can you spot it in Figure~\ref{fig:residual}?
@@ -175,6 +229,13 @@ In the bipartite graph, there does not exist any edge between $(X\cap S^*)$ and 
 Consider $f^*(u,v)$, i.e., the amount of flow carried by this edge in the maximum flow $f^*$.
 There are two possibilities~(as all capacities are 1): either $f^*(u,v) = 0$ or $f^*(u,v) = 1$. See Figure~\ref{fig:matching-proof}.
 \vspace*{-\topsep}
+
+\begin{figure}[h]
+\centering{\input{matching-proof}}
+\caption{Illustrating the two cases in proving Fact~\ref{noedges}.}
+\label{fig:matching-proof}
+\end{figure}
+
 \begin{enumerate}
 \item Suppose that $f^*(u,v) = 0$. Then in the residual graph $G'_{f^*}$ this edge becomes a forward edge $(u,v)$.
 Then $v$ must be in $S^*$ as $s$ can reach $u$ and $u$ can reach $v$ following this edge, a contradiction
@@ -191,16 +252,11 @@ Combined, we have a contradiction, as it's not possible to have both $f^*(u,v) =
 because this breaks the capacity condition of edge $(s,u)$. \qed
 \end{enumerate}
 
-\begin{figure}[t]
-\centering{\input{matching-proof}}
-\caption{Illustrating the two cases in proving Fact~\ref{noedges}.}
-\label{fig:matching-proof}
-\end{figure}
 
 Above fact immediately gives that $V_1$ is a vertex cover of the bipartite graph.
-See Figure~\ref{fig:residual} for a sketch of $G'$.
 We now show that $V_1$ is also a minimum vertex cover.
 Consider the capacity of $s$-$t$ cut $(S^*, T^*)$. 
+See Figure~\ref{fig:residual} for a sketch of $G'$.
 Since there is no edge between $X\cap S^*$ and $Y\cap T^*$, we have
 that $c(S^*, T^*) = |X\cap T^*| + |Y\cap S^*|$, as every edge has a capacity of 1.
 According to the max-flow min-cut theorem, we know 

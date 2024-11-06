@@ -8,20 +8,30 @@ Such specifications can be followed by a human, or implemented with a machine pr
 The \emph{problem} studied in theoretical computer science needs to be formally defined,
 usually described using input and output.
 
-For example, consider the \emph{sorting problem}: its input is an array $A = [a_1, a_2, \cdots, a_n]$,
-and its output is the sorted array, say in ascending order, of $A$.
+For example, consider the \emph{sorting problem}: its input is an array $A =
+[a_1, a_2, \cdots, a_n]$, and its output is the sorted array, say in ascending
+order, of $A$.
 
-A problem describes a template.
-It's concrete, instantiated version is called an \emph{instance}.  For example, an instance for above sorting problem would be $A = [4, 2, 10, -5, 8]$.
-The relationship between problem and instance is very similar to that between \emph{class} and \emph{object} in object-oriented programming languages.
-You may also think a problem is the set of all its possible instances.
+A problem describes a template.  It's concrete, instantiated version is called
+an \emph{instance}.  For example, an instance for above sorting problem would
+be $A = [4, 2, 10, -5, 8]$, with the corresponding output being $[-5, 2, 4, 8, 10]$.
+The relationship between problem and instance is
+very similar to that between \emph{class} and \emph{object} in object-oriented
+programming languages.  You may also think a problem is the set of all its
+possible instances.
+
+Consider the so-called \emph{selection problem}.
+Its input consists of an array $A = [a_1, a_2, \cdots, a_n]$ and an integer $k$, $1\le k \le n$,
+and the output asks for the $k$-th smallest number of $A$. An instance of selection problem
+can be $A = [4, 2, 10, -5, 8]$ and $k = 2$, for which the output should be 2.
 
 \subsection*{Principles of Algorithm Design}
 
 There is always a straightforward algorithm to solve a problem, which is just enumerating all possible solution~(and then pick the correct/best one).
 This is called \emph{brute-force}. Brute-force may work for instances of size small, but in general it is \emph{not efficient}.
 
-We focus on designing \emph{efficient} algorithms in this course. Here, ``efficient'' means ``runs in polynomial-time'', which we will formally define.
+We focus on designing \emph{efficient} algorithms in this course. Here,
+``efficient'' means ``runs in polynomial-time'', which we will formally define later in this course.
 There are two basic principles in designing efficient algorithms.
 Recall that an \emph{algorithm} produces a \emph{solution} for a \emph{problem}.
 \vspace*{-\topsep}
@@ -65,33 +75,15 @@ we guarantee that $k_A$ and $k_B$ point to the smallest number in $A$ and $B$ th
 The idea of the algorithm is to iteratively construct $C$~(so you may call it a greedy algorithm).
 In each step, we compare the two numbers at the two pointers: the smaller one of the two will be the smallest one
 in \emph{all} numbers that haven't been added to $C$; we then add it to $C$ and update the pointers accordingly.
-The pseudo-code for this algorithm is given below.
+The pseudo-code for this algorithm is given below~(next page).
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {15}{function merge-two-sorted-arrays ($A[1\cdots m], B[1\cdots n]$)}\xxx
-	\aab {init an empty array $C$; \textcolor{blue}{(\#units = 1)}}\xxx
-	\aab {init pointers $k_A = 1$ and $k_B = 1$; \textcolor{blue}{(\#units = 2)}}\xxx
-	\aab {add a big number $M$~(larger than any number in $A$ and $B$) 
-		to the end of $A$ and $B$: $A[m + 1] = M$ and $B[n + 1] = M$; (think: why we do it?); \textcolor{blue}{(\#units = 2)}}\xxx
-	\aaB {8}{for $k = 1 \to m + n$ \textcolor{blue}{(\#units = $m + n$)}}\xxx
-	\aaC {3}{if $A[k_A] \le B[k_B]$ \textcolor{blue}{(\#units = $m + n$)}}\xxx
-	\aad {$C[k] = A[k_A]$; \textcolor{blue}{(\#units = $a_1$)}}\xxx
-	\aad {$k_A = k_A + 1$; \textcolor{blue}{(\#units = $a_2$)}}\xxx
-	\aaC {3}{else}\xxx
-	\aad {$C[k] = B[k_B]$; \textcolor{blue}{(\#units = $m + n - a_1$)}}\xxx
-	\aad {$k_B = k_B + 1$; \textcolor{blue}{(\#units = $m + n - a_2$)}}\xxx
-	\aac {end if;}\xxx
-	\aab {end for;}\xxx
-	\aab {return $C$; \textcolor{blue}{(\#units = 1)}}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
 
 To analyze an algorithm, we need to (1) prove it's correct, and (2) analyze its running time.
 
 We first prove this algorithm is correct, i.e., the resulting $C$ is sorted and includes all numbers in $A$ and $B$.
 This seems obvious. To give a formal and complete proof, we define the following \emph{invariant}. 
 
-\emph{Invariant:} For any $k = 0, 1, 2, \cdots, m + n$,
+\emph{Invariant:} for any $k = 0, 1, 2, \cdots, m + n$,
 at the end of the $k$-th iteration of above algorithm, we must have that $C$ stores the smallest $k$ numbers in $A$ and $B$, $k_A$ and $k_B$
 points to the smallest number of $A\setminus C$ and $B\setminus C$, respectively. 
 
@@ -103,6 +95,25 @@ Consider what the algorithm does in the $(i+1)$-th iteration: it compare the num
 As each pointer now points to the smallest one in $A\setminus C$ and $B\setminus C$, we have that the smaller one is the $(i+1)$-th smallest number 
 in $A$ and $B$. Besides, how the algorithm updates the pointers guarantees the pointers always point to the smallest one
 in $A\setminus C$ and $B\setminus C$, respectively. Therefore, the invariant holds after $(i + 1)$-th iteration.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {15}{function merge-two-sorted-arrays ($A[1\cdots m], B[1\cdots n]$)}\xxx
+	\aab {init an empty array $C$; \textcolor{blue}{(\#units = 1)}}\xxx
+	\aab {init pointers $k_A = 1$ and $k_B = 1$; \textcolor{blue}{(\#units = 2)}}\xxx
+	\aab {add a big number $M$~(larger than any number in $A$ and $B$) 
+		to the end of $A$ and $B$: $A[m + 1] = M$ and $B[n + 1] = M$; (think: why we do it?); \textcolor{blue}{(\#units = 2)}}\xxx
+	\aaB {8}{for $k = 1 \to m + n$ \textcolor{blue}{(advancing $k$ from 1 to $m+n$; \#units = $m + n$)}}\xxx
+	\aaC {3}{if $A[k_A] \le B[k_B]$ \textcolor{blue}{(\#units = $m + n$)}}\xxx
+	\aad {$C[k] = A[k_A]$; \textcolor{blue}{(\#units = $a$)}}\xxx
+	\aad {$k_A = k_A + 1$; \textcolor{blue}{(\#units = $a$)}}\xxx
+	\aaC {3}{else}\xxx
+	\aad {$C[k] = B[k_B]$; \textcolor{blue}{(\#units = $m + n - a$)}}\xxx
+	\aad {$k_B = k_B + 1$; \textcolor{blue}{(\#units = $m + n - a$)}}\xxx
+	\aac {end if;}\xxx
+	\aab {end for;}\xxx
+	\aab {return $C$; \textcolor{blue}{(\#units = 1)}}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
 
 We then analyze its running time.
 The running time is measured with the \emph{basic computing units} used by the algorithm in the \emph{worst case}.
@@ -126,6 +137,5 @@ Therefore, it doesn't make much sense to keep the coefficients 4 and the constan
 Besides, we care how the running time grows as $m$ and $n$ grows.
 Hence, it suffices to write $T(m,n) = \Theta(m + n)$, meaning it grows as fast as function $m + n$.
 We will introduce asymptotic notations to facilitate this way of analyzing running time in next lecture.
-
 
 

@@ -83,6 +83,24 @@ and vertices will be deleted from $Q$ in the same order~(as queue is first-in-fi
 
 %The complete BFS algorithm is given below.
 
+
+
+Initially BFS has $V_0$~(i.e., $s$) in $Q$~(right before the while loop), 
+then BFS deletes $s$ from $Q$ and explores $s$~(newly reached vertices---these are $V_1$, will have their $dist$ set as 1 and be added to $Q$);
+at the time of finishing exploring $V_0$, $V_1$ will be in $Q$. 
+Next, BFS will gradually delete and explore each of the vertices in $Q$~(i.e., $V_1$);
+in this process, vertices in $V_2$ will be reached, their $dist$ be set as 2, and be added to $Q$;
+after all of them are deleted and explored, $Q$ will exactly consist of $V_2$.
+
+In general, BFS keeps the following invariant: for every $k = 0, 1, 2, \cdots$, 
+there is a time at which $Q$ contains exactly $V_k$, $dist[v] = distance(s, v)$ for any $v\in V_0\cup V_1\cup \cdots V_k$,
+and $dist[v] = \infty$ for all other vertices.
+This invariant explains the behavior of BFS while also proves its correctness:
+when the $Q$ becomes empty, $dist[v] = distance(s, v)$ for any $v\in V$.
+
+Following above invariant and the pseudo-code, we know that the time that vertex $v$ is reached for the first time~(happend when $(u,v)\in E$ is checked and $dist[v] = \infty$),
+is also the time that the shortest path to $v$ is found, that the $dist[v]$ gets assigned, and that $v$ is added to $Q$.
+
 \begin{minipage}{0.8\textwidth}
 	\aaA {15}{Algorithm BFS~($G = (V, E), s \in V$)}\xxx
 	\aab {$dist[v] = \infty$, for any $v\in V$;}\xxx
@@ -102,24 +120,6 @@ and vertices will be deleted from $Q$ in the same order~(as queue is first-in-fi
 	\aaa {end algorithm;}\xxx
 \end{minipage}
 
-
-
-
-Initially BFS has $V_0$~(i.e., $s$) in $Q$~(right before the while loop), 
-then BFS deletes $s$ from $Q$ and explores $s$~(newly reached vertices---these are $V_1$, will have their $dist$ set as 1 and be added to $Q$);
-at the time of finishing exploring $V_0$, $V_1$ will be in $Q$. 
-Next, BFS will gradually delete and explore each of the vertices in $Q$~(i.e., $V_1$);
-in this process, vertices in $V_2$ will be reached, their $dist$ be set as 2, and be added to $Q$;
-after all of them are deleted and explored, $Q$ will exactly consist of $V_2$.
-
-In general, BFS keeps the following invariant: for every $k = 0, 1, 2, \cdots$, 
-there is a time at which $Q$ contains exactly $V_k$, $dist[v] = distance(s, v)$ for any $v\in V_0\cup V_1\cup \cdots V_k$,
-and $dist[v] = \infty$ for all other vertices.
-This invariant explains the behavior of BFS while also proves its correctness:
-when the $Q$ becomes empty, $dist[v] = distance(s, v)$ for any $v\in V$.
-
-Following above invariant and the pseudo-code, we know that the time that vertex $v$ is reached for the first time~(happend when $(u,v)\in E$ is checked and $dist[v] = \infty$),
-is also the time that the shortest path to $v$ is found, that the $dist[v]$ gets assigned, and that $v$ is added to $Q$.
 
 
 BFS runs in $O(|V| + |E|)$ time, as each vertex will be explored at most once, and each 

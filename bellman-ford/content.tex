@@ -1,63 +1,6 @@
 \setcounter{definition}{0} \setcounter{property}{0} \setcounter{claim}{0} \setcounter{fact}{0} \setcounter{corollary}{0} \setcounter{figure}{0}
 \section{Bellman-Ford Algorithm}
 
-\subsection*{Properties of Shortest Path Problem}
-
-To prepare to solve the shortest path problem with negative edge length, we first see some properties.
-
-A negative cycle $C$ in a graph is a cycle with negative length, i.e., $l(C) := \sum_{e\in C} l(e) < 0$.
-In the presence of negative cycle, if we don't limit the number of edges
-in a path, then the length of a path could goes to negative infinity.
-In other words, the shortest path may not exist.
-Therefore, in a graph with negative edge length, we want to
-detect if there exists negative cycle.
-We will show an algorithm~(the Bellman-Ford algorithm) can be used to detect negative cycles.
-
-A path $p$ in a graph is \emph{simple} if $p$ does not have repeating vertices.
-If a graph $G$ does not contain negative cycle, then 
-for any pair of vertices $u$ and $v$, if $u$ can reach $v$,
-then there always exists a {simple} shortest path from $u$ to $v$,
-as otherwise we can skip the cycle in it to get a better or same-length path.
-If all cycles in graph $G$ are positive then every shortest path is simple.
-
-\begin{property}
-If $G$ does not contain negative cycles, for every $u,v\in V$, there exists a shortes path
-from $u$ to $v$ with at most $(|V| - 1)$ edges.
-\end{property}
-
-Shortest path admits the following \emph{optimal substructure} property.
-Intuitively, this property states that, the shortest path from $u$ to $v$
-contains the shortest path from $u$ to any internal vertex on this path~(formally described below).
-Essentially, this is why shortest path problem can be solved efficiently.
-
-\begin{property}
-Let $p = (v_1, v_2) \to (v_2, v_3) \to \cdots \to (v_{k-1}, v_k)$
-be the shortest path from $v_1$ to $v_k$.
-Then for any $1\le i \le k$,
-$p_i := (v_1, v_2) \to (v_2, v_3) \to \cdots \to (v_{i-1}, v_i)$, i.e., the portion of $p$ from $v_1$ to $v_i$,
-is the shortest path from $v_1$ to $v_i$.
-\end{property}
-
-\emph{Proof.} Suppose that 
-$p_i = (v_1, v_2) \to (v_2, v_3) \to \cdots \to (v_{i-1}, v_i)$
-is not the shortest path from $v_1$ to $v_i$. Assume that
-$q$ is the shorest path from $v_1$ to $v_i$.
-Then we can construct a path from $v_1$ to $v_k$ shorter than $p$,
-by concatenating $q$ and $(v_i, v_{i+1}) \to \cdots \to (v_{k-1}, v_k)$.
-This contradicts to the fact that $p$ is the shortest path from $v_1$ to $v_k$.\qed
-
-Note that the above property holds even for graphs with negative edge length~(as
-in the proof we don't assume anything about edge length).
-This property also immediately implies the following fact.
-
-\begin{property}
-If we know that there exists one shortest path from $s$ to $v$ such that $(w,v)$ is the last edge
-on this shortest path, then we have that $distanct(s,v) = distance(s,w) + l(w,v)$.
-\end{property}
-
-
-\subsection*{Bellman-Ford Algorithm}
-
 Bellman-Ford algorithm can be used to solve the (single-source) shortest path problem with negative edge length,
 and its extension can also be used to detect if a graph contains negative cycle~(reachable from the given source).
 
@@ -76,14 +19,8 @@ the former is larger than the latter.
 \end{minipage}
 
 
-
-%We derived the Bellman-Ford algorithm from the dynamic programming algorithm,
-%and studies its properties and proved its correctness with the help of the properties and correctness of the DP algorithm.
-%Another way to understand this algorithm is described below~(also refer to Chapter~4.6 of the textbook).
-
 Bellman-Ford algorithm iterates $(|V| - 1)$ rounds, and in each round, updates \emph{all} edges, in an arbitrary order.
-If the given $G$ does contain negative cycle reachable from given $s$,
-when the algorithm terminates, we will have that $dist[v] = distance(s,v)$ for every $v\in V$. 
+%If the given $G$ does contain negative cycle reachable from given $s$, when the algorithm terminates, we will have that $dist[v] = distance(s,v)$ for every $v\in V$. 
 
 \begin{minipage}{0.8\textwidth}
 	\aaA {8}{Algorithm Bellman-Ford~($G = (V, E)$, $l(e)$ for any $e\in E$, $s \in V$)}\xxx
@@ -99,54 +36,117 @@ when the algorithm terminates, we will have that $dist[v] = distance(s,v)$ for e
 	\aaa {end algorithm;}\xxx
 \end{minipage}
 
-Since $update$ function takes constant time, clearly, Bellman-Ford algorithm runs in $\Theta(|V| \cdot |E|)$ time.
-See examples below.
+
+See two examples of running Bellman-Ford algorithm below.
 
 \begin{figure}[h]
 \centering{\input{example2}}
 \caption{The dist array~(after each round) running Bellman-Ford algorithm on each example.
-In each example, in each round, we choose to update all edges in lexicographic order, i.e., $(a,b), (a,c), (c,b),(c,s),(s,a)$.}
+In each round, we choose to update all edges in lexicographic order, i.e., $(a,b), (a,c), (c,b),(c,s),(s,a)$.}
 \end{figure}
 
 
-Now let's see why this algorithm is correct. We first show an invariant about the data structure $dist$ array: 
+Since update function takes constant time, clearly, Bellman-Ford algorithm runs in $\Theta(|V| \cdot |E|)$ time.
+
+To prove the correctness of Bellman-Ford algorithm,
+we first introduce some definitions and prove some properties.
+
+A negative cycle $C$ in a graph is a cycle with negative length, i.e., $l(C) := \sum_{e\in C} l(e) < 0$.
+In the presence of negative cycle, if we do not limit the number of edges
+in a path, then the length of a path could goes to negative infinity.
+In other words, the shortest path may not exist in graphs with negative cycles.
+We therefore need to be careful when talking about shortest paths or $distance(\cdot, \cdot)$,
+as they have to exist first. It suffices to require the graph to be negative cycle free.
+Later in this Lecture we will
+also introduce an algorithm to detect if a given graph contains negative cycle or not.
+
+A path $p$ in a graph is \emph{simple} if $p$ does not have repeating vertices.
+If a graph $G$ does not contain negative cycle, then 
+for any pair of vertices $u$ and $v$, if $u$ can reach $v$,
+then there always exists a {simple} shortest path from $u$ to $v$,
+as otherwise we can skip the cycle in it to get a better or same-length path.
+If all cycles in graph $G$ are positive then every shortest path is simple.
+Since any simple path contains at most $|V| - 1$ edges, we have the following:
 
 \begin{fact}
-\label{bf-fact1}
-Throughout the algorithm, if $dist[v] \neq \infty$ then $dist[v]$ represents the length of some path from $s$ to $v$.
-In other words, $dist[v] \ge distance(s,v)$ throughout the algorithm, as $dist[v]$ 
-represents the length of \emph{some} path from $s$ to $v$, while $distance(s,v)$ represents the
-length of the \emph{shortest} path from $s$ to $v$.
+If $G$ does not contain negative cycles, for every $u,v\in V$ where $v$ is reachable from $u$, 
+there exists a shortest path from $u$ to $v$ with at most $(|V| - 1)$ edges.
 \end{fact}
 
-Clearly, in the initialization step which sets $dist[s] = 0$ and $dist[v] = \infty$ for all $v\neq s$, above claim holds,
+Shortest path admits the following \emph{optimal substructure} property.
+Intuitively, this property states that, the shortest path from $u$ to $v$
+contains the shortest path from $u$ to any internal vertex on this path~(formally described below).
+Essentially, this is why shortest path problem can be solved efficiently.
+
+\begin{fact}
+%Let $p = (v_1, v_2) \to (v_2, v_3) \to \cdots \to (v_{k-1}, v_k)$
+Let $p = v_1 \to v_2 \to v_3 \to \cdots \to v_{k-1} \to v_k$
+be the shortest path from $v_1$ to $v_k$.
+Then for any $1\le i \le k$,
+$p_i = v_1 \to v_2 \to \cdots \to  v_i$,
+%$p_i := (v_1, v_2) \to (v_2, v_3) \to \cdots \to (v_{i-1}, v_i)$, 
+i.e., the portion of $p$ from $v_1$ to $v_i$,
+is the shortest path from $v_1$ to $v_i$.
+\end{fact}
+
+\emph{Proof.} Suppose that 
+$p_i = v_1 \to v_2 \to \cdots \to v_i$
+%$p_i = (v_1, v_2) \to (v_2, v_3) \to \cdots \to (v_{i-1}, v_i)$
+is not the shortest path from $v_1$ to $v_i$. Assume that
+$q$ is the shorest path from $v_1$ to $v_i$.
+Then we can construct a path from $v_1$ to $v_k$ shorter than $p$,
+by concatenating $q$ and $v_i \to v_{i+1} \to \cdots \to v_k$.
+This contradicts to the fact that $p$ is the shortest path from $v_1$ to $v_k$.\qed
+
+%Note that the above property holds even for graphs with negative edge length~(as the proof does not assume anything about edge length).
+The above fact immediately implies the following:
+
+\begin{fact}
+If there exists one shortest path from $s$ to $v$ such that $(u,v)$ is the last edge
+on this shortest path, then we have that $distanct(s,v) = distance(s,u) + l(u,v)$.
+\end{fact}
+
+Now let's go back to the Bellman-Ford algorithm. 
+We first show an invariant about its data structure the $dist$ array: 
+
+\begin{fact}
+\label{fact1}
+Throughout the Bellman-Ford algorithm, if $dist[v] \neq \infty$ then $dist[v]$ represents the length of some path from $s$ to $v$.
+\end{fact}
+
+\emph{Proof.} Clearly, in the initialization step which sets $dist[s] = 0$ and $dist[v] = \infty$ for all $v\neq s$, above claim holds,
 as $dist[s]$ stores a path from $s$ to $s$ without any edge and therefore its length is 0.
 Now to show above fact is correct throughout the algorithm, we just need to show that the ``update'' operation keeps
-this invariant~(as this algorithm does nothing else but ``update'' operations).
-
-\begin{fact}
-\label{bf-fact2}
-The update operation keeps the invariant that $dist[v]$ represents the length of some path from $s$ to $v$ when $dist[v] \neq \infty$, i.e., $dist[v] \ge distance(s,v)$, for every $v\in V$.
-\end{fact}
-\emph{Proof.} We prove this by induction w.r.t.\ the sequence of update operations. Assume that up to the $n$-th update opertion
+this invariant~(as this algorithm does nothing else but ``update'').
+%\begin{fact}
+%\label{fact2}
+%The update operation keeps the invariant that $dist[v]$ represents the length of some path from $s$ to $v$ when $dist[v] \neq \infty$, i.e., $dist[v] \ge distance(s,v)$, for every $v\in V$.
+%\end{fact}
+%\emph{Proof.} 
+We can prove this by induction. % w.r.t.\ the sequence of update operations. 
+Assume that up to the $n$-th update opertion
 above claim holds, i.e., $dist[v]$ stores the length of some path from $s$ to $v$ when $dist[v] \neq \infty$.
 Now consider the $(n+1)$-th update operation on edge $e = (u,v)$. Assume that $dist[v] > dist[u] + l(u,v)$, as otherwise this operation does not change $dist$ 
 and the claim continues to be true.
 Now $dist[v]$ is updated as $dist[u] + l(u,v)$. Since, according to the inductive assumption, $dist[u]$ stores the length of some path from $s$ to $u$,
 we have that $dist[v]$ stores the length of the path that consists of the aforementioned path from $s$ to $u$ followed by edge $(u,v)$. \qed
 
+Assume that the shortest path from $s$ to $v$ exists. 
+Following above fact, $dist[v] \ge distance(s,v)$ throughout the algorithm, as $dist[v]$ 
+represents the length of \emph{some} path from $s$ to $v$, while $distance(s,v)$ represents the
+length of the \emph{shortest} path from $s$ to $v$.
 In Bellman-Ford algorithm, $dist[v]$ starts from a trivial upper bound~(i.e., infinity) of $distance(s,v)$,
-and will get closer and closer to $distance(s,v)$ through the ``update'' procedures,
+and will get closer and closer to $distance(s,v)$ through updates,
 and eventually reach $distance(s, v)$.  We now state the conditions for this to happen.
 
 \begin{fact}
 \label{fact3}
 If edge $(u,v)$ is the last edge on one shortest path from $s$ to $v$ and $dist[u] = distance(s,u)$, then after $update(u,v)$ we will have $dist[v] = distance(s,v)$.
 \end{fact}
-Since edge $(u,v)$ is the last edge on one shortest path from $s$ to $v$, according to Property~3 of Lecture~A14, we know that
+\emph{Proof.} Since edge $(u,v)$ is the last edge on one shortest path from $s$ to $v$, according to Fact~3, we know that
 $distance(s,v) = distance(s,u) + l(u,v) = dist[u] + l(u,v)$. Through $update(u,v)$, $dist[v]$ will be compared with $dist[u] + l(u,v) = distance(s,v)$.
 The first case will be that $dist[v] \le dist[u] + l(u,v) = distance(s,v)$. Notice that in this case we must have 
-$dist[v] = distance(s,v)$ according to above fact, i.e., $dist[v]$ already stores the distance.
+$dist[v] = distance(s,v)$ according to Fact~\ref{fact1}, i.e., $dist[v]$ already stores the distance.
 The second case will be that $dist[v] > dist[u] + l(u,v) = distance(s,v)$, and in this case the ``update'' function
 will set $dist[v] = dist[u] + l(u,v) = distance(s,v)$. 
 Hence, in either case, we will have $dist[v] = distance(s,v)$ after updating edge $(u,v)$.\qed
@@ -155,34 +155,33 @@ Hence, in either case, we will have $dist[v] = distance(s,v)$ after updating edg
 Suppose that $s \to v_1 \to v_2 \to \cdots \to v$ is one shortest path from $s$ to $v$.
 In the initialization step we have $dist[s] = distance(s,s) = 0$. 
 If at a later time, $update(s, v_1)$ is executed, then following above Fact~\ref{fact3}, 
-we know that $dist[v_1] = distance(s, v_1)$ after this update~(reasons: $dist[s] = distance(s,s)$,
+we know that $dist[v_1] = distance(s, v_1)$ after this update~(reasoning: $dist[s] = distance(s,s)$,
 and $(s,v_1)$ is the last edge on one shortest path from $s$ to $v_1$ according to the optimal substrcture property).
-Once $dist[v_1]$ becomes $distance(s,v_1)$, $dist[v_1]$ will stay as $distance(s,v_1)$ according to Fact~\ref{bf-fact1}.
+Once $dist[v_1]$ becomes $distance(s,v_1)$, $dist[v_1]$ will stay as $distance(s,v_1)$ according to Fact~\ref{fact1}.
 If at a later time $update(v_1, v_2)$ happens 
-then following Fact~\ref{fact3}, we know that $dist[v_2] = distance(s, v_2)$.
-Note that it doesn't matter if additional updates happen between $update(s, v_1)$ and $update(v_1, v_2)$.
+then following Fact~\ref{fact3}, we have that $dist[v_2] = distance(s, v_2)$.
+Note that it does not matter if additional updates happen between $update(s, v_1)$ and $update(v_1, v_2)$.
 We can continue this argument; a general form is summarized below.
 
 \begin{fact}
 \label{fact4}
-If there exists a sequence of udpate procedures~(not necessarily consecutive) that update all the edges following one shortest path
+If there exists a sequence of udpate procedures~(not necessarily consecutive,
+i.e., there can be update(s) between any two in this sequence) that update all the edges following one shortest path
 from $s$ to $v$, then after that we will have $dist[v] = distance(s, v)$.
-Again, there can be other ``update''(s) between any two ``update''s in this sequence.
 \end{fact}
 
-
-But we don't know the the shortest path in advance. That's fine.
-As the number of edges in the shortest path will not exceed $(|V| - 1)$, the Bellman-Ford algorithm
+But we do not know the the shortest path in advance. That's fine.
+As in graphs without negative cycles the number of edges in the (simple) shortest path will not exceed $(|V| - 1)$, the Bellman-Ford algorithm
 simply update \emph{all} edges in each round, and do this $(|V| - 1)$ times.
 This therefore guarantees that the $i$-th edge on the shortest path can be updated during the $i$-th round.
 Consequently, this guarantees the existence of a sequence of update procedures that update all edges following the shortest path.
-This analysis leads to the following conclusion, which actually proves the correctness of Bellman-Ford algorithm.
+This analysis leads to the following conclusion, which proves the correctness of Bellman-Ford algorithm.
 See an illustration in Figure~\ref{fig:bellman}.
 \begin{fact}
 \label{fact5}
-If $G$ does not contain negative cycle,  then we have $dist[v] = distance(s,v)$ for $v\in V$ after $|V| -1$ rounds.
-In particular, let $p$ be one shortest path from $s$ to $v$ with $k$ edge.  
-Then after $k$ rounds of the Bellman-Ford algorithm, $dist[v] = distance(s,v)$.
+If $G$ does not contain negative cycle,  then we have $dist[v] = distance(s,v)$ for every $v\in V$ after $|V| -1$ rounds of updates.
+In particular, let $p$ be one shortest path from $s$ to $v$ with $k$ edges.  
+Then after $k$ rounds of updates, $dist[v] = distance(s,v)$.
 \end{fact}
 
 \begin{figure}[h]
@@ -220,9 +219,12 @@ The algorithm does one more round of updates, in which it determines if some $di
 Let's show that above algorithm is correct.
 We first prove that, if $G$ does not contain negative cycle~(reachable from $s$), then in above additional round $dist[v] > dist[u] + l(u,v)$ will never happen,
 i.e., we will get the report that ``$G$ does not contain negative cycle''.
-As per Fact~\ref{fact5} and the assumption that $G$ does not contain negative cycle, we know that $dist[v] = distance(s,v)$ after $|V| -1 $ rounds.
-Also, according to Fact~\ref{bf-fact2}, update function will never make $dist[v]$ smaller than $distance(s,v)$ when $G$ does not contain negative cycle.
-Hence, during the $|V|$-th round in above algorithm, none of the $dist$ value can be further reduced.
+As per Fact~\ref{fact5} and the assumption that $G$ does not contain negative
+cycle, we know that $dist[v] = distance(s,v)$ after $|V| -1 $ rounds.  Also,
+	according to Fact~\ref{fact1}, update function will never make $dist[v]$
+	smaller than $distance(s,v)$ when $G$ does not contain negative cycle.
+	Hence, during the $|V|$-th round in above algorithm, none of the $dist$
+	value can be further reduced.
 
 We then prove that, if $G$ contains negaive cycle~(reachable from $s$), then in above additional round, there must exist an edge $(u,v)$ such that $dist[v] > dist[u] + l(u,v)$.
 Suppose conversely that, in above additional round, all edges satisfy $dist[v] \le dist[u] + l(u,v)$.
@@ -246,10 +248,10 @@ Summing up both sides of all above inequalities gives $\sum_{e\in C} l(e) \ge 0$
 Let $G = (V, E)$ be a DAG with possibly negative edge length $c(e)$ for each $e\in E$.
 We want to find the distance from a given source $s$ to each vertex $v\in V$.
 Note that $G$ does not contain negative cycles simply because $G$ does not contain any cycle.
-We can design a simpler version of Bellman-Ford algorithm to solve this problem.
+We can design a simplified version of Bellman-Ford algorithm to solve this problem.
 In particular, we only need to do one round of ``update''~(instead of $|V|-1$ rounds as in Bellman-Ford algorithm).
 But, the edges cannot be updated in a arbitrary order. In fact,
-we first need to find a linearization of $G$~(recall that a directed graph can be linearized if and only if it's a DAG),
+we first need to find a linearization of $G$~(recall that a directed graph can be linearized if and only if it is a DAG),
 and then update the in-edges of vertices following this linearization.
 
 %%\begin{minipage}{0.8\textwidth}
@@ -262,7 +264,7 @@ and then update the in-edges of vertices following this linearization.
 %%\end{minipage}
 
 \begin{minipage}{0.8\textwidth}
-	\aaA {10}{Algorithm DP-shortest-path~(DAG $G = (V, E)$, $l(e)$ for any $e\in E$, $s \in V$)}\xxx
+	\aaA {9}{Algorithm BF-DAG~(DAG $G = (V, E)$, $l(e)$ for any $e\in E$, $s \in V$)}\xxx
 	\aab {init array $dist$ of size $|V|$: $dist[s] = 0$; $dist[v] = \infty$ for any $v\neq s$;}\xxx
 	\aab {calculate a linearization of $G$;}\xxx
 	\aaB {4}{\textcolor{blue}{for $v\in V$ following the order of linearization}}\xxx
@@ -276,17 +278,26 @@ and then update the in-edges of vertices following this linearization.
 
 
 The correctness of above algorithm for DAGs can also be proved in the same way as in the Bellman-Ford algorithm.
-Let $p = s \to a \to b \to \cdots \to u \to v$ be the shortest path from $s$ to $v$;
-we have proved that~(for Bellman-Ford algorithm), if the run of the algorithm contains a \emph{subsequence} of update procedures
-that sequentially update the edges in the shortest path, then 
+For any vertex $v$, let $p = s \to v_1 \to v_2 \to \cdots \to v$ be one shortest path from $s$ to $v$;
+we have proved that~(for Bellman-Ford algorithm), if the run of the algorithm contains a {sequence} of updates 
+that sequentially update the edges in this shortest path $p$, then 
 $dist[v]$ will be equal to $distance(s,v)$ after these update procedures.
-Our above algorithm update the in-edges of vertices sequentially following a linearization.
-In a DAG, the list of vertices of any path, including shortest path, must be a \emph{subsequence}
-of the linearization. Therefore, the list of edges of any path must be updated
-sequentially by the algorithm. See Figure~\ref{fig:dag}.
+The above algorithm update the in-edges of vertices sequentially following a linearization $X$.
+By the definition of linearization, the list of vertices of any path, including $p$, must be a \emph{subsequence} of $X$~(i.e., $s$ is before
+$v_1$ in $X$, $v_1$ is before $v_2$ in $X$, etc).
+Therefore, edges in $p$ must be updated
+sequentially by the above algorithm, i.e., edge $(s, v_1)$ gets updated when processing $v_1$,
+edge $(v_1, v_2)$ gets updated when processing $v_2$, and so on. 
+See Figure~\ref{fig:dag} for an example.
 
 \begin{figure}[h]
 \centering{\input{dag}}
-\caption{Illustration of the correctness of the above algorithm for DAGs.}
+\caption{Illustration of the correctness of the above algorithm.
+Assume $s\to a \to b \to v$ be one shortest path from $s$ to $v$ in $G$.
+Then in any linearization of $G$, $s$ is before $a$, $a$ is before $b$, and $b$ is before $v$.
+So, edge $(s, a)$ will be updated when processing the in-edges of $a$, 
+$(a, b)$ will be updated when processing the in-edges of $b$, 
+and $(b, v)$ will be updated when processing the in-edges of $v$.
+Therefore, there exists a sequence of updates that sequentially update these 3 edge.  }
 \label{fig:dag}
 \end{figure}

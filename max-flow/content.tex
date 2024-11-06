@@ -1,6 +1,7 @@
 \setcounter{definition}{0} \setcounter{property}{0} \setcounter{claim}{0} \setcounter{fact}{0} \setcounter{corollary}{0} \setcounter{figure}{0}
 \section{Maximum Flow and Minimum Cut}
 
+
 A \emph{network}~(also called \emph{flow network}) models 
 an abstracted flow~(traffic, data, etc) transmits from an origin to a destination
 via a graphical structure. Formally, a (flow) network is a tuple $(G = (V, E), s, t, c(\cdot))$, where
@@ -19,7 +20,7 @@ via a graphical structure. Formally, a (flow) network is a tuple $(G = (V, E), s
 An \emph{$s$-$t$ flow} of network $(G = (V, E), s, t, c(\cdot))$
 describes {how} the flow is transmitted from $s$ to $t$
 via the graph $G$ under the capacity constraints. Formally,
-an $s$-$t$ flow $f$ is a function $f: E\to \mathbb{R}^+$
+an $s$-$t$ flow $f$ is a function $f: E\to \mathbb{R}_{\ge 0}$
 that satisfies the following two conditions:
 \vspace*{-\topsep}
 \begin{enumerate}
@@ -38,9 +39,11 @@ See Figure~\ref{fig:flow}.
 
 \begin{figure}[h]
 \centering{\input{flow}}
-\caption{An example of a network and an $s$-$t$ flow.
+\caption{Two examples of networks and $s$-$t$ flows.
 The capacities are marked as black numbers next to edges;
-the flow values are marked as red numbers next to edges.}
+the flow values are marked as red numbers next to edges.
+The value of the flow in the left exampe is 9;
+the value of the flow in the right exampe is 7;}
 \label{fig:flow}
 \end{figure}
 
@@ -48,7 +51,7 @@ The \emph{value} of an $s$-$t$ flow $f$, denoted as $|f|$,
 is defined as the total amount of flow that is generated from source vertex $s$:
 $|f| := \sum_{e\in O(s)} f(e)$. Intuitively, the total amount of flow that is generated
 from $s$ eventually must be fully absorbed by sink $t$, as all internal vertex~(i.e., $V\setminus\{s,t\}$)
-don't keep any flow. Therefore, we must have that 
+does not keep any flow. Therefore, we must have that 
 $|f| = \sum_{e\in I(t)} f(e)$.  
 This property is also a direct consequence of the conservation property.
 Below we formally state and prove it.
@@ -82,39 +85,45 @@ Combining $L = R$ and noticing that $\sum_{e\in E} f(e)$ is shared, we have $\su
 We now define the \emph{maximum-flow problem}: given network $(G= (V, E), s, t, c(\cdot))$,
 to find an $s$-$t$ flow $f$ such that $|f|$ is maximized.
 
-See Figure~\ref{fig:maxflow} for an example. Playing with the instance you may find
-a flow $f$ with $|f| = 9$, shown with red numbers in the figure.
-It seems that this flow $f$ is a maximum flow.
-Here is an argument that this flow $f$ is indeed a maximum flow.
-Consider the \emph{cut} shown with blue curve. Notice that
-$s$ and $t$ are on different sides of this cut. Therefore, all flow
-from $s$ to $t$ must cross this cut. Notice also that there are three
-cut-edges~(i.e., edges cross the border from $s$-side to $t$-side)
-and the \emph{total capacities} of these 3 edges is $3 + 2 + 4 = 9$.
-This gives an \emph{upper bound} of the maximum flow, which is 9.
-And, we have found a flow $f$ with $|f| = 9$. Therefore, $f$
-is a maximum flow.
+See Figure~\ref{fig:maxflow} for an example, which shows a flow with value 
+of 9. This flow has a larger value than the flow in Figure~1~(right panel,
+same network, but with a flow of value 7).
+Can you play with this example to try to obtain a flow with even larger value?
+Is this flow~(of value 9) the maximum flow of the network?
+If it is, how can we verify it is one maximum flow?
+Let's answer these questions using $s$-$t$ cut.
+
+%Playing with the instance you may find
+%a flow $f$ with $|f| = 9$, shown with red numbers in the figure.
+%It seems that this flow $f$ is a maximum flow.
+%Here is an argument that this flow $f$ is indeed a maximum flow.
+%Consider the \emph{cut} shown with blue curve. Notice that
+%$s$ and $t$ are on different sides of this cut. Therefore, all flow
+%from $s$ to $t$ must cross this cut. Notice also that there are three
+%cut-edges~(i.e., edges cross the border from $s$-side to $t$-side)
+%and the \emph{total capacities} of these 3 edges is $3 + 2 + 4 = 9$.
+%This gives an \emph{upper bound} of the maximum flow, which is 9.
+%And, we have found a flow $f$ with $|f| = 9$. Therefore, $f$
+%is a maximum flow.
 
 \begin{figure}[h]
 \centering{\input{maxflow}}
-\caption{An example of an network and its maximum $s$-$t$ flow~(red numbers).
-The right panel shows a certificate~(an $s$-$t$ cut) that proves that
-the $s$-$t$ flow given in the left panel is a maximum flow.}
+\caption{A flow with value 9~(same network with the right panel of Figure 1.}
 \label{fig:maxflow}
 \end{figure}
 
 
-\subsection*{Minimum-Cut}
+%\subsection*{Minimum-Cut}
 
-Recall that a \emph{cut} of a graph $G = (V, E)$ is defined
-as a \emph{partition} of the vertices, formally written as $(S, V\setminus S)$ where $S \subset V$.
-Given an network $G=(V, E)$ with source $s\in V$ and sink $t\in V$, 
-an \emph{$s$-$t$ cut} of the network is defined as a cut $(S, T)$, where $S\subset V$ and $T = V\setminus S$,
-satisfying that $s\in S$ and $t\in T$. In short, an $s$-$t$ cut of a network is a partition
+%A \emph{cut} of a graph $G = (V, E)$ is defined
+%as a \emph{partition} of the vertices, formally written as $(S, V\setminus S)$ where $S \subset V$.
+Given a network $G=(V, E)$ with source $s\in V$, sink $t\in V$, and capacity $c(\cdot)$,
+an \emph{$s$-$t$ cut} of the network is a pair $(S, T)$, where $S\subset V$, $T = V\setminus S$,
+and that $s\in S$ and $t\in T$. In short, an $s$-$t$ cut of a network is a partition
 of the vertices that separates the source and the sink.
 
-An $s$-$t$ cut $(S, T)$ of a network $G = (V, E)$ with source $s$ and sink $t$ also partitions all
-edges $E$ into four disjoint subsets, described below. 
+An $s$-$t$ cut $(S, T)$ of a network also partitions all
+edges in the graph into four disjoint subsets, described below. 
 We define the first category, i.e., $E(S, T) := \{(u,v)\in E\mid u\in S, v\in T\}$,
 as the \emph{cut-edges} w.r.t.\ the $s$-$t$ cut $(S, T)$.
 \vspace*{-\topsep}
@@ -130,8 +139,8 @@ We define the \emph{capacity} of $(S, T)$, denoted as $c(S, T)$, as the sum of t
 as $c(S, T) := \sum_{e\in E(S, T)} c(e)$. See Figure~\ref{fig:flow-cut}.
 
 \begin{figure}[h]
-\centering{\input{flow-cut}}
-\caption{Three different $s$-$t$ cuts and their capacities of the same network.}
+\centering{\input{cut}}
+\caption{Four different $s$-$t$ cuts and their capacities of the same network.}
 \label{fig:flow-cut}
 \end{figure}
 
@@ -146,10 +155,10 @@ Although the maximum-flow problem and the minimum-cut problem are defined indepe
 can be solved by the same algorithm~(for example, the Ford-Fulkson algorithm)
 and are connected by an elegant theorem~(i.e., the max-flow min-cut theorem).
 Below, we first show half of this theorem.
-Leter on we will introduce the Ford-Fulkson algorithm
+Later on we will introduce the Ford-Fulkson algorithm
 and use it to prove the other other half of the theorem.
 
-\subsection*{Maximum-Flow v.s.\ Minimum-Cut, One-Side Connection}
+%\subsection*{Maximum-Flow v.s.\ Minimum-Cut, One-Side Connection}
 
 We now show that, the capacity of \emph{any} $s$-$t$ cut of a network
 gives an \emph{upper bound} of the value of \emph{any} $s$-$t$ flow of the same network, 
@@ -211,13 +220,20 @@ i.e., $\sum_{v\in S} \sum_{e\in O(v)} f(e)$ and $\sum_{v\in S} \sum_{e\in I(v)} 
 \end{enumerate}
 Therefore, we have $|f| = \sum_{e\in E(S, T)} f(e) - \sum_{e\in E(T, S)} f(e)$. \qed
 
-We now formally prove Claim~\ref{fact1}. The proof simply combiines the capacity condition (and the non-negative property) of an $s$-$t$ flow,
+We now formally prove Claim~\ref{fact1}. The proof simply combines the capacity condition (and the non-negative property) of an $s$-$t$ flow,
 Fact~\ref{fact1}, and the definition of the capacity of an $s$-$t$ cut.
 
 \emph{Proof of Claim~\ref{claim1}.} Since $0\le f(e) \le c(e)$ for any $e\in E$,
 based on Fact~\ref{fact1}, we can write
 $|f| = \sum_{e\in E(S, T)} f(e) - \sum_{e\in E(T, S)} f(e)
 \le \sum_{e\in E(S, T)} c(e) - 0 = c(S, T)$. \qed
+
+\begin{figure}[!b]
+\centering{\input{flow-meet}}
+\caption{Illustration of the relationship between capacity of any $s$-$t$ cut
+and value of \emph{any} $s$-$t$ flow.}
+\label{fig:flow-meet}
+\end{figure}
 
 Claim~\ref{claim1} states that capacity of \emph{any} $s$-$t$ cut
 is larger or equal to the value of \emph{any} $s$-$t$ flow.
@@ -230,19 +246,13 @@ while each blue point represents the capacity of an $s$-$t$ cut.
 So all red points lie to the left side of all blue points,
 and if a red point and a blue point meet, they are maximum-flow and minimum-cut.
 
+
 \begin{figure}[h]
-\centering{\input{flow-meet}}
-\caption{Illustration of the relationship between capacity of any $s$-$t$ cut
-and value of \emph{any} $s$-$t$ flow.  Do they always meet in the middle?}
-\label{fig:flow-meet}
+\centering{\input{maxflow-mincut}}
+\caption{A maximum-flow $f$ and a minimum cut $(S, T)$, verified by $|f| = c(S,T)$.}
+\label{fig:maxflow-mincut}
 \end{figure}
 
-Does there \emph{always} exist $f$ and $(S,T)$ such that $|f| = c(S,T)$?
-In Figure~2 of Lecture~36 we saw an example where such flow and cut exist.
-But is this the case for \emph{every} instance?
-Actually, the answer is yes! (And this suprising result is referred to the max-flow min-cut theorem.)
-The proof is constructive: we will design an algorithm~(i.e., the Ford-Fulkson algorithm)
-that actually always finds an $s$-$t$ flow $f$ and an $s$-$t$ cut $(S, T)$
-that satisfies $|f| = c(S, T)$.
-
+In above example, we see a flow $f$ with $|f| = 9$ and an $s$-$t$ cut $(S, T)$ with $c(S, T) = 9$.
+So both are optimal. See Figure~\ref{fig:maxflow-mincut}.
 

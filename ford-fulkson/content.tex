@@ -2,7 +2,17 @@
 \section{Ford-Fulkson Algorithm and The Max-Flow Min-Cut Theorem}
 
 
-\subsection*{Ford-Fulkson Algorithm}
+At the end of previous Lecture we gave an example~(network) for which
+there exists a flow $f$ and an $s$-$t$ cut such that $|f| = c(S, T)$.
+Therefore, both $f$ and $(S,T)$ are optimal.
+Is this the case for \emph{any} network?
+That is, for an arbitrary network,
+does there \emph{always} exist $f$ and $(S,T)$ such that $|f| = c(S,T)$?
+The answer is yes! (This elegant, surprising result is referred to the max-flow min-cut theorem.)
+The proof is constructive: we will design an algorithm~(i.e., the Ford-Fulkson algorithm)
+that actually always finds an $s$-$t$ flow $f$ and an $s$-$t$ cut $(S, T)$ that satisfies $|f| = c(S, T)$.
+
+\subsection*{The Ford-Fulkson Algorithm}
 
 The Ford-Fulkson algorithm aims to find a maximum-flow of the given network.
 It employs the idead of \emph{iterative improving}. The algorithm
@@ -11,11 +21,25 @@ It then iteratively improve $f$.
 In each iteration, it finds a path $p$ from $s$ to $t$ in the so-called \emph{residual graph w.r.t.\ the current flow $f$},
 and then improve $f$ by \emph{augmenting} path $p$.
 The value of $f$ will be increased after each iteration,
-and the algorithm will terminate when such path cann't be found.
+and the algorithm will terminate when such path cannot be found.
+Below see the pseudo-code of the Ford-Fulkson's algorithm.
 
-\subsection*{Residual Graph}
+\begin{minipage}{0.8\textwidth}
+	\aaA {8}{Algorithm Ford-Fulkson~($G = (V, E), s, t, c$)}\xxx
+	\aab {init an $s$-$t$ flow $f$ with $f(e) = 0$ for any $e\in E$;}\xxx
+	\aaB {5}{while~(true)}\xxx
+	\aac {build the residual graph $G_f$ w.r.t.\ the current flow $f$;}\xxx
+	\aac {find an $s$-$t$ path $p$ in $G_f$;}\xxx
+	\aac {if such path cannot be found: return $f$;}\xxx
+	\aac {$f \leftarrow augment(f,p)$;}\xxx
+	\aab {end;}\xxx
+	\aaa {end;}\xxx
+\end{minipage}
 
-The residual graph plays a central role in the Ford-Fulkson algorithm and in
+
+%\subsection*{Residual Graph}
+
+{\bf Residual Graph.} The residual graph plays a central role in the Ford-Fulkson algorithm and in
 proving the max-flow min-cut theorem. Let $f$ be an $s$-$t$ flow of a network
 $(G = (V,E),s,t,c)$. We denote by $G_f =(V,E_f)$ the residual graph w.r.t.\ $f$. 
 We emphasize that a residual graph is always associated with (i.e., w.r.t.) a flow of a network.
@@ -50,29 +74,19 @@ $c_f (v, u) = f(e) = c(e)$. See Figure 2.
 \label{fig:example}
 \end{figure}
 
-\subsection*{The Ford-Fulkson Algorithm}
+%\subsection*{The Ford-Fulkson Algorithm}
 
-Recall that the central idea of the FF algorithm is to iteratively improve an
-$s$-$t$ flow $f$, initialized with $f(e) = 0$ for every $e \in E$. In each iteration, it
-seeks a path $p$ from $s$ to $t$, called an $s$-$t$ path, in residual graph $G_f$ w.r.t.\ the
-current flow $f$; it then augments $p$ to obtain a flow with increased value. The
-algorithm terminates when such $s$-$t$ path cann’t be found. The pseudo-code is
-given below.
+{\bf Finding an $s$-$t$ path in $G_f$.}
+%Recall that the central idea of the FF algorithm is to iteratively improve an $s$-$t$ flow $f$, initialized with $f(e) = 0$ for every $e \in E$. 
+In each iteration of the Ford-Fulkson algorithm, after building $G_f$ wrt the current flow $f$,
+it seeks a path $p$ from $s$ to $t$, called an $s$-$t$ path, in residual graph $G_f$.
+The searching of such $s$-$t$ path can be done by either BFS or DFS, starting from $s$.
+If such path cannot be found, the algorithm terminates and returns the current flow $f$.
+Otherwise, it \emph{augments} $p$ to obtain a flow with increased value. 
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {8}{Algorithm Ford-Fulkson~($G = (V, E), s, t, c$)}\xxx
-	\aab {init an $s$-$t$ flow $f$ with $f(e) = 0$ for any $e\in E$;}\xxx
-	\aaB {5}{while~(true)}\xxx
-	\aac {build the residual graph $G_f$ w.r.t.\ the current flow $f$;}\xxx
-	\aac {find an $s$-$t$ path $p$ in $G_f$;}\xxx
-	\aac {if such path cannot be found: return $f$;}\xxx
-	\aac {$f \leftarrow augment(f,p)$;}\xxx
-	\aab {end;}\xxx
-	\aaa {end;}\xxx
-\end{minipage}
-
+{\bf Augmenting an $s$-$t$ path $p$ in $G_f$.}
 To augment an $s$-$t$ path $p$ in $G_f$, we first calcualte the bottleneck capacity of
-$p$, which is defined as the smallest capacity of all edges in $p$, formally
+$p$, which is defined as the smallest capacity~(in the residual graph $G_f$) of all edges in $p$, formally
 written as $x(p) := \min_{e\in p} c_f(e)$. We then examine each edge $e \in p$, and
 update the flow of the corresponding edge in the network with the following rule.
 
@@ -114,6 +128,14 @@ flow of edge $(v, u)$ becomes $f(v, u) - x(p) \ge f(v,u)-c_f (e) = f(v,u)-f(v,u)
 And it’s obvious that $f(v,u)-x(p) \le f(v,u) \le c(v,u)$.
 \end{enumerate}
 
+\begin{figure}[!b]
+\centering{\input{ff}}
+\caption{Running the FF algorithm on an instance. Each row shows an iteration. The left column shows
+the current flow $f$. The right column shows the residual graph w.r.t.\ $f$ and the $s$-$t$ path found (in blue).}
+\label{fig:ff}
+\end{figure}
+
+
 The reason why the conservation condition remains satisfied is that we augment an entire $s$-$t$ path. Hence,
 for any vertex $v$ in path $p$ except $s$ and $t$, the augmenting procedure adjusts the
 flow of two adjacent edges of $v$ in the network, and such adjustments always
@@ -126,19 +148,11 @@ similarly.
 
 After augmenting path $p$, the value of the new flow becomes $|f|+x(p)$. Since we
 assume that all edges in the residual graph has positive capacity, we have that
-$x(p) > 0$, which means the value of the new flow always gets improved. If we
-further assume that all capacities are integers, we have $x(p) \ge 1$ and therefore
-the value of the new flow will be increased by at least 1 in each iteration.
+$x(p) > 0$, which means the value of the new flow always gets improved. 
+See an example of running Ford-Fulkson on a small network, given in Figure~\ref{fig:ff}.
 
-\begin{figure}[h]
-\centering{\input{ff}}
-\caption{Running the FF algorithm on an instance. Each row shows an iteration. The left column shows
-the current flow $f$. The right column shows the residual graph w.r.t.\ $f$ and the $s$-$t$ path found (in blue).}
-\label{fig:ff}
-\end{figure}
 
-See running the Ford-Fulkson algorithm on an instance in Figure~\ref{fig:ff}.
-The FF algorithm runs in $O(|f^*|\cdot(|V|+|E|))$ time,
+The Ford-Fulkson algorithm runs in $O(|f^*|\cdot(|V|+|E|))$ time,
 where $f^*$ is the flow returned by the FF. 
 This is because, each iteration (including building $G_f$, finding an $s$-$t$ path $p$ in $G_f$
 with BFS/DFS, and augmenting $p$) takes $O(|V|+|E|)$ time, and in each iteration,
@@ -146,10 +160,14 @@ the value of the flow is increased by at least 1~(assuming that all capacities a
 so the number of iterations needed is $O(|f^*|)$.
 
 
+
+
 \subsection*{The Max-Flow Min-Cut Theorem}
 
-We now prove that the FF algorithm is optimal, which also directly implies the so-called max-flow min-cut
-theorem.  Again let $f^*$ be the flow when the FF terminates. Note that the residual graph $G_{f^*}$ w.r.t.\ $f^*$ does
+We now prove that the Ford-Fulkson algorithm is correct, i.e., when the algorithm terminates,
+the returned flow is a maximum-flow.  
+%which also directly implies the so-called max-flow min-cut theorem.  
+Let $f^*$ be the flow when the FF terminates. Note that the residual graph $G_{f^*}$ w.r.t.\ $f^*$ does
 not have any $s$-$t$ path (or equivalently, $s$ cannot reach $t$ in $G_{f^*}$), because otherwise the FF algorithm will
 not terminate. Now we define a cut: let $S^*$ be the set of vertices in  $G_{f^*}$ that can be reached from $s$, formally 
 $S^* := \{v\in V\mid s \textrm{ can reach $v$ in } G_{f^*} \}$,
@@ -157,19 +175,31 @@ and define $T^* = V\setminus S^*$.
 Clearly, $s\in S^*$.  Since $s$ cannot reach $t$ in $G_{f^*}$, we know that $t\in T^*$. Hence
 $(S^*, T^*)$ is an $s$-$t$ cut. For example, in Figure~4, $S^* = \{s,b\}$ and $T^* = \{a,t\}$.
 
-We now show the central result: $|f^*| = c(S^*,T^*)$. Recall the Fact 1 in Lecture
-37: the value of any flow, here we focus on $f^*$, can be calculated with any $s$-$t$
+\begin{figure}[h]
+\centering{\input{theorem}}
+\caption{Illustration the proof of the max-flow min-cut theorem.
+Left: the residual graph $G_{f^*}$ wrt the flow $f^*$ when FF terminates~(see Figure~4 of Lecture 19).
+The cut $(S^*,T^*)$ is constructed by collecting vertices reachable from $s$ in $G_{f^*}$ as $S^*$, and $T^*=V\setminus S^*$.
+Right: the same $s$-$t$ cut $(S^*, T^*)$ drawn on the (original) graph $G$, where one can see that for every edge $e\in E(S^*, T^*)$, $f^*(e) = c(e)$,
+and for every edge $e\in E(T^*, S^*)$, $f^*(e) = 0$.}
+\label{fig:theorem}
+\end{figure}
+
+
+We now show the central result: $|f^*| = c(S^*,T^*)$. Recall the Fact 2 in Lecture
+18: the value of any flow, here we focus on $f^*$, can be calculated with any $s$-$t$
 cut, and here we will use the particular cut $(S^*,T^*)$.
 Specifically, we can write $|f^*| = \sum_{e\in E(S^*, T^*)} f^*(e) - \sum_{e\in E(T^*, S^*)} f^*(e)$.
 
-In fact, we have $f^*(e) = c(e)$ for every $e \in E(S^*,T^*)$. (Check Figure 4, where
-$E(S^*,T^*) = \{(s,a),(b,t)\}$.) Why? Suppose conversely that $f^*(e) < c(e)$.
+
+In fact, we have $f^*(e) = c(e)$ for every $e \in E(S^*,T^*)$. 
+See Figure~\ref{fig:theorem}. Why? Suppose conversely that $f^*(e) < c(e)$.
 Assume that $e = (u,v)$; the fact that $e = (u,v) \in E(S^*,T^*)$
 means that $u \in S^*$ and $v \in T^*$. According to the way the residual graph is constructed, in $G_{f^*}$, there will be
 a forward edge $(u,v)$. Consequently, $s$ can reach $v$ in $G_{f^*}$, as $s$ can reach $u$~(because $u\in S^*$) and $u$ can reach 
 $v$ following this forward edge. This contradicts to the fact that $v \in T^*$.
 
-Also, we can show that $f^*(e) = 0$ for every $e \in E(T^*,S^*)$. (Check Figure 4, where $E(T^*,S^*) = \{(a,b)\}$.)
+Also, we can show that $f^*(e) = 0$ for every $e \in E(T^*,S^*)$. %(Check Figure 4, where $E(T^*,S^*) = \{(a,b)\}$.)
 Why? Suppose conversely that $f^*(e)>0$. Assume that $e=(u,v)$; the fact that $e=(u,v) \in E(T^*,S^*)$ means
 that $u \in T^*$ and $v\in S^*$. Then in the residual graph $G_{f^*}$, there will be a backward edge 
 $(v, u)$. Consequently, $s$ can reach $u$ in $G_{f^*}$, as $s$ can reach $v$~(because $v\in S^*$) and $v$ can reach $u$ following this backward edge. 
@@ -179,7 +209,7 @@ Combining all above, we have
 $|f^*| = \sum_{e\in E(S^*, T^*)} f^*(e) - \sum_{e\in E(T^*, S^*)} f^*(e)
  = \sum_{e\in E(S^*, T^*)} c(e) - 0 = c(S^*, T^*)$.
 
-This proves that $f^*$ is a maximum-flow and $(S^*,T^*)$ is a minimum cut, i.e., the
+This proves that $f^*$ is a maximum-flow and $(S^*,T^*)$ is a minimum $s$-$t$ cut, i.e., the
 FF algorithm is optimal, and a minimum-cut can be constructed from the residual
 graph. It also completes the connection between the maximum-flow problem and
 the minimum-cut problem: for any network, the value of the maximum-flow
