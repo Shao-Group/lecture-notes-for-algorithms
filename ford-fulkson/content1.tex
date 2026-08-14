@@ -1,0 +1,61 @@
+\subsection*{The Ford-Fulkson Algorithm}
+
+{\bf Residual Graph.} The residual graph plays a central role in the Ford-Fulkson algorithm and in
+proving the max-flow min-cut theorem. Let $f$ be an $s$-$t$ flow of a network
+$(G = (V,E),s,t,c)$. We denote by $G_f =(V,E_f)$ the residual graph w.r.t.\ $f$. 
+We emphasize that a residual graph is always associated with (i.e., w.r.t.) a flow of a network.
+Each edge $e\in E_f$ in the residual graph is also associated with a capacity, denoted as $c_f(e)$. 
+The construction of the residual graph is given below.  See Figure~\ref{fig:residual-graph}.
+\vspace*{-\topsep}
+\begin{enumerate}
+\item The residual graph has the same set of vertices with the network.
+\item For each edge $(u,v)\in E$, there are two corresponding edges in
+$E_f$: the \emph{forward-edge} $(u,v)$ with capacity $c_f (u, v) = c(u,v) - f(u,v)$, 
+and the \emph{backward-edge} $(v, u)$ with capacity $c_f (v, u) = f(u,v)$. 
+\end{enumerate}
+
+\begin{figure}[h]
+\centering{\input{residual-graph}}
+\caption{Definition of edges and capacities of the residual graph.}
+\label{fig:residual-graph}
+\end{figure}
+
+Edges in the residual graph with capacity of 0 will be removed. In other words,
+we always assume that edges in the residual graph have positive
+capacities. Therefore, if an edge $e = (u,v) \in E$ in the network carries a
+flow of 0, i.e., $f(e) = 0$, then the residual graph only includes the
+corresponding forward-edge $(u, v)$ with capacity $c_f (u, v) = c(e)$; if an
+edge $e = (u, v) \in E$  is \emph{saturated}, i.e., $f (e) = c(e)$, then the residual
+graph only includes the corresponding backward-edge $(v, u)$ with capacity
+$c_f (v, u) = f(e) = c(e)$. See Figure~\ref{fig:example}.
+
+\begin{figure}[h]
+\centering{\input{example}}
+\caption{An example of residual graph.}
+\label{fig:example}
+\end{figure}
+
+The Ford-Fulkson algorithm finds a maximum-flow of the given network.
+It follows the idea of \emph{iterative improving}. It 
+starts from a trivial flow $f$ with $f(e) = 0$ for every $e\in E$.
+It then iteratively improve $f$.
+In each iteration, it finds a path $p$ from $s$ to $t$ in the so-called \emph{residual graph w.r.t.\ the current flow $f$},
+and then improve $f$ by \emph{augmenting} path $p$.
+The value of $f$ will be increased after each iteration,
+and the algorithm will terminate when such path cannot be found.
+Below see the pseudo-code of the Ford-Fulkson's algorithm.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {8}{Algorithm Ford-Fulkson~($G = (V, E), s, t, c$)}\xxx
+	\aab {init an $s$-$t$ flow $f$ with $f(e) = 0$ for any $e\in E$;}\xxx
+	\aaB {5}{while~(true)}\xxx
+	\aac {build the residual graph $G_f$ w.r.t.\ the current flow $f$;}\xxx
+	\aac {find an $s$-$t$ path $p$ in $G_f$;}\xxx
+	\aac {if such path cannot be found: return $f$;}\xxx
+	\aac {$f \leftarrow augment(f,p)$;}\xxx
+	\aab {end;}\xxx
+	\aaa {end;}\xxx
+\end{minipage}
+
+
+

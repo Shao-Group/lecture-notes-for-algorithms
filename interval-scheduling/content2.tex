@@ -1,0 +1,129 @@
+\subsection*{Correctness of the Greedy Algorithm for the Interval Scheduling Problem}
+
+We now show that, the greedy algorithm of picking the interval with earliest finish-time 
+followed by removing the intervals conflicting with it is optimal.
+Let $X$ be the set of intervals picked by this greedy algorithm.
+First, all intervals in $X$ do not conflict with each other. %compatible~(even if using the first 3 strategies),
+This is obvious, as right after picking an interval all conflicting ones will be immediately removed;
+so, any newly added interval will not conflict with ones already picked.
+
+Now we show that the algorithm is optimal, i.e., $|X|$ is maximized.
+Assume that $X = \{x_1, x_2, \cdots, x_k\}\subseteq\{1, 2, \cdots, n\}$.
+We also assume that these $k$ intervals are sorted by their finish-time, i.e., $f(x_1) \le f(x_2) \le \cdots \le f(x_k)$.
+Assume that $Y = \{y_1, y_2, \cdots, y_m\}$ be an optimal solution~(with $m$ intervals).
+We also assume that these $m$ intervals are sorted by their finish-time, i.e., $f(y_1) \le f(y_2) \le \cdots \le f(y_m)$.
+
+Clearly $k \le m$, as we assume $Y$ is the optimal solution.
+The ultimate goal is to prove that $k = m$, i.e., the greedy algorithm always finds the
+same number of intervals with the optimal solution.
+In order to achieve it, we first prove a more informative fact,
+which shows that the greedy solution always \emph{stays ahead} of the optimal solution. Specifically,
+the finish-time of the $i$-th interval in the greedy solution
+is always no latter than the finish-time of the $i$-th interval of the optimal solution,
+formally stated below.
+
+\begin{fact} \label{int-fact1}
+For any $1 \le i \le k$, we have $f(x_i) \le f(x_i^*)$.
+\end{fact}
+
+\emph{Proof.} We prove it by induction. The base case
+is to show $f(x_1) \le f(y_1)$. This is obvious,
+as the first interval picked by the greedy algorithm 
+is always the one with smallest finish-time.
+
+We now show the inductive step. Suppose $f(x_j) \le f(y_j)$ for all $1\le j \le i$.
+We aim to prove $f(x_{i+1}) \le f(y_{i+1})$. 
+See Figure~\ref{fig:inductive}.
+We can write $f(x_i) \le f(y_i) \le s(y_{i+1})$, 
+   where the first inequality comes from the inductive assumption
+   and the second one comes from the fact that intervals in the optimal solution do not conflict.
+This shows that, $y_{i+1}$ does not conflict with $x_i$,
+and hence $y_{i+1}$ does not conflict with any of these $\{x_1, x_2, \cdots, x_i\}$.
+Therefore, in the greedy algorithm, after picking $x_i$, the interval $y_{i+1}$ remains~(i.e., not removed).
+In other words, when the greedy algorithm picks the $(i+1)$-th interval, 
+interval $y_{i+1}$ is one of the available candidates.
+As the greedy algorithm always pick the one with earliest finish-time~(among all available ones), 
+either $y_{i+1}$ is picked, or another one with even smaller finish-time~(than $y_{i+1}$) is picked;
+in either case, we have $f(x_{i+1}) \le f(y_{i+1})$, as desired. \qed
+
+\begin{figure}[h]
+\centering{\input{inductive}}
+\caption{Illustrating of proving Fact~\ref{int-fact1}.}
+\label{fig:inductive}
+\end{figure}
+
+\begin{fact} \label{fact2}
+We have $k = m$.
+\end{fact}
+
+\emph{Proof.} We prove it by contradiction.
+See Figure~\ref{fig:fact2}.  Suppose conversely that $m \ge k + 1$.
+Using the same reasong in proving Fact~\ref{int-fact1},
+we know that in the greedy algorithm after picking $\{x_1, x_2, \cdots, x_k\}$,
+$y_{k+1}$ remains alive, as it does not overlap with any of these $k$ intervals that are already picked.
+Hence, the greedy algorithm will not terminate and will continue to pick at least one more interval.
+This contradicts to the assumption that the greedy solution includes $k$ intervals. \qed
+
+\begin{figure}[h]
+\centering{\input{fact2}}
+\caption{Illustrating of proving Fact~\ref{fact2}.}
+\label{fig:fact2}
+\end{figure}
+
+
+\subsection*{The Complete Algorithm}
+
+One iteration of the greedy algorithm requires to remove the intervals that conflict with the currently picked one.
+The naive approach is to compare with all remaining intervals,
+which takes linear time, resulting in an overall $O(n^2)$ time algorithm.
+%with earliest finish-time that is compatible with existing ones~(i.e., those in $X$)?
+
+Can we do it faster?
+We can sort all intervals by their finish-time, examine them one-by-one following this order, and include it when it does not
+conflict with those already picked~(denoted as $X$). %---a similar approach is used in the Kruskal's algorithm.
+Note that, this means we delay the removal: instead of removing the conflicting intervals immediately, we remove
+it at the time of examining it, and actually remove/skip it if it conflicts with one of the added intervals.
+
+The next question is, when examining the current interval, 
+how to decide if it conflicts with any one in $X$?
+Again we can do linear scan but it will take linear time.
+%A naive solution is to compare it with all intervals in $X$, but this will take linear time and the resulting algorithm will take $O(n^2)$ time.
+%In fact, we can do it faster. 
+In fact, we only need to check if it conflicts with the \emph{last interval added to $X$}.
+This is because, the current interval does not conflict with all in $X$ 
+is equivalent to that its start-time is no sooner than the finish-time of all intervals in $X$,
+but since all intervals are now sorted by their finish-time,
+this becomes equivalent to that the start-time of the current interval is no sooner than the 
+finish-time of the last interval added to $X$.
+
+In implementation, we simply maintain the last interval that is added to $X$,
+and use a single comparison to decide if the current one should be picked or not.
+The pseudo-code is given below.
+The for-loop takes linear time. The entire algorithm takes $O(n\log n)$ time, as it is dominated by sorting.
+An example of running this algorithm follows.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {11}{Algorithm greedy~(intervals $\{(s(i), f(i))\}, 1\le i \le n$)}\xxx
+	\aab {sort $A$ by their finish-time;}\xxx
+	\aab {init $X=\{1\}$;}\xxx
+	\aab {let $j=1$;\ \ // maintain the last interval added to $X$}\xxx
+	\aaB {5}{for $i = 2 \to n$}\xxx
+	\aaC {3}{if~($s(i) \ge f(j)$)}\xxx
+	\aad {pick $i$ and add it to $X$;}\xxx
+	\aad {$j = i$;}\xxx
+	\aac {end;}\xxx
+	\aab {end;}\xxx
+	\aab {return $X$;}\xxx
+	\aaa {end;}\xxx
+\end{minipage}
+
+\vspace*{-0.8cm}
+
+\begin{figure}[h]
+\centering{\input{jump}}
+\caption{An example of running above algorithm.}
+\label{fig:jump}
+\end{figure}
+
+
+

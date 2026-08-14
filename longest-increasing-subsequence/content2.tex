@@ -1,0 +1,234 @@
+\subsection*{The Complete Dynamic Programming Algorithm}
+
+Now we develop the complete algorithm for the LIS problem.
+We follow the recurrence to fill up a DP table, in this case the $L(\cdot)$ array
+that stores the length of the optimal solution of all subproblems.
+The length of the LIS of the input array $A$ is given by $\max_{1\le k \le n} L(k)$.
+The pseudo-code is given below. 
+This algorithm runs in $\Theta(n^2)$ time and $\Theta(n)$ space.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {8}{Algorithm LIS-DP~(array $A[1\cdots n]$)}\xxx
+	\aaB {5}{for $k = 1 \to n$}\xxx
+	\aac {$L[k] = 1$;}\xxx
+	\aaC {2}{for $j = 1 \to k - 1$}\xxx
+	\aad {if~($A[j] < A[k]$ and $L(j) + 1 > L(k)$): $L[k] = L[j] + 1$;}\xxx
+	\aac {end for;}\xxx
+	\aab {end for;}\xxx
+	\aab {return: $\max_{1\le k \le n} L[k]$;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+Let $k^* = \arg\max_{1\le k \le n} L(k)$, i.e., the LIS of $A$ ends at $A[k^*]$.
+We know the length of the LIS of $A$ is $L[k^*]$.
+But how to obtain the actual LIS, i.e., $opt(P_{k^*})$? 
+First of all, we do not need to explicitly store the actual LIS, i.e., $opt(P_k)$, for all subproblems:
+storing each of them explicitly using an array would take $O(n)$ space and
+hence storing them all (in this way) takes $O(n^2)$ space, which is prohibitive.
+In fact, there is an approach that can store them all in $O(n)$ space!
+Why is this possible? Again this is due to the optimal structure property:
+the optimal solutions for different subproblems contain duplicate information.
+
+We can use one array $T$ to store \emph{all} optimal solutions, i.e., $\{opt(P_k)\}$. 
+To achieve so, 
+we define $T[k]$ to store the index/position of the second last element of $opt(P_k)$.
+(The last element of $opt(P_k)$ is fixed, i.e., $A[k]$, by the definition of the subproblems.)
+See below the $T$ array built for the same example.
+%For the same example, this array will be: $$T = [0, 1, 2, 1, 4, 5, 4].$$
+\begin{displaymath}
+\begin{array}{rllllllllllll}
+A & = & [3, &8, &9, &4, &6, &7, &5] \\
+opt(P_1) &=& [3]  &&&&&& && T[1] = nul\\
+opt(P_2) &=& [3, &8] &&&&&&& T[2] = 1\\
+opt(P_3) &=& [3, &8, &9] &&&&&& T[3] = 2\\
+opt(P_4) &=& [3, &&&4] &&&&& T[4] = 1\\
+opt(P_5) &=& [3, &&&4, &6] &&&& T[5] = 4\\
+opt(P_6) &=& [3, &&&4, &6, &7] &&& T[6] = 5\\
+opt(P_7) &=& [3, &&&4, &&&5] && T[7] = 4\\
+\end{array}
+\end{displaymath}
+
+Once $T$ is built~(which we will show),
+the optimal solution for \emph{any} $P_k$ can be obtained from $T$ using traceback.
+For example, to construct $opt(P_5)$ from $T$, we start with placing $A[5]$
+as its last element, by definition. The second last element will be at position/index $T[5] = 4$. 
+The element before $A[4]$ must be at position $T[4] = 1$; 
+the one right before $A[1]$ is at position $T[1]=nul$ which marks the termination of the traceback.
+So, $opt(P_5) = [A[1],A[4],A[5]] = [3, 4, 6]$.
+%For example, to construct $opt(P_6)$ from $T$, we start with placing $A[6] = 7$
+%as its last element, by definition. The second last element will be at position/index $T[6] = 5$ and the
+%corresponding element is $A[5] = 6$. The element before it must be $A[T[5]] = A[4] = 4$;
+%the one before is $A[T[4]] = A[1] = 3$. Now $T[1] = nul$ so the traceback terminates,
+%which concludes with $opt(P_6) = [3, 4, 6, 7]$.
+
+The pseudo-code for constructing $opt(P_k)$ for \emph{any} $k$ is given below.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {6}{Algorithm LIS-traceback~($A[1\cdots n]$, $T[1\cdots n]$, $k$)}\xxx
+	\aaB {3}{while~($k\neq nul$)}\xxx
+	\aac {add $A[k]$ to the front of $opt$;}\xxx
+	\aac {$k = T[k]$;}\xxx
+	\aab {end while;}\xxx
+	\aab {return $opt$;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+Of course, to construct the LIS of $A$, i.e., the optimal solution to the original problem,
+we can simply call LIS-traceback($A$, $T$, $k^*$), where $k^* = \arg\max_{1\le k \le n} L(k)$.
+
+The only remaining question is to build $T$.
+By definition, $T[k]$ stores the index of the second last element of $opt(P_k)$.
+Using the same argument for deriving the recurrence for $L(\cdot)$, 
+the second last element of $opt(P_k)$
+is $A[j]$, where $1\le j < k$ and $A[j] < A[k]$, that maximizes $L(j)$.
+Formally, $$\textstyle T[k] = \arg\max_{1\le j < k, A[j] < A[k]} L(j).$$
+
+Note the connection between $T$ and $L$.
+Not a surprise, $T$ can be constructed on the fly along with constructing $L$.
+Whenever $L[k]$ gets updated, meaning a larger $L[j]$, where $1\le j \le k$ and $A[j] < A[j]$, is found, 
+we update $T[k]$ accordingly to keep track of $j$, i.e., the index of currently the best second last element.
+The pseudo-code for constructing $T$ (and $L$) is given below.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {9}{Algorithm LIS-DP-T~(array $A[1\cdots n]$)}\xxx
+	\aaB {6}{for $k = 1 \to n$}\xxx
+	\aac {$L[k] = 1$;}\xxx
+	\aac {$T[k] = nul$;}\xxx
+	\aaC {2}{for $j = 1 \to k - 1$}\xxx
+	\aad {if~($A[j] < A[k]$ and $L(j) + 1 > L(k)$): $L[k] = L[j] + 1$ and $T[k] = j$}\xxx
+	\aac {end for;}\xxx
+	\aab {end for;}\xxx
+	\aab {return $T$;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+
+%%The pseudo-code is given above.
+%%We maintain two arrays, $L(k)$, to store the length of the $opt(k)$,
+%%and $T(k)$, to maintain the tracking-back pointers, $1 \le k \le n$.
+%%The optimal solution $opt(k)$ can be constructed by using $T$.
+%%The running time of the algorithm is $\Theta(n^2)$.
+
+
+\subsection*{An $\Theta(n\log n)$ Algorithm}
+
+The LIS problem can be solved in $\Theta(n\log n)$ time.
+The idea is to maintain the ``best'' IS of each length, so that
+longer IS can be built on top of them when the next number gets processed.
+Here the ``best'' means the subsequence ends with the smallest possible number.
+This is intuitive as it facilitates further extension.
+
+Formally, we define $S_k[l]$ as the smallest number in $A[1\cdots k]$ such
+that there exists an IS of length $l$ that ends at this number.
+It helps to work on an example to fully understand above defintion.
+
+$A = [3, 8, 5, 9, 6, 2, 7, 4]$. Then we have:\\
+$S_1 = [3]$; \\
+$S_2 = [3, 8]$; \\
+$S_3 = [3, 5]$; \\
+$S_4 = [3, 5, 9]$; \\
+$S_5 = [3, 5, 6]$; \\
+$S_6 = [2, 5, 6]$; \\
+$S_7 = [2, 5, 6, 7]$; \\
+$S_8 = [2, 4, 6, 7]$.
+
+It is important to keep in mind that $S_k[l]$ corresponds to an IS of length $l$.
+$S_k[l]$ does not store the entire IS but just its last element.
+
+We observe that, for every $k$, the array $S_k$ is sorted in ascending order.
+This is not an coinsidence. We now prove it, by contradiction.
+Suppose conversely that, for some $k$, $S_k[i] > S_k[j]$ where $i < j$.
+By the definition of $S_k[j]$, there exists an IS
+of length $j$ that ends at $S_k[j]$. Let $a_i$ be the $i$-th number
+in this IS; we have $a_i < S_k[j]$.
+Note that $a_i$ is also the last number of an IS of length $i$.
+Since, by definition, $S_k[i]$ stores the \emph{smallest}
+last number across all length-$i$ ISs,
+we know that $S_k[i] \le a_i$. This results in a contradiction.
+
+Having $S_k$ is increasing is critical for obtaining the faster algorithm,
+as it allows for binary search which takes $O(\log n)$ time. 
+
+Suppose that we are able to build $S_k$, for all $k = 1, 2, \cdots, n$,
+what is the LIS of $A$? Its length will be $|S_n|$; 
+the actual LIS can be constructed using traceback as we will see shortly.
+
+The remaining question is to build $\{S_k\}$. We do it gradually,
+i.e., to build $S_{k+1}$ based on $S_k$.
+You might also have observed in above example that, at most one element
+needs to be updated. This is indeed true.
+The updating procedure is quite simple: if $A[k+1]$ is larger than the last element of $S_k$~(or, $S_k$ is empty),
+we append $A[k+1]$ to its end; otherwise, we locate~(using binary search) the smallest $i$
+such that $S_k[i] > A[k+1]$ and then replace $S_k[i]$ with $A[k+1]$.
+Please take a moment to verify that this procedure works by applying to above example.
+
+Now we formally prove that this procedure results in the correct $S_{k+1}$.
+In the case that $A[k+1]$ is larger than the last element of $S_k$, or $S_k$ is empty,
+we know that a longer IS, of length $|S_k| + 1$, can be formed, by concatenating
+the IS implied by the last element of $S_k$ and $A[k+1]$.
+%the IS of $|S_k|$~(whose last element is the last element of $S_k$) and $A[k+1]$.
+Also, $A[k+1]$ must be used to form an IS of length $|S_k| + 1$ because
+without it the length of the LIS in $A[1\cdots k]$ is $|S_k|$. Hence, $A[k+1]$ is
+also the smallest possible last element, because it is the only choice.
+We also have $S_{k+1}[l] = S_k[l]$ for each $l = 1, 2, \cdots, |S_k|$, since
+the best length-$l$ IS in $A[1\cdots k+1]$ will not use $A[k+1]$ because $S_k[l] < A[k+1]$.
+These analysis combined proves that simply appending $A[k+1]$ to $S_k$ obtains $S_{k+1}$.
+
+Now consider the case that $S_k[i] > A[k+1]$, where $i$ is the smallest such index.
+This implies that $S_k[l] < A[k+1]$ for all $1 \le l < i$.
+Using above analysis, we have that $S_{k+1}[l] = S_k[l]$, for $1 \le l < i$.
+%then the first $i-1$ elements in $S_k$ should remain unchanged as they are all smaller than $A[k+1]$.
+Next, $S_{k+1}[i]$ must be $A[k+1]$,
+%$S_k[i]$ should be replaced with $A[k+1]$ 
+as now we have a ``better'' IS of length $i$,
+by concatenating the IS of length $(i-1)$ implicitly stored in $S_k[i-1]$ and $A[k+1]$; 
+this new length-$i$ IS is better because $A[k+1] < S_k[i]$.
+Last, $S_{k+1}[l] = S_k[l]$ for $l = i + 1, \cdots, |S_k|$.
+This can be proved by contradiction.
+Assume that $S_{k+1}[l] = A[k+1]$ for some $l \ge i + 1$. 
+Consider the IS of length $l$ it implies.
+The $i$-th element in it, which we call $a_i$, is the last element of an IS of length $i$,
+so we must have $S_k[i] \le a_i < A[k+1]$ which is a contradiction.
+All these combined proves that, for this case, simply replacing $S_k[i]$ with $A[k+1]$ results in the correct $S_{k+1}$.
+
+The pseudo-code is given below.  Note that we will not maintain separate arrays $S_k$; 
+we only maintain one array $S$ and update it as $k$ increases.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {7}{Algorithm faster-LIS~(array $A[1\cdots n]$)}\xxx
+	\aab {$S=\emptyset$;}\xxx
+	\aaB {3}{for $k = 1 \to n$}\xxx
+	\aac {if $|S| = 0$ or $A[k] > S[|S|]$:  append $A[k]$ to $S$;}\xxx
+	\aac {else: binary-search($S$, $A[k]$) to locate the smallest $i$ such that $S[i] > A[k]$, then $S[i] = A[k]$;}\xxx
+	\aab {end for;}\xxx
+	\aab {return $|S|$;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+Above algorithm computes the length of the LIS. To construct the actual LIS, we need two modifications.
+First, instead of storing the numbers in $A$, we use $S$ to store the corresponding indexes.
+Second, we maintain tracing back pointers stored in an array $T$.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {18}{Algorithm faster-LIS-full~(array $A[1\cdots n]$)}\xxx
+	\aab {$S=\emptyset$; }\xxx
+	\aaB {9}{for $k = 1 \to n$}\xxx
+	\aaC {3}{if $|S| = 0$ or $A[k] > S[|S|]$}\xxx
+	\aad {$T[k] = S[|S|]$ or $T[k] = null$ if $|S|=0$;}\xxx
+	\aad {append $k$ to $S$;}\xxx
+	\aaC {4}{else}\xxx
+	\aad {binary-search to locate the smallest $i$ such that $A[S[i]] > A[k]$;}\xxx
+	\aad {$S[i] = k$;}\xxx
+	\aad {$T[k] = S[i-1]$ or $T[k] = nul$ if $i=1$;}\xxx
+	\aac {end if;}\xxx
+	\aab {end for;}\xxx
+	\aab {$j = S[|S|]$; $opt=\emptyset$;}\xxx
+	\aaB {3}{while~($j\neq nul$)}\xxx
+	\aac {add $A[j]$ to the front of $opt$;}\xxx
+	\aac {$j = T[j]$;}\xxx
+	\aab {end while;}\xxx
+	\aab {return $opt$;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+Both algorithms runs in $\Theta(n\log n)$ time as binary-search takes $\Theta(\log n)$ time.

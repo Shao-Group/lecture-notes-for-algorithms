@@ -1,0 +1,301 @@
+%\setcounter{definition}{0} \setcounter{property}{0} \setcounter{claim}{0} \setcounter{fact}{0} \setcounter{corollary}{0} \setcounter{figure}{0}
+\section{Edit Distance Problem}
+
+The edit distance problem is largely motivated by and abstracted from genome evolution.
+There are three types of nucleotide-level mutations, substitutions, insertions, and deletions.
+See Figure~\ref{fig:edits}. Given two DNA sequences, for examples, the sequences of two homologous genes,
+we want to infer the most likely mutation events happened between them during the evolutionary history.
+This can be modeled as the following edit distance problem: given two strings $X$ and $Y$ over alphabet $\Sigma$,
+to find the minimum number of such events that transforms $X$ into $Y$.
+We denote by $d(X, Y)$ as the edit distance between $X$ and $Y$.
+See Figure~\ref{fig:align} for an example, where we can write $d(X, Y) = 4$.
+
+\begin{figure}[h]
+\centering{\input{edits}}
+\caption{Illustration of the 3 types of mutation events in genome evolution.}
+\label{fig:edits}
+\end{figure}
+
+An equivalent and convenient way to represent edits between two sequences 
+is \emph{alignment}. See Figure~\ref{fig:align}.
+In an alignment, deletions and insertions are represented with \emph{gaps}, shown with $-$.
+(Note that deletions on $X$ is equivalent to insertions on $Y$;
+deletions on $Y$ is equivalent to insertions on $X$.)
+Both exactly-matched characters and mismatched-characters~(i.e., requires a substitutions event),
+are shown by vertical-bars with substitutions highlighted.
+We define the \emph{score} of an alignment as the number of mismatches
+and the gaps in $X$ and the gaps in $Y$.
+Clearly, there is a one-to-one correspondence between a series
+of events that transforms $X$ into $Y$ and an alignment between $X$ and $Y$,
+and the number of events is equal to the score of the alignment. %the number of gaps and mismatches in the alignment.
+Hence, calculating edit distance between $X$ and $Y$ is equivalent to
+seeking the optimal alignment between $X$ and $Y$~(i.e., the alignment with minimized score).
+
+\begin{figure}[h]
+\centering{\input{align}}
+\caption{Illustration of the edit distance and the corresponding optimal alignment.}
+\label{fig:align}
+\end{figure}
+
+
+\subsection*{A Dynamic Programming Algorithm}
+
+We now design a dynamic programming to find the optimal alignment of two given strings.
+We first look into the optimal substructures. Suppose that $\mathcal{A}$ is the optimal
+alignment of two strings $X$ and $Y$~(see Figure~\ref{fig:optimal}).
+Then clearly its substructure, i.e., the first $k$ columns, gives the optimal
+alignment between the corresponding two substrings, which can be obtained by removing
+the gaps in the first $k$ columns of $\mathcal{A}$.
+(Proof: if the two substrings can be aligned with
+a better alignment~(with smaller score), then we can have
+a better alignment, than $\mathcal{A}$, between $X$ and $Y$,
+by concatenating to it the remaining columns of $\mathcal{A}$.)
+
+\begin{figure}[h]
+\centering{\input{optimal}}
+\caption{Illustration of the optimal substructure of alignment.
+The left figure shows the optimal alignment between $X$ and $Y$.
+Then we can remove any number of columns from right-side, and the resulting
+alignment must be the optimal alignment of the corresponding two substrings.
+For examples, the middle figure shows the optimal alignment between $X' = AGCATCAG$ and $Y' = AGGAAG$,
+where one column of the alignment in the left-figure is removed;
+and the right figure shows the optimal alignment between $X'' = AGCATC$ and $Y'' = AGGA$,
+where three columns of the alignment in the left-figure is removed.}
+\label{fig:optimal}
+\end{figure}
+
+So this problem satisfies the optimal substructure property.
+The substructure suggests defining the subproblems as to computing the optimal
+alignment between a substring of $X$~(starting from beginning) and 
+a substring of $Y$~(starting from beginning).
+Formally, let $F(i,j)$ be the edit distance between $X[1\cdots i]$ and $Y[1\cdots j]$.
+Clearly, $d(X, Y) = F(m,n)$, where we assume $m = m$ and $n = n$.
+Now we develop a recurrence. In order to calculate the optimal alignment between $X[1\cdots i]$
+and $Y[1\cdots j]$, consider the possible scenario of the last step, i.e., how $X[i]$ and $X[j]$
+are placed in the optimal alignment. There are three cases. See Figure~\ref{fig:recurrence}.
+
+\begin{figure}[h]
+\centering{\input{recurrence}}
+\caption{Illustration of the three cases in developing the recurrence.}
+\label{fig:recurrence}
+\end{figure}
+
+
+First, $X[i]$ is aligned to $Y[j]$ in the optimal alignment. In this case, the optimal alignment
+between $X[1\cdots i]$ and $Y[1\cdots j]$ can be obtained by concatenating the optimal alignment
+between $X[1\cdots i-1]$ and $Y[1\cdots j-1]$ and this column of $(X[i], Y[j])^T$.
+Hence, in this case, $F(i,j) = F(i-1, j-1) + \delta(X[i] \neq Y[j])$, where the delta function
+$\delta(X[i] \neq Y[j]) = 1$ if $X[i] \neq Y[j]$, i.e., a mismatch that requires a substitution event,
+and $\delta(X[i] \neq Y[j]) = 0$ if $X[i] = Y[j]$, i.e., an exact-match that does not need any event.
+%The extra delta function represents if a substitution is needed.
+
+Second, $X[i]$ is not aligned~(or, aligned to a gap) in the optimal alignment. In this case, the optimal alignment
+between $X[1\cdots i]$ and $Y[1\cdots j]$ can be obtained by concatenating the optimal alignment
+between $X[1\cdots i-1]$ and $Y[1\cdots j]$ and this column of $(X[i], -)^T$.
+Hence, in this case, $F(i,j) = F(i-1, j) + 1$, where 
+the extra 1 represents a deletion on $X$ is needed.
+
+Third, $Y[j]$ is not aligned~(or, aligned to a gap) in the optimal alignment. In this case, the optimal alignment
+between $X[1\cdots i]$ and $Y[1\cdots j]$ can be obtained by concatenating the optimal alignment
+between $X[1\cdots i]$ and $Y[1\cdots j-1]$ and this column of $(-, Y[j])^T$.
+Hence, in this case, $F(i,j) = F(i, j- 1) + 1$, where 
+the extra 1 represents a deletion on $Y$ is needed.
+
+Combined, the recurrence is given below.
+\begin{displaymath}
+F(i,j) = \min\left\{
+	\begin{array}{llll}
+	F(i-1,j-1) + \delta(X[i] \neq Y[j]) \\
+	F(i-1,j) + 1 \\
+	F(i,j-1) + 1 \\
+	\end{array}
+\right.
+\end{displaymath}
+
+We now can complete the algorithm. The algorithm fills a DP table. See Figure~\ref{fig:table}.
+To facilitate the use of the recurrence to solve all subproblems, we add a new row and a new column in the table,
+and fill them in the initialization step. 
+We then fill the table, either row by row, or column by column. (Think: why both work?).
+The right bottom entry, $F(m, n)$, gives the edit distance between $X$ and $Y$.
+The actual alignment can be constructed by maintaining a tracking back pointer on each entry.
+
+\begin{figure}[t!]
+\centering{\input{table}}
+\caption{The dynamic programming table.}
+\label{fig:table}
+\end{figure}
+
+The runtime of this algorithm is $\Theta(mn)$.
+There are faster algorithm to calculate the edit distance~(and the optimal alignment).
+For example, using the Four Russian's technique, it can be solved in $O(n^2/\log n)$, where we assume that $m = n$.
+However, it is unlikely to design strong subquadratic algorithms.
+Formally, it is proved that, unless the exponential time hypothesis is false, there does not exist $O(n^{2-\epsilon})$ time
+algorithm for any $\epsilon > 0$.
+
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {13}{Algorithm DP-optimal-alignment~(two strings $X$, $Y$)}\xxx
+	\aab {$F(0,j) = j$, for any $0 \le j \le n$}\xxx
+	\aab {$F(i,0) = i$, for any $0 \le i \le m$}\xxx
+	\aab {$T(0,j) = null$, for any $0 \le j \le n$}\xxx
+	\aab {$T(i,0) = null$, for any $0 \le i \le m$}\xxx
+	\aaB {5}{for $i = 1 \to m$}\xxx
+	\aaC {3}{for $j = 1 \to n$}\xxx
+	\aad {$F(i,j) = \min\{F(i-1,j-1) + \delta(X[i] \neq Y[j]), F(i-1,j) + 1, F(i,j-1) + 1\}$;}\xxx
+	\aad {let $T(i,j)$ store the best case}\xxx
+	\aac {end for;}\xxx
+	\aab {end for;}\xxx
+	\aab {report: $F(m,n) = d(X,Y)$;}\xxx
+	\aab {the optimal alignment can be obtained by tracing back following $T$;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+
+\subsection*{Transforming into Shortest Path Problem}
+
+Another way to solve the edit distance problem is to transform it into a shortest-path problem.
+See Figure~\ref{fig:graph}.
+We build a graph with $(|X| + 1)(|Y| + 1)$ vertices, $v_{ij}$, $0\le 0 \le |X|$ and $0\le j \le |Y|$. 
+(Imagine placing a vertex in each entry of above DP table.)
+There are three in-edges for vertex $v_{ij}$, when $i\ge 1$ and $j \ge 1$, corresponding to
+the 3 cases of the recursion. 
+All vertical edges have edge length of 1;
+all horizontal edges have edge length of 1;
+all diagonal edges have edge length of either 1 or 0: 
+if $X[i] \neq Y[j]$ then the edge $(v_{i-1,j-1}, v_{ij})$ has a length of 1,
+and otherwise this edge has a length of 0.
+
+\begin{figure}[h]
+\centering{\input{graph}}
+\caption{The graph constructed for $X=ACG$ and $Y = AGGT$. The 3 blue edges have length of 0, and all other edges have length 1.}
+\label{fig:graph}
+\end{figure}
+
+Clearly, there is a one-to-one correspondence between a path from $v_{00}$ to $v_{|X|,|Y|}$
+and an alignment between $X$ and $Y$, and the length of the path equals to the
+number of operations in the alignment. 
+See Figure~\ref{fig:graph2}.
+In fact, a path from $v_{00}$ to $v_{|X|,|Y|}$
+suggests how to align $X$ and $Y$: a diagonal edge pointing to vertex $v_{ij}$ implies aligning $X[i]$ and $Y[j]$;
+a vertical edge pointing to vertex $v_{ij}$ implies not to aligning $X[i]$~(or aligning $X[i]$ with gap);
+a horizontal edge pointing to vertex $v_{ij}$ implies not to aligning $Y[j]$~(or aligning $Y[j]$ with gap).
+You can also see that the length of this path equals to the number of 
+gaps and mismatches in the resulting alignment. This correlation is bi-directional:
+an alignment can be mapped into a path in the graph too.
+
+
+\begin{figure}[h!]
+\centering{\input{graph2}}
+\caption{Two examples showing the one-to-one correspondence between paths in the graph and alignments.}
+\label{fig:graph2}
+\end{figure}
+
+The above analysis leads to that, the optimal alignment between $X$ and $Y$
+corresponds to the shortest path from  $v_{00}$ to $v_{|X|,|Y|}$.
+As the graph is a DAG, we can use the linear time algorithm to find the shortest path from $v_{00}$.
+The graph contains $\Theta(|X||Y|)$ edges and vertices.
+Hence the running time is $\Theta(|X||Y|)$,
+the same as the DP algorithm.
+
+
+\subsection*{Why not Recursive Programming?}
+
+In the two DP algorithms we've designed, we always use a table to store
+the optimal solution of subproblems; when solving larger
+subproblems, we simply query the table and fetch the optimal
+solutions as needed. 
+This leads to a bottom-up strategy, i.e., we start from solving
+smaller subproblems as they will be needed by larger ones.
+Is this strategy always necessary?
+Can we directly solve the original problem with recursive programming?
+
+Let's try.
+Consider the edit distance problem.
+The DP algorithm we designed there uses the recursion below.
+\begin{displaymath}
+F(i,j) = \min\left\{
+	\begin{array}{llll}
+	F(i-1,j-1) + \delta(X[i] \neq Y[j]) \\
+	F(i-1,j) + 1 \\
+	F(i,j-1) + 1 \\
+	\end{array}
+\right.
+\end{displaymath}
+
+We write a recursive procedure: define $F(i,j)$
+returns the edit distance between $X[1\cdots i]$ and $Y[1\cdots j]$.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {7}{function $F(i,j)$}\xxx
+	\aab {if $i = 0$: return $j$;}\xxx
+	\aab {if $j = 0$: return $i$;}\xxx
+	\aab {$z_1 = F(i-1,j-1) + \delta(X[i] \neq Y[j])$;}\xxx
+	\aab {$z_2 = F(i-1,j) + 1$;}\xxx
+	\aab {$z_3 = F(i,j-1) + 1$;}\xxx
+	\aab {return $\min\{z_1,z_2,z_3\}$;}\xxx
+	\aaa {end function;}\xxx
+\end{minipage}
+
+We then call $F(m,n)$, where $m=|X|$ and $n=|Y|$.
+This is a correct algorithm.
+How about its running time?
+We define $T(m,n)$ as the running time of $F(m,n)$.
+We have $T(m,n) = T(m-1,n-1) + T(m-1,n) + T(m,n-1) + 1$.
+To \emph{approximate} $T(m,n)$, assume that $m=n$.
+Notice also that $T(m-1,n) \ge T(m-1,n-1)$
+and $T(m,n-1) \ge T(m-1,n-1)$.
+We can write $T(n,n) \ge 3T(n-1,n-1) + 1$.
+Hence, $T(n,n) \ge \Theta(3^n)$.
+So, above algorithm runs in exponential-time!
+This suggests that recursive procedure is a bad strategy.
+
+Note that there are $\Theta(mn)$ distinct subproblems, i.e., $F(i,j)$, $0\le i
+\le m$, $0\le j \le n$. The reason why above
+algorithm runs in exponential time is that it keeps solving the \emph{same}
+subproblems. See Figure~\ref{fig:search-tree} for the recursive tree. 
+The height of that tree is linear, i.e., $\Omega(n)$~(again assuming $m=n$), as
+the size of the subproblem is usually reduced by a \emph{constant}~(for example, $n\to n-1$) in each recursive call.
+The total number of nodes in the tree is $\Omega(3^n)$ which is exponential
+and aligns with above runtime analysis.
+But there are only $\Theta(mn)$ distinct subproblems, showing that
+vast duplicates of nodes in the tree.
+Hence, in the DP it is necessary to use a table to store the optimal solutions so as to avoid
+repeating resolving the same ones.
+
+\begin{figure}[h]
+\centering{\input{search-tree}}
+\caption{First 3 levels of the recursive tree of above procedure.
+Identical recursive calls are marked with the same color.}
+\label{fig:search-tree}
+\end{figure}
+
+
+
+
+%An alternative way to understand it is that, subproblems will be used
+%multiple times by different larger subproblems, hence it's beneficial
+%to store them.
+
+Both divide-and-conquer algorithms and dynamic programming algorithm
+rely on a recursive formula that reduces larger subproblems into smallers.
+See the merge-sort algorithm given below.
+
+\begin{minipage}{0.8\textwidth}
+        \aaA {5}{Algorithm merge-sort~($S[1\cdots n]$)}\xxx
+        \aab {if $n \le 1$: return $S$;}\xxx
+        \aab {$S'_1 =$ merge-sort~($S[1\cdots n/2]$);}\xxx
+        \aab {$S'_2 =$ merge-sort~($S[n/2 + 1\cdots n]$);}\xxx
+        \aab {return merge-two-sorted-arrays~($S_1', S_2'$);}\xxx
+        \aaa {end algorithm;}\xxx
+\end{minipage}
+
+Why for D\&C algorithm we do not maintain a table?
+There are two reasons.
+First, in (most) D\&C algorithms including above merge-sort algorithm, 
+there are no duplicate subproblems~(e.g., in merge-sort all subproblems are distinct).
+Hence, there is no difference between
+solving recursively or by using a table as they solve the same amount of subproblems.
+Second, in (most) D\&C algorithms, the size of the subproblem is usually reduced by a \emph{fixed ratio}~(for example, $n\to n/2$),
+and consequently the height of the recursive tree is $\Theta(\log n)$ and there is linear number of nodes in the recursive tree. 
+Hence, there is \emph{no need} to maintain a table, as solving all subproblems recursively is still efficient.
+

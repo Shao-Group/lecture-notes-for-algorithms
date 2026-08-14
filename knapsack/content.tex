@@ -2,116 +2,143 @@
 \section{Knapsack Problem}
 
 Given a knapsack with total capacity of $W$, and $n$ items, where item-$i$ has weight $w_i$ and value $v_i$,
-the \emph{knapsack problem} is to select a bunch of items, represented as a vector $(x_1, x_2, \cdots, x_n)$,
-where $x_i$ gives how many item-$i$ are picked, such that
-the total weight of these items is at most $W$, i.e., $\sum_{1\le i \le n} x_iw_i \le W$,
-and that the total value of them, i.e., $\sum_{1\le i \le n} x_i v_i$, is maximized.
+the \emph{knapsack problem} is to select a subset of items, $S\subset\{1,2,\cdots,n\}$, %represented as a vector $(x_1, x_2, \cdots, x_n)$,
+such that the total weight of these items is at most $W$, i.e., $\sum_{i \in S} w_i \le W$,
+and that the total value of the selected items, i.e., $\sum_{i\in S} v_i$, is maximized.
 
-There are two variants of above knapsack problem. 
-The first variant~(with repetition) allows each (type of) item can be
-selected unlimitted number of times, i.e., $x_i \in \{0, 1, 2, \cdots \}$, $1\le i \le n$.
-The second variant~(without repetition) requires that each item can be
-selected at most once, i.e., $x_i \in \{0, 1\}$, $1\le i \le n$.
+%% There are two variants of above knapsack problem. 
+%% The first variant~(with repetition) allows each (type of) item can be
+%% selected unlimitted number of times, i.e., $x_i \in \{0, 1, 2, \cdots \}$, $1\le i \le n$.
+%% The second variant~(without repetition) requires that each item can be
+%% selected at most once, i.e., $x_i \in \{0, 1\}$, $1\le i \le n$.
 
-Consider an instance with total capacity $W = 7$ and 4 items with weights being $(5, 2, 1, 3)$
-and values being $(8, 3, 2, 7)$. 
-For the variant~1, the optimal solution is $(0, 0, 1, 2)$, i.e.,
-item~3 is picked once and item~4 is picked twice, which gives a total value of 16 and a total weight of 7.
-For the variant~2, the optimal solution is $(0, 1, 1, 2)$, i.e.,
-item~2, 3 and 4 are picked (once), which gives a total value of 12 and total weight of 6.
+Consider an instance with total capacity $W = 7$ and 4 items with weights being $(5, 2, 1, 3)$ and values being $(8, 3, 2, 7)$. 
+%For the variant~1, the optimal solution is $(0, 0, 1, 2)$, i.e.,
+%item~3 is picked once and item~4 is picked twice, which gives a total value of 16 and a total weight of 7.
+%For the variant~2, the optimal solution is $(0, 1, 1, 2)$, 
+	The optimal solution $S = \{2,3,4\}$, i.e.,
+to pick items 2, 3 and 4, which gives a total value of 12~(and total weight of 6).
 
-\subsection*{An Exercise}
+\subsection*{A Greedy Algorithm}
 
 Since we want to maximize the total value given the capacity limit,
-an intuitive strategy is therefore to pick ``the most valuable item per unit''.
-This leads to a greedy algorithm. Formally, we sort all items w.r.t.\ $v_i/w_i$ in descending order,
-and then pick items (greedily) following this order: if the current item can be fit into the knapsack,
-we pick it, reduce the total capacity by its weight, and then either stay at this item~(for variant~1) or move to next item~(for variant~2);
+an intuitive strategy is therefore to pick ``the most valuable item if we can''.
+This leads to a greedy algorithm. Formally, we sort all items w.r.t.\ $v_i$ in descending order,
+and then pick items following this order: if the current item can be fit into the knapsack,
+we pick it, reduce the total capacity by its weight; %, and then either stay at this item~(for variant~1) or move to next item~(for variant~2);
 if the weight of the current item exceeds the remaining capacity of the knapsack, move to the next item. 
-This algorithm is good heuristic and unfortunately may not always find the optimal solution.
-\vspace*{-\topsep}
-\begin{enumerate}
-\item Design an instance for variant~1 such that this algorithm fails to find the optimal solution.
-\item Design an instance for variant~2 such that this algorithm fails to find the optimal solution.
-\end{enumerate}
+The pseudo-code is given below.
 
-\subsection*{Algorithm for Variant~1}
+\begin{minipage}{0.8\textwidth}
+	\aaA {11}{Algorithm knapsack-greedy~(weights $(w_1,w_2,\cdots,w_n)$, values $(v_1,v_2,\cdots,v_n)$, capacity $W$)}\xxx
+	\aab {sort items in descending order of $v_i$;}\xxx
+	\aab {$S = \emptyset$;}\xxx
+	\aab {$c = W$;}\xxx
+	\aaB {5}{for $i = 1 \to n$}\xxx
+	\aaC {3}{if~($w_i \le c$)}\xxx
+	\aad {$S = S \cup \{i\}$;}\xxx
+	\aad {$c = c - w_i$;}\xxx
+	\aac {end if;}\xxx
+	\aab {end for;}\xxx
+	\aab {report: $S$;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
 
-We now design an optimal, dynamic programming algorithm for variant~1.
-Again, let's first check if it satisfies optimal substructure property.
-Let $p = (x_1, x_2, \cdots, x_n)$ be the optimal solution.
-Assume that $x_k \ge 1$. Let $q$ be the solution obtained from $p$ by
-reducing $x_k$ by 1, i.e., $q = (x_1, x_2, \cdots, x_{k-1}, x_k - 1, x_{k + 1}, \cdots, x_n)$.
-Then $q$ is the optimal solution when the total capacity is $W - w_k$.
-(Proof: suppose $q$ is not the optimal solution with total capacity being $W - w_k$,
-i.e., one can find a solution achieves higher value than $q$ and does not exceed capacity limit of $W - w_k$.
-Then adding item-$k$ to this solution yields a better solution than $p$, contradicting to the assumption of $p$.)
 
-According to this optimal substructure property, naturally,
-we define $F(a)$ as the total achievable value with capacity limit being $a$.
-Clearly $F(W)$ answers the original question.
-We now develop the recursion.
-In order to calculate $F(a)$, following above optimal substructure property,
-we need to find an item in the optimal solution so as to reduce it to a smaller subproblem.
-Which item is in the optimal solution? We don't know. So we enumerate.
-We consider every single item that fits~(i.e., weight is less or equal to $a$).
-Once we know, say item-$k$, is in the optimal solution, the remaining part of the optimal
-solution can be obtained by calculating the optimal solution with $a - w_k$ being the total capacity.
-Hence, the recursion is
-$$F(a) = \textstyle \max_{1\le k \le n, w_k \le a} (F(a-w_k) + v_k).$$
+This algorithm is good heuristic but may not always find the optimal solution.
+The above instance is a counter-example, where this greedy algorithm
+picks items 1 and 2.
 
-The algorithm simply fills the array of size $(W + 1)$, i.e., $F(0), F(1), \cdots F(W)$,
-with this recursion. The running time is therefore $O(nW)$, as solving
-a single subproblem takes $O(n)$ time.
+%\vspace*{-\topsep}
+%\begin{enumerate}
+%\item Design an instance for variant~1 such that this algorithm fails to find the optimal solution.
+%\item Design an instance for variant~2 such that this algorithm fails to find the optimal solution.
+%\end{enumerate}
 
-Note that this algorithm does not run in polynomial-time.
-This is because, the \emph{input size} of numerical value $W$ is $\log W$.
-By rewriting the running time as a function of input-size, i.e.,
-$O(nW) = O(n2^{\log W})$, we can see the running time is exponential.
-(Note: if the running time is a polynomial function of \emph{numerail values}, we call it
-\emph{pseudo-polynomial time} algorithm. And this algorithm is such an example.)
+\subsection*{A Dynamic Programming Algorithm}
 
-\subsection*{Algorithm for Variant~2}
 
 Note that the optimal substructure property stated above for variant~1 does not hold for variant 2 anymore.
 This is because in variant 2 each item can be picked at most once. Therefore, another parameter should
 be introduced to ``memorize'' which items are available in the subproblem. A convenient and efficient way is to
 limit the largest index of available items. Here is the optimal substructure property for variant 2:
-let $p = (x_1, x_2, \cdots, x_n)$ be the optimal solution~(recall that each $x_i \in \{0,1\}$).
-Let $k$ be the largest index with $x_k = 1$.
-Let $q$ be the solution obtained from $p$ by
-reducing $x_k$ by 1, i.e., $q = (x_1, x_2, \cdots, x_{k-1}, x_k - 1, x_{k + 1}, \cdots, x_n)$.
-Then $q$ is the optimal solution when the total capacity is $W - w_k$ and only first $(k-1)$ items are available.
-(Proof: suppose $q$ is not the optimal solution,
-i.e., one can find a set of items from the first $(k-1)$ items that achieves higher value~(than $q$) and does not exceed capacity limit of $W - w_k$.
-Then adding item-$k$ to this solution yields a better and feasible solution than $p$, contradicting to the assumption of $p$.)
+
+Let $S\subset\{1,2,\cdots, n\}$ be the optimal solution. %~(recall that each $x_i \in \{0,1\}$).
+Let $k$ be the largest number in $S$, i.e., the last picked item.
+Let $S' = S\setminus \{k\}$, i.e., a solution by excluding the last item from $S$.
+%Let $q$ be the solution obtained from $p$ by reducing $x_k$ by 1, i.e., $q = (x_1, x_2, \cdots, x_{k-1}, x_k - 1, x_{k + 1}, \cdots, x_n)$.
+Then $S'$ is the optimal solution when the total capacity is $W - w_k$ and only first $(k-1)$ items are available.
+Here is the proof~(again, using the replacement argument). 
+Suppose $S'$ is not the optimal solution,
+i.e., one can find a subset of items from the first $(k-1)$ items that achieves higher value~(than $\sum_{i\in S'} v_i$) 
+and does not exceed capacity limit of $W - w_k$.
+Then adding item-$k$ to this solution yields a better~(than $\sum_{i\in S} v_i$) 
+and feasible solution, contradicting to the assumption $S$ is optimal.
 
 Following above optimal substructure property,
-we define $F(k, a)$ as the total achievable value using the first $k$ items with capacity limit being $a$.
-Clearly $F(n, W)$ answers the original question.
-We now develop the recursion.
+we define $P(k, c)$ as the total achievable value using the first $k$ items with capacity limit being $c$.
+Clearly $P(n, W)$ answers the original question.
+We now develop the recurrence.
 Consider the last step, i.e., whether item-$k$ is included in the optimal solution.
-In the case that the optimal solution doesn't include item-$k$ we have $F(k,a) = F(k-1,a)$.
-In the case that the optimal solution includes item-$k$ we have $F(k,a) = F(k-1,a-w_k) + v_k$.
-Note that in order to be able to include item-$k$, it is required that $w_k \le a$.
+In the case that the optimal solution does not include item-$k$ we have $P(k,c) = P(k-1,c)$.
+In the case that the optimal solution includes item-$k$ we have $P(k,a) = P(k-1,c-w_k) + v_k$.
+Note that in order to be able to include item-$k$, it is required that $w_k \le c$.
 Hence, the recursion is
 \begin{displaymath}
-F(k,a) = 
+P(k,c) = 
 \left\{
 	\begin{array}{lllll}
 	 \max \left\{
 			\begin{array}{lllll}
-			F(k-1,a-w_k) + v_k\\
-			F(k-1,a)
+			P(k-1,c-w_k) + v_k\\
+			P(k-1,c)
 			\end{array}
-		\right. & \textrm{ if } w_k \le a \\
-	F(k-1,a) & \textrm{ if } w_k > a
+		\right. & \textrm{ if } w_k \le c \\
+	P(k-1,c) & \textrm{ if } w_k > c
 	\end{array}
 \right.
 \end{displaymath}
 
-The algorithm fills out the DP table of size $n(W + 1)$
-with above recursion. The running time is therefore $O(nW)$, as solving
-a single subproblem takes $O(1)$ time.
-Again this is a \emph{pseudo-polynomial time} algorithm. 
+The algorithm fills out the DP table of size $n(W+1)$
+using above recurrence. 
+See the pseudo-code below.
 
+\begin{minipage}{0.8\textwidth}
+	\aaA {12}{Algorithm knapsack-DP~(weights $(w_1,w_2,\cdots,w_n)$, values $(v_1,v_2,\cdots,v_n)$, capacity $W$)}\xxx
+	\aab {$P(0,c) = 0$, for $0 \le c \le W$;}\xxx
+	\aaB {8}{for $k = 1 \to n$}\xxx
+	\aaC {6}{for $c = 0 \to W$}\xxx
+	\aaD {4}{if~($w_k \le c$)}\xxx
+	\aae {$P(k,c) = \max(P(k-1,c), P(k-1,c-w_k) + v_k)$;}\xxx
+	\aad {else;}\xxx
+	\aae {$P(k,c) = P(k-1,c)$;}\xxx
+	\aad {end if;}\xxx
+	\aac {end for;}\xxx
+	\aab {end for;}\xxx
+	\aab {report: $P(n,W)$;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+
+The running time is therefore $O(nW)$, as solving
+a single subproblem takes $O(1)$ time. The space complexity is also $O(nW)$.
+Note that the above algorithm does \emph{not} run in polynomial-time,
+even though $nW$ is a polynomial-function!
+To see this clearly, recall that runtime is a function of \emph{input size},
+rather than a function of \emph{input}.
+Intuitively, the input size is the size of the memory that needs to store the actual input.
+Take the edit distance problem as an example, the input is two strings $X$ and $Y$,
+while the input size is $m$ and $n$, where $m=|X|$ and $n=|Y|$.
+The runtime is $O(mn)$, which is a function of the input size, rather than the actual input~(two strings).
+
+Now let's carefully look into the knapsack problem. The input are three things: $W$, which is a number;
+the values $(v_1, v_2, \cdots, v_n)$ and weights $(w_1, w_2,\cdots, w_n)$.
+What is the input size, i.e., what is the memory needed to store the input?
+To store the number $W$, we need $\log_2 W$ bits, and to store the two vectors of size $n$ we need roughly $2n$ space.
+Hence, the runtime needs to be a function of $\log_2 W$ and $n$.
+Let $t=\log_2 W$. We have $O(nW) = O(n\cdot 2^t)$. This is an exponential function, in terms of $t$ and $n$.
+In other words, this DP algorithm runs in exponential time, rather than in polynomial time.
+
+%Again this is a \emph{pseudo-polynomial time} algorithm. 
+If the running time is a polynomial function of \emph{numerail values}, we call it
+\emph{pseudo-polynomial time} algorithm; this algorithm is such an example.

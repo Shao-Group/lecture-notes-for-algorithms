@@ -1,0 +1,169 @@
+\section{Longest Increasing Subsequence}
+
+\subsection*{Framework of Dynamic Programming Algorithm}
+
+A typical dynamic programming algorithm consists of following steps:
+\vspace*{-\topsep}
+\begin{enumerate}
+\item Define subproblems, %~(or equivalently, partition the search space into sub-spaces),
+$P_1, P_2, \cdots, P_n$. Solving all these subproblems will solve the original problem.
+sometimes the original problem is $P_n$, but sometimes it is not.
+\item Develop a recurrence for these subproblems. Formally, let $opt(P_k)$ be the optimal
+solution of $P_k$. A recurrence is a function that calculates
+$opt(P_{k+1})$ using $opt(P_1), opt(P_2), \cdots, opt(P_k)$.
+\item Fill a \emph{dynamic programming table},
+in which each entry stores the optimal solution of a subproblem, 
+using above recurrence.
+\end{enumerate}
+
+\subsection*{Optimal Substrcture Property}
+
+Let $P_1, P_2, P_3, \cdots, P_n$ be a series of subproblems defined for original problem $P$.
+If  $opt(P_k)$ can be calculated solely from the \emph{optimal solution} of previous subproblems,
+i.e., $opt(P_k) = f(opt(P_1), opt(P_2), \cdots, opt(P_{k-1}))$,
+then we say $P$ and its subproblems $\{P_1, P_2, \cdots, P_n\}$ satisfies the optimal substructure property.
+Intuitively, the optimal substructure property states that
+the optimal solution of a larger problem can be \emph{assembled}
+using the optimal solutions of the smaller subproblems.
+
+How to determine if a definition of subproblems satisfies the optimal substructure property?
+Usually we can verify if its opporsite side is true, i.e., if the optimal solution
+of a bigger subproblem \emph{implies} the optimal solution of
+the smaller subproblems.
+%Take the shortest path problem as an example we showed before:
+%Let $p = s \to w \to \cdots \to u \to v$
+%be the shortest path from $s$ to $v$.
+%Then clearly its sub-path $s\to w \to \cdots \to u$ is the shortest path from
+%$s$ to $u$~(because, if there exists a shorter path from $s$ to $u$
+%then we can find a shorter one from $u$ to $v$ than $p$).
+%This suggests that the shortest path problem
+%satisfies the optimal substructure property.
+We will use examples to demonstrate it.
+%and how to determine a proper definition accordingly.
+
+
+\subsection*{Longest Increasing Subsequences}
+
+Let $A[1\cdots n]$ be an array with $n$ distinct integers.
+A \emph{subsequence} of array $A$ is a subset of $A$ but follows
+the same order. For example, $(A[2], A[4], A[5])$ is a subsequence of $A$
+while $(A[3], A[1], A[4])$ is not.
+An \emph{increasing subsequence}~(IS) of $A$ means the values of the
+subsequence are increasing.
+Formally, an IS of length $k$ can be written
+as $(A[i_1], A[i_2], \cdots, A[i_k])$, where $1\le i_1 < i_2 < \cdots < i_k \le n$,
+and $A[i_1] < A[i_2] < \cdots < A[i_k]$.
+The \emph{longest increasing subsequence problem}~(LIS problem) is, given array $A[1\cdots n]$,
+to seek an IS with maximum length.
+(We assume that $A$ contains $n$ \emph{distinct} numbers for sake
+of simplicity; all algorithms introduced later can be modified to handle duplicates.)
+
+For example, let $A = [1, 8, 3, 9, 4, 7, 5]$. Then one LIS is $[1, 3, 4, 7]$; %The optimal solution may not be unique though. 
+another LIS is $[1, 3, 4, 5]$.
+
+We want to design a dynamic programming algorithm to solve this problem.
+The first step is to define subproblems. Naturally, we define $P_k$
+as to seek the LIS for $A[1\cdots k]$. Solving $P_n$ gives the LIS
+of $A[1\cdots n]$. Is this a good definition? Let's verify if substructures
+of $opt(P_k)$ implies the optimal solutions of smaller subproblems.
+Consider this example:
+
+\begin{displaymath}
+\begin{array}{rllllllll}
+A & = & [3, &8, &9, &4, &6, &7, &5] \\
+opt(P_1) &=& [3] \\
+opt(P_2) &=& [3, &8] \\
+opt(P_3) &=& [3, &8, &9] \\
+opt(P_4) &=& [3, &8, &9] \\
+opt(P_5) &=& [3, &&&4, &6] &&\quad (\textrm{or } [3, 8, 9]) \\
+opt(P_6) &=& [3, &&&4, &6, &7] \\
+opt(P_7) &=& [3, &&&4, &6, &7]
+\end{array}
+\end{displaymath}
+
+Consider $opt(P_6) = [3, 4, 6, 7]$ and its 3 substructures $[3]$, $[3, 4]$, and $[3, 4, 6]$.
+The first and the last one are indeed the optimal solutions of $P_1$ and $P_5$,
+but $[3, 4]$ is not the optimal solution of $P_4$.
+This suggests that these subproblems do not satisfy the optimal substructure property and
+not suitable for designing a DP algorithm.
+
+Let's have another try. Define $P_k$ as to find the LIS of $A[1\cdots k]$ that ends at $A[k]$.
+This is a common technique that introduce a constraint to the definition of the subproblems.
+Here we require that $opt(P_k)$ must use, and end at, $A[k]$. Let's manually work out
+the optimal solutions, following this new defintion, on above example:
+\begin{displaymath}
+\begin{array}{rllllllll}
+A & = & [3, &8, &9, &4, &6, &7, &5] \\
+opt(P_1) &=& [3] \\
+opt(P_2) &=& [3, &8] \\
+opt(P_3) &=& [3, &8, &9] \\
+opt(P_4) &=& [3, &&&4] \\
+opt(P_5) &=& [3, &&&4, &6] \\
+opt(P_6) &=& [3, &&&4, &6, &7] \\
+opt(P_7) &=& [3, &&&4, &&&5] \\
+\end{array}
+\end{displaymath}
+
+You may verify that, any substructure of any optimal solution implies the optimal
+solution of the smaller subproblem. In fact, we can formally prove it.
+
+%Recall that, in order to give a proper definition of subproblems,
+%we can try ``reverse engineering'', i.e., starting from the optimal
+%solution, trying to determine if it \emph{implies} the optimal solution
+%of certain subproblem. If it does, then that subproblem is likely the one
+%we could use in designing the DP algorithm.
+%
+%Let's try this approach with on above example. We know that $[1, 3, 4, 7]$
+%is one optimal solution. Does its substructure, $[1, 3, 4]$, give the optimal
+%solution of certain subproblem? A natural guess would be that, $[1, 3, 4]$,
+%is the LIS of $A[1\cdots 6] = [1, 5, 3, 8, 9, 4]$.
+%But, a further look denies this conjecture, as $[1, 3, 8, 9]$ is a longer
+%IS of $A[1\cdots 6]$.
+%Let's have another try. We still consider $A[1\cdots 6]$, but require that
+%the last number of the IS must be $A[6] = 4$.
+%(Note: this is again a commonly-used technique, i.e., introducing a variable or a constraint
+%into the definition of the subproblems.)
+%Among all such ISs of $A[1\cdots 6]$, is $[1, 3, 4]$ the optimal one?
+%Yes! Why? We can prove by contradiction: suppose that there is a longer IS of $A[1\cdots 6]$
+%that ends at $A[6] = 4$, we can concatenate it with $A[7] = 7$ to obtain 
+%a longer, than $[1, 3, 4, 7]$, IS of $A$, contradicting
+%to the optimality of $[1, 3, 4, 7]$.
+
+%We summarize above example with the following optimal substructure statement.
+\begin{fact}\label{lis-fact1}
+Let $(A[i_1], A[i_2], \cdots, A[i_k])$ be one LIS of $A[1\cdots i_k]$.
+Then  $(A[i_1], A[i_2], \cdots, A[i_j])$ must be one LIS of $A[1\cdots i_j]$
+for any $j$, $j=1, 2, \cdots, k-1$.
+\end{fact}
+\emph{Proof.} We prove it by contradiction. Assume that, for some $j$, 
+$(A[i_1], A[i_2], \cdots, A[i_j])$ is not optimal, i.e.,
+there exists an IS ending at $A[i_j]$ whose length is greater than $j$.
+Extending this IS by appending $(A[i_{j+1}], A[i_{j+2}], \cdots, A[i_k])$
+gives an IS, because $A[i_j] < A[i_{j+1}]$, whose size is larger than $k$.
+This contradicts to the optimality of $(A[i_1], A[i_2], \cdots, A[i_k])$. \qed
+
+We proved that above definition of subproblems $\{P_k\}$ satisfy the optimal substructur property.
+We proceed with developing the recurrence.
+%Above property directly suggests the definition of subproblems.
+%We define $opt(k)$ as the LIS of $A[1\cdots k]$ with $A[k]$ being the last number,
+%and define $L(k)$ as the length of $opt(k)$.
+%In other words, among all ISs of $A[1\cdots k]$ with last number being $A[k]$,
+%$opt(k)$ is the optimal solution and $L(k)$ is its length.
+%
+%We defined $n$ subproblems. Suppose we can solve all of them.
+%What's the LIS of $A$?
+%Clearly, that's $\max_{1\le k \le n} L(k)$.
+%
+%We now develop a recurrence. 
+How to construct $opt(P_k)$ given $opt(P_j)$, $j = 1, 2, \cdots, k-1$?
+A useful technique is to enumerate the last step.
+%we enumerate the last step. By definition of the subproblem, $A[k]$ is the last number of $opt(k)$.
+For the LIS problem, it is to enumerate the second last number~(the last number of $opt(P_k)$ is $A[k]$ by its definition).
+The second last number must be one of $A[j]$ satisfying $1\le j < k$ and $A[j] < A[k]$.
+%We don't know which one is correct so we enumerate all possibilities.  (And once we enumerate, we can assume we know it.)
+Suppose that $A[j]$ is the second last number of $opt(P_k)$, then according to Fact~\ref{lis-fact1},
+$opt(P_k)$ can be obtained by concatenating $opt(P_j)$ and $A[k]$.
+Hence, seeking $opt(P_k)$ is equivalent to finding $j$ such that $opt(P_j)$ is the longest. 
+Let $L(k)$ to denote the length of $opt(P_k)$. We can write the recurrence:
+$$\textstyle L(k) = 1 + \max_{1 \le j < k, A[j] < A[k]} L[j].$$
+

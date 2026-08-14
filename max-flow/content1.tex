@@ -1,0 +1,82 @@
+\subsection*{Network Flow}
+
+A \emph{network}~(also called \emph{flow network}) models 
+an abstracted flow~(traffic, data, etc) transmits from an origin to a destination
+via a graphical structure. Formally, a (flow) network is a tuple $(G = (V, E), s, t, c(\cdot))$, where
+%$G = (V, E)$ is a directed graph, $s\in V$ represents the source vertex~(i.e., the in-degree of $s$ is 0),
+%$t\in V$ represents the sink vertex~(i.e., the out-degree of $t$ is 0),
+%and $c(e) \ge 0$ represents the \emph{capacity} of edge $e\in E$.
+
+\vspace*{-\topsep}
+\begin{enumerate}
+\item $G = (V, E)$ is a directed graph;
+\item $s\in V$ is a source vertex of $G$~(i.e., the in-degree of $s$ is 0), from which the flow is generated;
+\item $t\in V$ is a sink vertex of $G$~(i.e., the out-degree of $t$ is 0), at which the flow is absorbed;
+\item $c: E\to \mathbb{R}^+$, in which $c(e)$ represents the \emph{capacity} of edge $e\in E$, which models the limit of the flow that edge $e$ can carry.
+\end{enumerate}
+
+An \emph{$s$-$t$ flow} of network $(G = (V, E), s, t, c(\cdot))$
+describes {how} the flow is transmitted from $s$ to $t$
+via the graph $G$ under the capacity constraints. Formally,
+an $s$-$t$ flow $f$ is a function $f: E\to \mathbb{R}_{\ge 0}$
+that satisfies the following two conditions:
+\vspace*{-\topsep}
+\begin{enumerate}
+\item For every $e\in E$, $0\le f(e) \le c(e)$; this is called the \emph{capacity condition};
+\item For every vertex $v\in V\setminus\{s,t\}$, $\sum_{e\in I(v)} f(e) = \sum_{e\in O(v)} f(e)$, where $I(v) := \{(u,v)\in E\mid u\in V\}$ represents
+the set of in-edges of $v$, and $O(v) := \{(v,w)\in E\mid w\in V\}$ represents
+the set of out-edges of $v$. This is called the \emph{conservation condition}.
+\end{enumerate}
+
+Intuitively, an $s$-$t$ flow assigns an non-negative value $f(e)$ to edge $e$, representing the
+amount of flow that is carried by edge $e$; such amount must not exceed the capacity of $e$, i.e., $f(e) \le c(e)$, for every $e\in E$.
+All vertices, except the source $s$ that generates the flow and the sink that absorbs the flow,
+redistribute the flow~(instead of repositing any flow); therefore, for each vertex $v\in V\setminus\{s,t\}$,
+the total amount of flow that enters $v$ equals to the total amount of flow that leaves $v$.
+See Figure~\ref{fig:flow}.
+
+\begin{figure}[h]
+\centering{\input{flow}}
+\caption{Two examples of networks and $s$-$t$ flows.
+The capacities are marked as black numbers next to edges;
+the flow values are marked as red numbers next to edges.
+The value of the flow in the left exampe is 9;
+the value of the flow in the right exampe is 7.}
+\label{fig:flow}
+\end{figure}
+
+The \emph{value} of an $s$-$t$ flow $f$, denoted as $|f|$,
+is defined as the total amount of flow that is generated from source vertex $s$:
+$|f| := \sum_{e\in O(s)} f(e)$. Intuitively, the total amount of flow that is generated
+from $s$ eventually must be fully absorbed by sink $t$, as all internal vertex~(i.e., $V\setminus\{s,t\}$)
+does not keep any flow. Therefore, we must have that 
+$|f| = \sum_{e\in I(t)} f(e)$.  
+This property is also a direct consequence of the conservation property.
+Below we formally state and prove it.
+
+\begin{fact}
+We have $\sum_{e\in O(s)} f(e) = \sum_{e\in I(t)} f(e)$. 
+\end{fact}
+
+\emph{Proof.} According to the conservation condition:
+$\sum_{e\in I(v)} f(e) = \sum_{e\in O(v)} f(e)$, 
+for every vertex $v\in V\setminus\{s,t\}$. 
+We sum up both sides over all $v\in V\setminus\{s,t\}$: 
+we have $\sum_{v\in V\setminus\{s,t\}} \sum_{e\in I(v)} f(e) = \sum_{v\in V\setminus\{s,t\}} \sum_{e\in O(v)} f(e)$. 
+
+We now break down the left side 
+$L := \sum_{v\in V\setminus\{s,t\}} \sum_{e\in I(v)} f(e) 
+= \sum_{v\in V} \sum_{e\in I(v)} f(e) -  \sum_{e\in I(s)} f(e) - \sum_{e\in I(t)} f(e)$.
+Notice also that $\sum_{v\in V} \sum_{e\in I(v)} f(e) = \sum_{e\in E} f(e)$.
+Since $s$ is a source vertex, we have $I(s) = \emptyset$, and therefore $\sum_{e\in I(s)} f(e)  = 0$.
+Hence, $L = \sum_{e\in E} f(e) - \sum_{e\in I(t)} f(e)$.
+
+Similarly, the right side 
+$R := \sum_{v\in V\setminus\{s,t\}} \sum_{e\in O(v)} f(e) 
+= \sum_{v\in V} \sum_{e\in O(v)} f(e) -  \sum_{e\in O(s)} f(e) - \sum_{e\in O(t)} f(e)$.
+Again we have $\sum_{v\in V} \sum_{e\in O(v)} f(e) = \sum_{e\in E} f(e)$.
+Since $t$ is a sink, we have $O(t) = \emptyset$, and therefore $\sum_{e\in O(t)} f(e)  = 0$.
+Hence, $R = \sum_{e\in E} f(e) - \sum_{e\in O(s)} f(e)$.
+
+Combining $L = R$ and noticing that $\sum_{e\in E} f(e)$ is shared, we have $\sum_{e\in O(s)} f(e) = \sum_{e\in I(t)} f(e)$, as desired.  \qed
+

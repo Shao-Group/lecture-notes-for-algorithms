@@ -1,0 +1,170 @@
+\subsection*{Running Time of Disjoint Set}
+
+We now show that the above balancing procedure guarantees
+that, the height of any tree is $\Theta(\log n)$. 
+\begin{fact}
+Let $T$ be a tree with $n$ nodes. Then $h(T) \le 1 + \log_2 n$, where $h(T)$ denotes the height of $T$.
+\end{fact}
+\emph{Proof.} The \emph{make-set} creates a new tree with a single node, and clearly it holds above fact.
+The \emph{find} operation queries but doesn't change anything. We now show the \emph{union}
+holds above fact too. We prove it by induction: suppose the before merging $T_1$ and $T_2$
+with $n_1$ and $n_2$ nodes respectively, we have $h(T_1) \le 1 + \log n_1$ and $h(T_2) \le 1 + \log n_2$.
+Note that after mering we have $n = n_1 + n_2$.
+Consider the 3 cases in the union procedure. 
+If $h(T_1) < h(T_2)$, then $h(T) = h(T_2) \le 1 + \log n_2 \le 1 + \log n$, as desired.
+The same for $h(T_1) > h(T_2)$. Now consider $h(T_1) = h(T_2)$.
+In this case $h(T) = h(T_1) + 1 = h(T_2) + 1$.
+We can write $2h(T) = 2 + h(T_1) + h(T_2) \le 4 + \log n_1 + \log n_2 = 4 + \log n_1n_2 \le 4 + \log((n_1+n_2)/2)^2 = 4 + 2\log (n/2) = 2(1+\log n)$,
+   which gives the desired $h(T) \le 1 + \log n$.  \qed
+
+Hence, the \emph{make-set} takes $\Theta(1)$ time.
+The \emph{find} takes $\Theta(\log n)$ time.
+The \emph{union} takes $\Theta(\log n)$ time as well; it is dominated by the \emph{find} procedure; the remaining of \emph{union}
+after calling find takes $\Theta(1)$ time.
+
+\subsection*{Complete Kruskal's Algorithm}
+
+Recall that, at any time of the Kruskal's algorithm, the vertices are implicitly
+partitioned
+into a collection of connected components by $E_1$,
+and adding an edge $e = (u,v)$ to $E_1$ doesn't produce a cycle
+if and only if $u$ and $v$ are in different components.
+Hence, we can use a disjoint-set data structure
+to maintain the connected components formed by $E_1$, 
+where each set here corresponds to a component.
+Determining whether adding an edge $e=(u,v)$ leads to a cycle 
+is equivalent to determining if $u$ and $v$ are in the same component,
+which can be answered by querying if $find(u)$ equals to $find(v)$.
+If $find(u)$ is not equal to $find(v)$, then $e$ can be safely added.
+Adding $e$ results in the merging the two connected components~(containing $u$ and $v$ respectively);
+we can then simply call $union(u,v)$ to update the
+disjoint-set to reflect the merging.
+The complete algorithm is given below.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {12}{Algorithm Kruskal's~($G = (V,E), w(e) \forall e\in E$)}\xxx
+	\aab {sort all edges in $E$ by weights in ascending order;}\xxx
+	\aab {$E_1 = \emptyset$;}\xxx
+	\aab {for each $v\in V$: call \emph{make-set~($v$)}; \ // as $E_1 = \emptyset$, each vertex forms a set of its own}\xxx
+	\aaB {7}{for each $e = (u,v)\in E$ following above ordering}\xxx
+	\aac {$r_u = find(u)$}\xxx
+	\aac {$r_v = find(v)$}\xxx
+	\aaC {3}{if~($r_u\neq r_v$)}\xxx
+	\aad {$E_1 = E_1\cup \{e\}$}\xxx
+	\aad {$union(r_u,r_v)$}\xxx
+	\aac {end;}\xxx
+	\aab {end;}\xxx
+	\aaa {end;}\xxx
+\end{minipage}
+
+Sorting takes $\Theta(|E|\log|E|) = \Theta(|E|\log|V|)$ time~(note that $\log |E| \le \log |V|^2 = 2\log |V|$).
+Examining all edges takes $\Theta(|E|\log|V|)$ too.
+So the entire algorithm runs in $\Theta(|E|\log|V|)$ time.
+
+
+\subsection*{Complete Prim's Algorithm}
+
+Recall that the Prim's algorithm maintains a single connected component $S$.
+$S$ is initialized with an arbitrarily picked vertex, and in each iteration,
+the algorithm picks an edge with minimized weight that connects $S$ to a \emph{new} vertex outside $S$.
+In other words, in each iteration, the algorithm picks the smallest cut-edge w.r.t.\ cut $(S, V\setminus S)$,
+formally written as $\arg\min_{e=(u,v), u\in S, v\not\in S} w(e)$.
+An efficient implementation requires a data structure that can quickly compute the minimization.
+
+We use \emph{priority queue}.
+In a priority queue, each element is labeled with a \emph{priority}~(also called key).
+%The priority/key serves as the identify of the element.
+%In other words, each element in a priority queue is a pair (\emph{key, value}),
+%where \emph{key} indicates its priority, while \emph{value} stores the actual data.
+A {priority queue} data structure supports the following operations.
+\vspace*{-\topsep}
+\begin{enumerate}
+\item empty~($PQ$): decides if priority queue $PQ$ is empty;
+\item insert~($PQ$, $x$, \emph{key}): add element $x$ to $PQ$ with priority being \emph{key};
+\item find-min~($PQ$): return the element in $PQ$ with smallest key~(i.e., highest priority);
+\item delete-min~($PQ$): remove the element in $PQ$ with smallest key~(i.e., highest priority).
+\item decrease-key~($PQ$, $x$, \emph{new-key}): set the key of the specified element $x$ as the given \emph{new-key}.
+\end{enumerate}
+
+The major advantage of the priority queue is that find-min can be done quickly.
+With a binary heap implementation, the above 5 operations takes $O(1)$, $O(\log n)$, $O(1)$,
+$O(\log n)$, and $O(\log n)$ time, respectively.
+
+Throughout the Prim's algorithm, we use priority queque $PQ$ to store $V\setminus S$, i.e., 
+the vertices that are not yet added to $S$.
+(Hence, implicitly maintaining $S$ is not needed, as it is complement to $PQ$.)
+Now think: what the priority/key of a vertex in $PQ$ should be?
+The priority/key of a vertex $v$ in $PQ$~(i.e., in $V\setminus S$) 
+should be the weight of the smallest edge that connects $S$ to $v$, formally written as
+$key[v] := \min_{e=(u,v), u\in S} w(e)$.
+This works because, \emph{find-min~($PQ$)} gives
+$\min_{v\not\in S} key[v] = \min_{e=(u,v), u\in S, v\not\in S} w(e)$, which is exactly 
+the weight of the smallest cut-edge. % w.r.t.\ cut $(S,V\setminus S)$.
+Another way to understand it is that, cut-edges are grouped according to their ends in $V\setminus S$;
+finding the smallest cut-edge is done in two steps: the first step finds the smallest edge in each group,
+i.e., $\min_{e=(u,v), u\in S} w(e)$,  for each $v\in V\setminus S$, 
+which is defined as the priority/key of $v$;
+the second step finds the smallest edge across groups, i.e., $\min_{v\in V\setminus S} key[v]$.
+See  Figure~\ref{fig:prim} for an example.
+
+\begin{figure}[h]
+\centering{\input{prim}}
+\caption{Illustrating the priority/key of vertices in $V\setminus S$~(in red).
+Left: $e$ has the smallest key, and $prev[e] = d$.
+Right: edge $(d,e)$ is added to $S$ and keys are updated.}
+\label{fig:prim}
+\end{figure}
+
+Let $e=(u,v)$ be the smallest cut-edge picked in an iteration, where $u\in S$ and $v\in V\setminus S$.
+Vertex $v$ can be found by calling \emph{find-min}, and vertex $u$ can be found by maintaining
+pointer $prev[v]$.
+Vertex $v$ should be added to $S$, which can be equivalently done by calling
+\emph{delete-min}. Now $S$ includes $v$ and this may trigger lower key values.
+This happens for vertex $w\in V\setminus S$ only if there exists an edge
+$e' = (v,w)\in E$ and $w(e') < key[w]$; when this is the case,
+$key[w]$ is updated as $w(e')$ and the pointer $prev[w]$ is updated as $v$.
+The complete algorithm is given below.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {20}{Algorithm Prim's~($G = (V, E)$, $w(e)$ for each $e\in E$)}\xxx
+	\aab {$E_1 = \emptyset$;}\xxx
+	\aab {init an empty priority queue $PQ$;}\xxx
+	\aab {$key[v] = \infty$, $prev[v] = nul$, for any $v\in V$;}\xxx
+	\aab {for any $v\in V$: insert~($PQ$, $v$, $key[v]$);}\xxx
+	\aab {$key[v] = 0$, where $v$ is an arbitrarily picked vertex;}\xxx
+	\aab {decrease-key~($PQ, v, 0$);}\xxx
+	\aaB {12}{while~(empty~($PQ$) = false)}\xxx
+	\aac {$v$ = find-min~($PQ$);}\xxx
+	\aac {delete-min~($PQ$);}\xxx
+	\aac {$u$ = $prev[v]$;}\xxx
+	\aac {add edge $(u,v)$ to $E_1$;}\xxx
+	\aaC {6}{for each edge~$e' = (v, w)\in E$}\xxx
+	\aaD {4}{if~($key[w] > w(e')$)}\xxx
+	\aae {$key[w] = w(e')$;}\xxx
+	\aae {decrease-key~($PQ$, $w$, $key[w]$);}\xxx
+	\aae {$prev[w] = v$;}\xxx
+	\aad {end if;}\xxx
+	\aac {end for;}\xxx
+	\aab {end while;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+
+Let's analyze its runtime.
+Note that each vertex will be poped and removed 
+from $PQ$ exactly once and each edge will be examined exactly twice~(for undirected graph).
+So, the most inner {if} part will be executed $O(|E|)$ times.
+The break-down of running time is given below~(using binary heap).
+The total running time is $O((|V|+|E|)\log |V|)$.
+
+\vspace*{-\topsep}
+\begin{enumerate}
+\item initialization: $\Theta(|V|)$;
+\item insert~($PQ$): $|V| \times O(\log |V|)$;
+\item empty~($PQ$): $|V| \times O(1)$;
+\item find-min~($PQ$): $|V| \times O(1)$;
+\item delete-min~($PQ$): $|V| \times O(\log |V|)$;
+\item updating key and prev: $|E| \times O(1)$;
+\item decrease-key~($PQ$): $|E| \times O(\log |V|)$;
+\end{enumerate}
+

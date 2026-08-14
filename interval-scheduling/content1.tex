@@ -1,0 +1,57 @@
+\subsection*{Interval Scheduling Problem}
+
+Given $n$ \emph{intervals} $R$, where the $i$-th internal is represented with
+its \emph{start-time} $s(i)$ and \emph{finish-time} $t(i)$, we seek a subset $X\subset R$
+where any two intervals in $X$ do not overlap/conflict, and that $|X|$ is maximized. 
+%Here, $X$ is \emph{compatible} is defined as that intervals in $X$ are disjoint~(i.e., any two intervals in $X$ don't overlap).
+See Figure~\ref{fig:interval}.
+
+\begin{figure}[h]
+\centering{\input{interval}}
+\caption{An instance of interval scheduling problem.
+The optimal solution includes 4 intervals $\{1, 2, 5, 6\}$.}
+\label{fig:interval}
+\end{figure}
+
+Let's design a greedy algorithm for above interval scheduling problem.
+Recall that a greedy algorithm iteratively makes \emph{local decisions},
+until reaches a complete solution. For this problem
+a greedy algorithm follows the following framework.
+In this framework, we greedily pick intervals;
+once a interval is picked, we never undo it~(this is another character of greedy algorithms);
+hence, intervals that conflict with it can be removed.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {8}{Algorithm greedy-framework~($n$ intervals $R$)}\xxx
+	\aab {init $X=\emptyset$;}\xxx
+	\aaB {4}{while~($R$ is not empty)}\xxx
+	\aac {\textcolor{blue}{greedily pick an interval $x\in R$;}}\xxx
+	\aac {add $x$ to $X$;}\xxx
+	\aac {remove from $R$ the intervals that overlap/conflict with $x$;}\xxx
+	\aab {end;}\xxx
+	\aab {return $X$;}\xxx
+	\aaa {end;}\xxx
+\end{minipage}
+
+Above procedure is a framework, as how to \emph{greedily pick a interval} in the remaining intervals is not specified.
+A common practice in order to design a correct~(i.e., optimal) greedy algorithm is
+exploring different greedy strategies. For each strategy, we first try to
+design a counter-example to show it doesn't work; if such an instance
+is hard to construct, then it's a promising direction and we then try to prove that it is optimal.
+For this interval scheduling problem, we can explore the following strategies:
+
+\vspace*{-\topsep}
+\begin{enumerate}
+\item Pick the interval with smallest length.
+In fact, Figure~\ref{fig:interval} is an counter-example, where this greedy strategy finds intervals $\{3, 1, 2\}$.
+\item Pick the interval with fewest conflicts.
+You may notice that this strategy actually finds the optimal solution on Figure~\ref{fig:interval}.
+But it cannot guarantee optimality on all instances. Can you design an counter-example?
+Figure~4.1~(c) of the textbook~[KT], page 117, gives such a counter-example.
+\item Pick the interval with earliest start-time.
+Figure~\ref{fig:interval} again is an counter-example, where this greedy strategy finds intervals $\{1, 7\}$.
+\item Pick the interval with earliest finish-time.
+You may notice that this strategy also finds the optimal solution on Figure~\ref{fig:interval}.
+In fact, this strategy is indeed optimal.
+\end{enumerate}
+
