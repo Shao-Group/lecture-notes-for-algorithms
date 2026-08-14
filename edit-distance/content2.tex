@@ -1,0 +1,119 @@
+\subsection*{An Algorithm in Linear Space}
+
+The space complexity~(the memory required) of above algorithm~(DP-optimal-alignment) is $\Theta(mn)$,
+as it maintains two matrices of size $(m+1)\cdot(n+1)$.  Can we do better?
+First, if we only need the edit distance~(i.e., no need to reconstruct the optimal alignment), then linear space
+is enough. This is because, the calculation of $F(i,j)$ only relies on two numbers in the previous row and
+the one number in the current row. There is absolutely no need to restore the rows before the previous row.
+Hence, we can modify that algorithm, by simply using two vectors and alternating them as previous and current rows.
+The pseudo-code is given below. It runs in $\Theta(mn)$ time and in $\Theta(m+n)$ space.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {10}{Algorithm DP-edit-distance~($X[1\cdots m]$, $Y[1\cdots n]$)}\xxx
+	\aab {$F_1[j] = j$, for any $0 \le j \le n$}\xxx
+	\aaB {6}{for $i = 1 \to m$}\xxx
+	\aac {$F_2[0] = i$;}\xxx
+	\aaC {2}{for $j = 1 \to n$}\xxx
+	\aad {$F_2[j] = \min\{F_1[j-1] + \delta(X[i] \neq Y[j]), F_1[j] + 1, F_2[j-1] + 1\}$;}\xxx
+	\aac {end for;}\xxx
+	\aac {$F_1 = F_2$;}\xxx
+	\aab {end for;}\xxx
+	\aab {return: $F_1[n]$;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+Note that, prior to the algorithm returns $F_1[n]$, 
+$F_1[j]$ stores the length of the shortest path from $(0,0)$ to $(m, j)$ for
+every $j = 0, 1, \cdots, n$. This inherits the definition of $F(i,j)$ in the DP-optimal-alignment,
+which stores $d(X[1\cdots i], Y[1\cdots j])$, i.e., the length of the shortest path from $(0,0)$ to $(i,j)$.
+
+\begin{figure}[b!]
+\centering{\input{middle}}
+\caption{The optimal path~(marked in red) must cross the $m/2$-th row.}
+\label{fig:middle}
+\end{figure}
+
+
+
+We now design an algorithm that finds the optimal alignment in linear space and in quadratic time.
+(You should try and convince yourself that, the above approach that uses two rows for computing the 
+edit distance does not work for computing the optimal alignment.)
+The central idea is divide-and-conquer! We define recursive function DC-optimal-alignment($X[1\cdots m]$, $Y[1\cdots n]$)
+returns the shortest path from $(0,0)$ to $(m,n)$ in the corresponding graph.
+The optimal path must cross the middle row, i.e., the $m/2$-th row.
+If we know where exactly it crosses the middle row, then we are able to decompose the original problem
+into two subproblems. 
+See Figure~\ref{fig:middle}.
+Specifically, assume that the optimal path goes through $(m/2, j^*)$, where
+$j^*$ is to be determined, then we only need to find the best path from $(0, 0)$ to $(m/2, j^*)$
+and to find the path from $(m/2, j^*)$ to $(m,n)$ and concatenate them together. The two subproblems
+can be solved using recursive calls. The framework of this algorithm is given below.
+
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {6}{Algorithm DC-optimal-alignment~($X[1\cdots m]$, $Y[1\cdots n]$)}\xxx
+	\aab {if $m \le 1$: handle basecase and return as needed;}\xxx
+	\aab {$j^* = $ find-middle~($X$, $Y$);}\xxx
+	\aab {$P_1 = $ DC-optimal-alignment~($X[1\cdots m/2]$, $Y[1\cdots j^*]$);}\xxx
+	\aab {$P_2 = $ DC-optimal-alignment~($X[m/2\cdots m]$, $Y[j^*\cdots n]$);}\xxx
+	\aab {return $P_1$ followed by $P_2$ but make sure the middle $(m/2, j^*)$ is only used once;}\xxx
+	\aaa {end algorithm;}\xxx
+\end{minipage}
+
+
+The remaining task is to find $j^*$.
+Let $Z[j]$ be the length of the shortest path from $(0, 0)$ to $(m,n)$ that goes through $(m/2,j)$.
+If we know $Z[j]$, for all $j = 1, 2, \cdots, n$. Then we have 
+$$j^* = \arg\max_{1\le j \le n} Z[j].$$
+The task now becomes to compute $Z[j]$ for all $1\le j \le n$.
+In other words, $Z[j]$ is the length of the shortest path from $(0, 0)$ to $(m/2, j)$ plus
+the length of the shortest path from $(m/2, j)$ to $(m,n)$.
+Let $A[j]$ be the former and $B[i]$ the latter, i.e., $Z[j] = A[j] + B[j]$, for any $1\le j \le n$.
+
+Can you spot an algorithm that finds $A[j]$ for all $1\le j \le n$?
+It is DP-edit-distance($X[1\cdots m/2]$, $Y$)!
+But we assume the entire $F_1$ array will be returned, where
+$F_1[j]$ exactly gives $A[j]$, i.e., the length of the shortest path from $(0,0)$ to $(m/2, j)$, for any $1\le j \le n$.
+
+How about $B[j]$? It is also the length of the shortest path from $(m, n)$ to $(m/2, j)$, assuming that
+directions of each edge in the graph is reversed. This suggests we call DC-edit-distance($X[m\cdots, m/2]$, $Y[n\cdots 1]$).
+In the returned $F_1$ array, $F_1[j]$ gives the length of shortest path from $(m,n)$ to $(m/2, n+1-j)$.
+Hence, $B[j] = F_1[n+1-j]$. See below for the complete pseudo-code.
+
+\begin{minipage}{0.8\textwidth}
+	\aaA {7}{function find-middle~($X[1\cdots m]$, $Y[1\cdots n]$)}\xxx
+	\aab {$F_1^A = $ DP-edit-distance~($X[1\cdots m/2]$, $Y[1\cdots n]$);}\xxx
+	\aab {$F_1^B = $ DP-edit-distance~($X[m\cdots m/2]$, $Y[n\cdots 1]$);}\xxx
+	\aaB {2}{for $j = 1$ to $n$}\xxx
+	\aac {$Z[j] = F_1^A[j] + F_1^B[n+1-j]$;}\xxx
+	\aab {end for;}\xxx
+	\aab {return $\arg\min_{1\le j \le n} Z[j]$;}\xxx
+	\aaa {end function}\xxx
+\end{minipage}
+
+
+\subsection*{Analysis of the Divide-and-Conquer Algorithm}
+
+We start with analyzing find-middle.  It takes $\theta(mn)$ time since
+DP-edit-distance takes quadratic time.  It also takes $\Theta(m +n)$ space, as
+DP-edit-distance takes linear space.
+
+Now we analyze DC-optimal-alignment. It also takes linear space.
+To see this, notice that find-middle takes linear space.
+That space can be reused by the following two recursive calls.
+Next, we analyze its runtime. Let $T(m,n)$ be the runtime of
+DC-optimal-alignment($X[1\cdots, m]$, $Y[1\cdots, n]$).
+We have recurrence
+$$T(m,n) = \Theta(mn) + T(m/2, j^*) + T(m/2, n-j^*).$$
+It is easy to guess $T(m,n)$ and then prove it by induction.
+Assume that the runtime of find-middle is upper bounded by $cmn$, for some $c > 0$, i.e.,
+we use $cmn$ to upper bound the $\Theta(mn)$ in the recurrence.
+This gives $$T(m,n) \le cmn + T(m/2, j^*) + T(m/2, n-j^*).$$
+We now prove $T(m,n) \le 2cmn$, by induction.
+We can write
+\begin{align*}
+T(m,n) & \le c\cdot m\cdot n + T(m/2, j^*) + T(m/2, n-j^*)\\
+& \le cmn + 2c\cdot m/2\cdot j^* + 2c\cdot m/2 \cdot (n-j^*) \\
+& = 2cmn
+\end{align*}
+
