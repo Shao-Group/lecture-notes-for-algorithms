@@ -1,0 +1,211 @@
+\setcounter{definition}{0} \setcounter{property}{0} \setcounter{claim}{0} \setcounter{fact}{0} \setcounter{corollary}{0} \setcounter{figure}{0}
+\section{Hierarchy of Complexity Classes and co-NP}
+
+Recall that P stands for the set of decision problems that are polynomial-time solvable,
+and NP stands for the set of decision problems that are polynomial-time verifiable.
+Clearly, P is a subset of NP, i.e., P{}~$\subset${}~NP.
+But is the case that P{}~$\neq${}~NP~(i.e., P is a strict subset of NP),
+or P{}~$=${}~NP?  This question remains open,
+and is perhap \emph{the} most important open question in computer science.
+%(It is also one of the seven Millennium Prize Problems selected by the Clay Mathematics Institute.)
+
+The existence of NP-complete problems gives a way to prove that P{}~$=${}~NP, by just showing
+one NP-complete problem is polynomial-time solvable. This is intuitive: NP-complete
+problems are the hardest problems in NP; if one of them is polynomial-time solvable,
+then every problem must be polynomial-time solvable. We formally state it and prove it below.
+
+\begin{fact}
+Let $X$ be a NP-complete problem. If $X$ is in P, then P{}~$=${}~NP.
+\end{fact}
+\emph{Proof.} 	
+In order to show P{}~$=${}~NP, we only need to prove NP{}~$\subset${}~P, as we already have P{}~$\subset${}~NP. 
+Let $X'$ be an arbitrary problem in NP.  
+Since $X$ is NP-complete, by definition, we know that $X'\le_p X$. Because
+$X$ is in P, then we have that $X'$ is in P as well.
+This proves that NP{}~$\subset${}~P, as $X'$ is arbitrary.  \qed
+
+We define \emph{complementary} problem. Let $X$ be a decision problem.
+Recall that $X$ is equivalently defined by all its instances, each of which
+has a truth~(i.e., true of false). The \emph{complementary problem} of $X$,
+denoted as $\overline{X}$, has the same set of instances with $X$ but each instance has an opposite truth.
+See Figure~\ref{fig:co-np}.
+
+\begin{figure}[!h]
+\centering{\input{co-np}}
+\caption{Illustration of problem $X$ and its complementary $\overline{X}$.}
+\label{fig:co-np}
+\end{figure}
+
+For example, for 3SAT problem, an instance of 3SAT is a true instance if and only 
+if there exists a truth assignment for variables such as all clauses can be satisfied.
+Its complementary, $\overline{\textrm{3SAT}}$, still takes a set of variables and a set of clauses
+as input. An instance of $\overline{\textrm{3SAT}}$ is a false instance if and only if
+there exists a truth assignment for variables such as all clauses can be satisfied.
+
+It is clear that, $\overline{\overline{X}} = X$. Another fact is: 
+\begin{fact}
+If $X$ is in P, then $\overline{X}$ is also in P. 
+\label{fac:np1}
+\end{fact}
+This is because the polynomial-time algorithm
+for $X$ essentially solves $\overline{X}$, by returning the opposite answer.
+
+%Does $X \in \textrm{NP}$ imply that $\overline{X} \in \textrm{NP}$?
+%This is complicated. In fact, this question remains open.
+%Recall that, 
+NP can also be described as the set of decision problems
+with polynomial-size certificate for true instances.
+We now introduce \emph{co-NP}, which is the set of decision problems
+with polynomial-size certificate for false instances.
+We formally define it below. It should be compared with the definition of NP.
+
+
+\begin{definition}[co-NP]
+Let $X$ be a decision problem. We say $X\in \textrm{co-NP}$ if there exists a polynomial-time algorithm $A$~(we call $A$ as a \emph{verifier}), such that,\\
+        (1), verifier $A$ takes an instance $x$ of $X$ \emph{and} a polynomial-length certificate $c$ as input, and \\
+        (2), for every instance $x$ of problem $X$: \\
+        \hspace*{0.2cm} if $x$ is a ``false''-instance, then there must exist a certificate $c$ such that $A(x,c)$ returns ``no'';\\
+        \hspace*{0.2cm} if $x$ is a ``true''-instance, then for any polynomial-length certificate $c$, $A(x,c)$ always returns ``yes''.
+\end{definition}
+
+By defintions of complementary problem and co-NP, we immediately have:
+\begin{fact}
+A decision problem $X$ is in NP if and only if $\overline{X}$ is in co-NP.
+\label{fac:np2}
+\end{fact}
+
+%(The definition of co-NP can be regarded as another definition of complementary problems.)
+We have shown that, if $X$ is in P then $\overline{X}$ is also in P. 
+This implies that P is also a subset of co-NP. (Proof: let $X$ be an arbitrary problem in P.
+So $\overline{X}$ is in P, which gives $\overline{X}$ is in NP; hence $X$ is in co-NP.)
+Combining the fact that P is a subset of NP. We have
+
+\begin{fact}
+$\textrm{P} \subset \textrm{NP} \cap \textrm{co-NP}$.
+\end{fact}
+
+A natural question: is P equal to $\textrm{NP} \cap \textrm{co-NP}$, or P is a strict subset of 
+$\textrm{NP} \cap \textrm{co-NP}$? This question remains open.
+Another question: is NP equal to co-NP? This one remains open too. But we can prove the following.
+
+\begin{fact}
+If $\textrm{P} = \textrm{NP}$, then $\textrm{NP} = \textrm{co-NP}$.
+\end{fact}
+
+\emph{Proof.} Let $X$ be an arbitrary problem in NP. Since 
+$\textrm{P} = \textrm{NP}$, we have $X$ is also in P.
+According to Fact~\ref{fac:np1}, we know $\overline{X}$ is in P and hence also in NP.
+Based on Fact~\ref{fac:np2}, we have $X\in \textrm{co-NP}$. This proves that $\textrm{NP}\subset \textrm{co-NP}$.
+To prove the other side, let $X$ be an arbitrary problem in co-NP.
+Hence, $\overline{X} \in \textrm{NP}$ and also $\overline{X} \in \textrm{P}$ because of the condition.
+Again based on Fact~\ref{fac:np1}, we have $X$ is in P and therefore also in NP. 
+This proves that $\textrm{co-NP}\subset \textrm{NP}$. \qed
+
+
+See Figure~\ref{fig:hierarchy} for a hierarchy for the classes we have introduced,
+depending on the possible results of 3 critical open questions in computer science.
+
+\begin{figure}[!h]
+\centering{\input{hierarchy}}
+\caption{Hierarchy of the complexity classes. All 3 questions in the boxes are open.}
+\label{fig:hierarchy}
+\end{figure}
+
+You might wonder, in the fourth situation shown in Figure~\ref{fig:hierarchy},
+whether it is possible for NPC and co-NP to overlap. The answer is no; the reason is stated below.
+Its proof uses this conclusion~(that we do not prove): if $A \le_p B$ and $B\in\textrm{NP}$ then $A\in\textrm{NP}$. 
+
+\begin{fact}
+Let $X$ be NP-complete. If $X$ is in co-NP, then $\textrm{NP} = \textrm{co-NP}$.
+\label{fac:np3}
+\end{fact}
+\emph{Proof.} Let $X'$ be an arbitrary problem in NP.
+Since $X$ is NP-complete, we have $X' \le_p X$, i.e., we can design an
+algorithm for $X'$ using polynomial number of calls of a solver for $X$.
+This algorithm for $X'$, when modified to return the opporsite answer, exactly solves $\overline{X'}$.
+This implies that $\overline{X'} \le_p X$. 
+Since $X\in\textrm{NP}$, according to the said conclusion,
+we have $\overline{X'}\in\textrm{NP}$ which gives $X'\in\textrm{co-NP}$.
+This proves that $\textrm{NP}\subset \textrm{co-NP}$.
+To prove the other side, let $X'$ be an arbitrary problem in co-NP, which gives $\overline{X'} \in \textrm{NP}$.
+Hence, $\overline{X'} \le_p X$. Using the same argument, we have $X'\le_p X$.
+Using above conclusion and that $X\in \textrm{NP}$, we have $X'\in\textrm{NP}$.
+This proves that $\textrm{co-NP}\subset\textrm{NP}$. \qed
+
+\subsection*{Interger Factorization}
+
+For all NP-complete problems we have seen, %so far, such as 3SAT, $IS(G, k)$, and perfect 3D matching,
+their true instances are in the form of ``there exists an object''.
+For examples, a 3SAT instance is true if there exists an truth assignment that satisfies all clauses;
+an $IS(G, k)$ instance is true if there exists an independent set of size at least $k$;
+a perfect 3D matching instance is true if there exists a perfect matching.
+It is therefore straightforward to show that these problems are in NP,
+as NP requires a (polynomial-size) certificate for true instances, and
+the ``object'' naturally serves as such a certificate.
+In contrast, their false instances are in the form of 
+``there does not exist an object''. As a result, it is much more difficult, or even impossible,
+to prove that these problems are in co-NP, as it requires a polynomial-size certificate for false instances. 
+In fact, none of these NP-complete is known to be in co-NP~(as otherwise NP will be equal to co-NP, according
+to Fact~\ref{fac:np3}).
+
+Any problem in P is known to be both in NP and co-NP.
+Is there a problem that is not known to be in P, but in both NP and co-NP?
+We introduce such a problem now, the \emph{interger factorization problem}. 
+This problem takes two positive integers $X$ and $t$ as input,
+and seeks if there exists a factor $a$ of $X$ such that $a\le t$.
+(Recall that $a$ is a factor of $X$ means $X$ is divisible $a$, or equivalently, $X \textrm{ mod } a = 0$.)
+
+You might think this problem can be solved in polynomial-time. Consider the following:
+
+\begin{minipage}{0.8\textwidth}
+        \aaA {5}{algorithm-for-integer-factorization~($X,t$)}\xxx
+        \aaB {2}{for $a = 2 \to t$}\xxx
+        \aac {if $X \textrm{ mod } a = 0$: return ``yes''}\xxx
+        \aab {end for;}\xxx
+        \aab {return ``no'';}\xxx
+        \aaa {end}\xxx
+\end{minipage}
+
+This algorithm is certainly correct, but it runs in exponential time.
+Recall that runtime is a function of input size.
+For this problem, the input is $X$ and $t$ and the input size
+is the number of bits storing them, which are $\log X$ and $\log t$ respectively.
+Let $m = \log X$ and $n = \log t$.
+Computing $X \textrm{ mod } a$ takes $O(\log X \cdot \log a) = O(mn)$ time.
+The entire algorithm takes $O(tmn) = O(mn2^n)$ time, which is exponential.
+
+We first show that this problem in NP. It is again easy.
+%It is again easy to show that the interger factorization problem is in NP.
+The certificate is simply a factor of $X$ that is less than or equal to $t$.
+Specifically, the verifier takes $X$, $t$, and certificate $c$ as input,
+and verifies whether $X \textrm{ mod } c = 0$ and whether $c \le t$.
+
+Proving that this problem is in co-NP is more complicated and more interesting.
+An instance is false if all factors of $X$ are greater than $t$.
+Using all factors as certificate does not work, as its size is exponential: 
+there are $O(X) = O(2^m)$ number of factors.
+The key idea is, we only need to check \emph{prime} factors: all factors of $X$ are greater than $t$
+if and only if all prime factors of $X$ are greater than $t$.
+
+The number of prime factors of integer $X$ is $O(m)$. To see this, consider the factorization of $X$:
+$$X = \Pi_{i=1}^k p_i^{n_i},$$
+where $p_i$ is a prime and $n_i \ge 1$. The distinct number of prime factors of $X$ is $k$.
+To show that $k = O(m)$, take logarithm on both sides:
+%\begin{eqnarray*}
+$$\log X = \sum_{i=1}^k n_i \log p_i \ge \sum_{i=1}^k \log p_i \ge \sum_{i=1}^k \log 2 = k\cdot \log 2,$$
+which gives $k = O(\log X) = O(m)$.
+%\end{eqnarray*}
+
+We hence use a prime factorization, consisting of $k$ pairs $\{(p_i, n_i) \mid 1\le i \le k\}$, as a certificate for false instances.
+The verifier takes $X$ and $t$ and certificate $c$ as input.
+It verifies whether $c$ consists of pairs of numbers  $\{(p_i, n_i)\}$.
+It then verifies whether $c$ gives a factorization of $X$, i.e., to verify $X = \Pi p_i^{n_i}$.
+It also verifies whether $\{p_i\}$ are all primes and whether they are all greater than $t$.
+The verifier returns ``no'' if all these pass, and otherwise return ``yes''.
+
+According to above analysis, an instance is false if all prime factors are greater than $t$. 
+For a false instance, the certificate~(i.e., prime factors and their powers) is in polynomial size, which we have proved.
+The verifier runs in polynomial-time. The only step that needs
+attention is to verify $\{p_i\}$ are primes,
+but thanks to the AKS algorithm~(2002), testing whether an integer is a prime can be done in polynomial-time.
+This concludes the proof that the interger factorization problem is in co-NP.

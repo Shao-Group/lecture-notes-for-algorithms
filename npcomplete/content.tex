@@ -1,110 +1,116 @@
 \setcounter{definition}{0} \setcounter{property}{0} \setcounter{claim}{0} \setcounter{fact}{0} \setcounter{corollary}{0} \setcounter{figure}{0}
-\section{NP-complete and NP-hard}
-
-\subsection*{Polynomial-Time Reduction Revisit}
-
-Polynomial-time reduction can be used in two different ways. Suppose we have $X\le_p Y$.
-\vspace*{-\topsep}
-\begin{enumerate}
-\item If we know an algorithm to solve $Y$, then we know how to solve $X$. In this way
-we are making use of an (existing) algorithm for $Y$ to solve a (new) problem $X$. Such an example
-is we use the maximum flow problem~(problem $Y$) to solve the bipartite maximum matching problem~(problem $X$).
-\item If we know problem $X$ is \emph{hard}, then we know that problem $Y$ is \emph{hard}. 
-This is because $X\le_p Y$ means that $Y$ is at least as hard as $X$, as any algorithm of $Y$ can be used to solve $X$.
-In this way, we are making use of an (existing) hard problem $X$
-to prove that a (new) problem $Y$ is hard.  Below we will formally define ``hard''.
-Informally, it means a polynomial-time algorithm does not exist~(unless P{}~$=${}~NP).
-\end{enumerate}
-
-
-\subsection*{NP-complete}
+\section{NP-complete}
 
 \begin{definition}[NP-complete]
 Let $X$ be a decision problem. We say $X$ is NP-complete, if $X$ is in NP, and for every problem $X'$ in NP, we have $X'\le_p X$.
 \end{definition}
 
 NP-complete problems are the ``hardest'' problems in NP. It's not obvious that
-NP-complete problems even exist.  
+NP-complete problems even exist.
 Thanks to the pioneers of computer science: in 1971 Cook and Levin proved the first
-NP-complete problem by showing that the circuit satisfiability problem is NP-complete.
+NP-complete problem by showing that the \emph{satisfiability problem} is NP-complete.
 This builds the foundation of complexity theory.
 
-One side of application of NP-complete relates to the connection between P and NP.
-Clearly, P is a subset of NP, i.e., P{}~$\subset${}~NP.
-But is the case that P{}~$\neq${}~NP~(i.e., P is a strict subset of NP),
-or P{}~$=${}~NP?  This question remains open,
-and is perhap \emph{the} most important open question in computer science.
-(It is also one of the seven Millennium Prize Problems selected by the Clay Mathematics Institute.)
-The existence of NP-complete problems gives a way to prove that P{}~$=${}~NP, by just showing
-one NP-complete problem is polynomial-time solvable. This is easy to understand: NP-complete
-problems are the hardest problems in NP; if one of them is polynomial-time solvable,
-then every problem must be polynomial-time solvable. We formally state it and prove it below.
+The satisfiability~(SAT) problem is
+to decide if a given boolean formula can be satisfied
+by assigning values to boolean variables.
+Let's define it. The \emph{variables}, $x_1, x_2, \cdots, x_m$, involved are
+boolean~(or binary), taking value of either true or false.
+A \emph{literal} is either a variable itself~(e.g., $x_3$, $x_5$, etc) or the negation of a variable~(e.g., $\overline{x_3}$, $\overline{x_5}$, etc).
+A \emph{clause} is a disjunction of literals~(e.g., $x_2 \vee \overline{x_4}$, $\overline{x_3} \vee \overline{x_5} \vee x_2$, $\overline{x_1}$, etc).
+A \emph{CNF~(conjunctive normal form) formula} is a conjunction of clauses, such as
+$(x_2 \vee \overline{x_4})\wedge (\overline{x_3} \vee \overline{x_5} \vee x_2) \wedge (\overline{x_1})$.
 
-\begin{claim}
-Let $X$ be a NP-complete problem. If $X$ is in P, then we have P{}~$=${}~NP.
-\end{claim}
+Given a CNF formula with $n$ clauses $C_1, C_2, \cdots, C_n$ involving $m$ variables
+$x_1, x_2, \cdots, x_m$, the SAT problem is to decide if there exists an
+\emph{assignment}~(i.e., assigning true or false value to each variable) such
+that all $n$ clauses are true~(i.e., the CNF formula is true).
 
-\emph{Proof.} 	
-In order to show P{}~$=${}~NP, we only need to prove NP{}~$\subset${}~P, as we already have P{}~$\subset${}~NP. 
-Let $X'$ be an arbitrary problem in NP.  
-Since $X$ is NP-complete, by definition, we know that $X'\le_p X$. Because
-$X$ is in P, then we have that $X'$ is in P as well~(see Fact~1 in Lecture~40).
-This proves that NP{}~$\subset${}~P, as $X'$ is arbitrary.  \qed
+If each clause is restricted to have exactly 3 literals, then the above problem becomes the so-called 3SAT problem.
+3SAT has been proved to be NP-hard, i.e., there doesn't exist any efficient algorithm for it unless P~=~NP.
+(We will introduce NP-completeness later this course; you don't need to know that these mean now.)
 
-Above claims suggests the two possible cases between P, NP, and NPC---here we use ``NPC''
-to represent the set of all NP-complete problems. See Figure~\ref{fig:PvsNP}.
+If each clause is restricted to have exactly 2 literals, then the above problem becomes the 2SAT problem.
+2SAT can be solved in polynomial-time.
+If each clause is restricted to have exactly 3 literals, then the above problem becomes the so-called 3SAT problem.
+3SAT has been proved to be NP-hard.
+Below, we only prove its first part, i.e., 3SAT is in NP.
+%Below we will design an algorithm for 2SAT, in which the core part is to use the algorithm of identifying connected componenets of directed graphs.
 
-\begin{figure}[!h]
-\centering{\input{PvsNP}}
-\caption{Two possibilities among P, NP, and NPC.}
-\label{fig:PvsNP}
-\end{figure}
 
-\vspace*{-\topsep}
-\begin{enumerate}
-\item P{}~$\neq${}~NP. In this case, we must have P{}~$\cap${}~NPC{}~$=\emptyset$. This is
-because otherwise, if there exists a problem $X\in \textrm{ P } \cap \textrm{ NPC}$, P will be equal to NP according to above Claim). 
-\item P{}~$=${}~NP. In this case, we must have P{}~$=${}~NP{}~$=${}~NPC. 
-This is because in this case \emph{any} two problems $X$ and $Y$ in NP~(and therefore in P)
-must satisfy that $X\le_p Y$ and $Y\le_p X$, as both $X$ and $Y$ can be solved in polynomial-time.
-This proves that every problem in NP is NP-complete.
-\end{enumerate}
+\begin{fact}
+3SAT problem is in NP.
+\end{fact}
+\emph{Proof.} By definition, to prove 3SAT is in NP, we need to design an
+algorithm~(i.e., the verifier $A$), and show that it satisfies the two
+conditions. For 3SAT, the certificate is an assignment for all variables,
+which can be represented as a binary vector. The verifier, given below, will check
+if the given binary vector is in correct length, and if it satisfies all clauses,
+and these can be done in polynomial-time.
 
-Another side of application of NP-complete problems is to use existint NP-complete problems
-to prove new problems are NP-complete~(i.e., hard). This is based on the following claim.
+\begin{minipage}{0.8\textwidth}
+	\aaA {4}{verifier~$(x, c)$}\xxx
+	\aab {verify that the length of $c$ equals to the number of variables in instance $x$: if not, return ``no'';}\xxx
+	\aab {verify that every clause in instance $x$ is true when $x_i$ is assigned with $c[i]$: if not, return ``no'';}\xxx
+	\aab {return ``yes'';}\xxx
+	\aaa {end;}\xxx
+\end{minipage}
 
-\begin{claim}
-Let $X$ be a problem in NP. If there exists an NP-complete problem $Y$ such that $Y\le_p X$,
-we we have $X$ is NP-complete.
-\end{claim}
+Now we prove that above verifier satisfies the two conditions.
+It clearly takes an instance and a certificate as input.
+If $x$ is an ``true''-instance, then it means $x$ is satisfiable, i.e.,
+there exists an assignment that satisfies all clauses.
+Clearly, once this assignment is passed to the verifier together with $x$,
+the verifier will return ``yes''.
+If $x$ is an ``false''-instance, then it means $x$ is not satisfiable, i.e.,
+there does not exist an assignment that satisfies all clauses.
+Hence, no matter what is passed to the verifier with $x$,
+the verifier always returns ``no''. Also, verifier $A$ runs in polynomial-time.
+This proves that 3SAT is in NP.
+\qed
 
-This is easy to understand: $Y$ is NP-complete, i.e., it is (one of) the hardest problem
-in NP; of course $Y$ is at least as hard as $X$ because $X$ is in NP.
-Now we have $Y\le_p X$, i.e., $X$ is at least as hard as $Y$. Combined, $X$ is (one of) the
+
+
+
+We study how to prove that a problem is NP-complete by reducing from known
+NP-complete problems. The approach is based on the following key idea.
+
+\begin{fact}
+Let $Y$ be a problem in NP. If there exists an NP-complete problem $X$ such that $X\le_p Y$,
+then $Y$ is NP-complete.
+\end{fact}
+
+This is intuitive: $X$ is NP-complete, i.e., it is (one of) the hardest problem
+in NP; of course $X$ is at least as hard as $Y$ because $Y$ is in NP.
+Now we have $X\le_p Y$, i.e., $Y$ is at least as hard as $X$. Combined, $Y$ is (one of) the
 hardest problem in NP as well. Below we give a formal proof.
 
-\emph{Proof.} Let $X'$ an arbitrary problem in NP. Since problem $Y$ is NP-complete,
-by definition, we have $X' \le_p Y$. Since $Y\le_p X$, we must have that $X'\le X$.
-(Here we use the property that the polynomial-time reduction is transitive.)
-Combining that $X$ is in NP, we know that $X$ is NP-complete.\qed
+\emph{Proof.} Let $X'$ an arbitrary problem in NP. Since problem $X$ is NP-complete,
+by definition, we have $X' \le_p X$. Since $X\le_p Y$, we must have that $X'\le Y$.
+(Here we use the property that the polynomial-time reduction is transitive, i.e.,
+ if $A\le_p B$ and $B\le_p C$ then $A\le_p C$.)
+Combining that $Y$ is in NP, we know that $Y$ is NP-complete.\qed
 
-Above Claim suggest a procedure to prove that a decision problem $X$ is NP-complete.
+Above Fact suggest a procedure to prove that a decision problem $Y$ is NP-complete.
 \vspace*{-\topsep}
 \begin{enumerate}
-\item show that $X$ is in NP;
-\item pick an existing NP-complete problem $Y$;
-\item show that $Y$ is polynomial-time reducible to $X$. 
+\item Show that $Y$ is in NP;
+\item Pick an existing NP-complete problem $X$;
+\item Show that $X$ is polynomial-time reducible to $Y$. 
 \end{enumerate}
 
-Using above procedure, lots of problems have been proved to be NP-complete.
-These includes the 3SAT problem, the decision-version of the vertex cover problem, i.e., $VC(G,k)$.
-Other well-known NP-complete problems include, the decision-version of independenet set problem,
-the Hamiltonian path problem, 
-the Hamiltonian cycle problem, 
-3D matching problem, $k$-coloring problem when $k\ge 3$, the subset-sum problem, decision-version of TSP~(traveling salesman problems), etc.
-Below we give some details for the independent set problem.
+Below we give two examples. So far, we (only) know one NP-complete
+problem, 3SAT. We will use it for proving other problems to be NP-complete.
 
-\subsection*{The Independent Set Problem}
+%Using above procedure, lots of problems have been proved to be NP-complete.
+%These includes the 3SAT problem, the decision-version of the vertex cover problem, i.e., $VC(G,k)$.
+%Other well-known NP-complete problems include, the decision-version of independenet set problem,
+%the Hamiltonian path problem, 
+%the Hamiltonian cycle problem, 
+%3D matching problem, $k$-coloring problem when $k\ge 3$, the subset-sum problem, decision-version of TSP~(traveling salesman problems), etc.
+%Below we give some details for the independent set problem.
+
+\subsection*{Independent Set}
 
 An \emph{independent set} of an undirected graph $G = (V, E)$
 is a subset of vertices $V_1\subset V$ satisfying that no two vertices in it is connected by an edge, i.e.,
@@ -116,12 +122,13 @@ for any $u,v\in V_1$, we have $(u,v)\not\in E$. We define two versions of the in
 we denote this problem as $IS(G,k)$.
 \end{enumerate}
 
-There is a simple connection between independent set and vertex cover, stated below. Can you spot why?
+There is a simple connection between independent set and vertex cover. 
 See Figure~\ref{fig:is} for an example.
+(Can you spot it?) 
 
-\begin{claim}
+\begin{fact}
 Let $G = (V, E)$ be an undirected graph. We have $V_1\subset V$ is an independent set of $G$ if and only if $V\setminus V_1$ is a vertex cover of $G$.
-\end{claim}
+\end{fact}
 
 \begin{figure}[!h]
 \centering{\input{is}}
@@ -129,7 +136,7 @@ Let $G = (V, E)$ be an undirected graph. We have $V_1\subset V$ is an independen
 \label{fig:is}
 \end{figure}
 
-Above claim immediately suggests the following corollaries.
+Above fact immediately suggests the following corollaries.
 \begin{corollary}
 $V_1^*\subset V$ is one maximum independent set of an undirected graph $G$ if and only if $V\setminus V_1^*$ is one minimum vertex cover of $G$.
 \end{corollary}
@@ -137,37 +144,207 @@ $V_1^*\subset V$ is one maximum independent set of an undirected graph $G$ if an
 $G$ has an independent set with $k$ vertices if and only if $G$ has a vertex cover with $|V|-k$ vertices.
 \end{corollary}
 
-According to Corollary~2, we have $VC(G, k) \le_p IS(G, k)$, as we can design an algorithm for $VC(G,k)$ with one statement ``return solver-for-$IS(G,|V|-k)$''.
-Note that, this actually proves that $IS(G,k)$ is NP-complete, given that $VC(G,k)$ is NP-complete and $IS(G,k)$ is in NP.
-%Symmetrically we have $IS(G,k)\le_p VC(G,k)$.
-%Similarly, according to Corollary~1, we can write $IS(G) \le_p VC(G)$ and $VC(G) \le_p IS(G)$.
-%Recall that we also proved that $VC(G,k)\le_p VC(G)$ and $VC(G)\le_p VC(G,k)$ in Lecture~41.
-%We conclude that all the four problems are equivalent, i.e., any two of them are polynomial-time reducible to each other.
+According to Corollary~2, we have $VC(G, k) \le_p IS(G, k)$, as we can design
+an algorithm for $VC(G,k)$ with one statement ``return
+solver-for-$IS(G,|V|-k)$''.
+%Note that, this actually proves that $IS(G,k)$ is NP-complete, given that $VC(G,k)$ is NP-complete and $IS(G,k)$ is in NP.
+Symmetrically we have $IS(G,k)\le_p VC(G,k)$.
+Similarly, according to Corollary~1, we can write $IS(G) \le_p VC(G)$ and $VC(G) \le_p IS(G)$.
+Recall that we also proved that $VC(G,k)\le_p VC(G)$ and $VC(G)\le_p VC(G,k)$. % in Lecture~41.
+We conclude that all the four problems are equivalent, i.e., any two of them are polynomial-time reducible to each other.
 
-\subsection*{NP-hard}
+We now prove that, $IS(G, k)$ is NP-complete.
+The first step is to show that this problem is in NP.
+The certificate is a solution, in this case an independent set $V_1$ of $G$ of size at least $k$.
+The verifier takes $G$, $k$, and certificate $c$ as input, and verifies (1), whether $c$ is a subset of vertices of $G$,
+(2), whether $c$ is an indepdent set, i.e., no two vertices in it are connected by an edge,
+and (3), whether the size of $c$ is at least $k$. If all these are satisfied, the verifier returns ``yes'' and otherwise ''no''.
+Clearly, if the instance ($G,k$) is a ``true'' instance, meaning that there exists an independent set $V_1$ of size at least $k$,
+then verifier will return ``yes'' when given $G$, $k$ together with $V_1$ as input.
+On the other side, if the instance ($G,k$) is a ``false'' instance, which means that there 
+does not exist an independent set $V_1$ of size at least $k$, then the verifier will always output ``no''.
 
-\begin{definition}[NP-hard]
-Let $X$ be a problem. We say $X$ is NP-hard, if there exists an NP-complete problem $Y$ such that $Y\le_p X$.
-\end{definition}
+Next, we pick an existing NP-complete problem $X$ and show that $X$ is polynomial-time reducible to $IS(G, k)$.
+The choice for $X$ here is 3SAT.
+We therefore need to design an algorithm for 3SAT, assuming and using (up to polynomial-time) an algorithm for $IS(G, k)$.
+Here is a way of interpreting both problems that bridges them.
+\begin{enumerate}
+\vspace*{-\topsep}
+\item An instance of 3SAT is satisfiable~(i.e., a ``true'' instance), if and only if, one can pick a literal in each clause such that 
+a variable and its negation are not picked simultaneously. To see this formally, if a 3SAT instance is satisfiable,
+there exists an assignment for all variables such that at least one literal in each clause is true. We can then pick
+a true literal from each clause. The picked literals certainly cannot include both $x$ and $\overline{x}$ as they cannot
+be true at the same time. On the other side, assume that one can pick a literal in each clause such that 
+no variable and its negation are both chosen.  Letting all these $n$ literals be true satisfy all clauses. 
+For each variable $x$,
+if literal $x$ gets picked, we assign $x$ to be true; if $\overline{x}$ is picked we assign $x$ to be false; if
+none of these two we assign $x$ a random value. Clearly, this assignment to all variables satisfy all clauses. 
+\item An instance of $IS(G,k)$ is a ``true'' instane, if and only if, one can pick $k$ vertices in $G$ such that
+the two ends of an edge are not picked simultaneously.
+\end{enumerate}
 
-Intutively, a problem is said to be NP-hard, if it is at least as hard as the hardest problem in NP~(i.e., an NP-complete problem).
-Note that NP-hard problems are not restricted to decision problems. This makes it convinent to use. For examples, 
-we can say the (optimization-version of) vertex cover problem is NP-hard,
-the (optimization-version of) independent set problem is NP-hard,
-the TSP problem is NP-hard, etc.
-Of course, all NP-complete problems are also NP-hard. In fact, by definitions, we have
-
-\begin{fact}
-NP{}~$\cap${}~NP-hard{}~$=${}~NPC, where we also use ``NP-hard'' to represent the set of all NP-hard problems.
-\end{fact}
-
-Above fact suggests the following two possibilities among P, NP, NPC, and NP-hard. See Figure~\ref{fig:nphard}.
+Above analysis suggests that, for a 3SAT instance we build a graph $G$ with
+vertices representing literals and edges connecting variables and their negations.
+Formally, assume the given 3SAT instance consists of $m$ variables $x_1, x_2, \cdots, x_m$
+and $n$ clauses $C_1, C_2, \cdots, C_n$. We build an undirected graph $G$ with $3n$ vertices which
+correspond to the $3n$ literals in the $n$ clauses. We add an edge for any two literals/vertices
+in the form of a variable $x$ and its negation $\overline{x}$.
+Finally, we add 3 edges to connect the 3 pairs of literals in each clause.
+See Figure~\ref{fig:3satis}. The algorithm (for 3SAT) calls a solver for $IS(G,k)$
+to decide if the constructed graph $G$ has an independent set of size at least $n$.
+If ``yes'' the algorithm return ``yes'', and returns ``no'' otherwise.
 
 \begin{figure}[!h]
-\centering{\input{nphard}}
-\vspace*{-0.1cm}
-\caption{Two possibilities among P, NP, NPC, and NP-hard.}
-\label{fig:nphard}
+\centering{\input{3satis}}
+\caption{Reducing 3SAT to $IS(G,k)$. The 3SAT instance~(with $n$ clauses) is satisfiable
+if and only if the resulting graph has an independent set of size $n$.}
+\label{fig:3satis}
 \end{figure}
 
+To show the above algorithm is correct, we need to prove that the given 3SAT instance~(with $n$ clauses)
+is satisfiable if and only if the constructed graph $G$ contains an independent set of size at least $n$.
+%($\Longrightarrow$) 
+Assume the 3SAT is satisfiable, i.e., one can pick $n$ literals, one from each clause, such that 
+$x$ and $\overline{x}$ are not picked. In $G$, these $n$ literals/vertices
+must form an independent set, since, according to how $G$ is constructed,
+any two picked vertices will not be connected by the $(x,\overline{x})$ edge
+nor by the edge connecting the literals within a clause~(because the picked literals
+come from different clauses). To prove the other side, assume that $G$ contains
+an independent set of size at least $n$. These vertices/literals must come from different clauses~(since
+all literals within a clause are connected). 
+So the size must be exactly $n$, one from each clause. 
+Being independent guarantees that 
+a variable and its negation, the two ends of an edge, must be not present simultaneously.
 
+
+
+\subsection*{3D Matching}
+
+3D matching generaizes the matching of bipartite graph~(i.e., 2D matching).
+See Figure~\ref{fig:3dmatching}.
+Formally, let $X$, $Y$, and $Z$ be 3 disjoint sets of vertices. 
+A set $E\subset X\times Y \times Z$ is said to be \emph{edges},
+each of which is a triple consists of 3 vertices from the 3 sets.
+A matching $M$ of $(X,Y,Z,E)$ is a subset of $E$ such that
+each vertex in $X\cup Y \cup Z$ appears in at most one edge in $E$;
+in other words, any two edges in a matching does not share any vertex.
+
+\begin{figure}[!h]
+\centering{\input{3dmatching}}
+\caption{Left: 2D matching~(i.e., matching of bipartite graph). Right: 3D matching.
+For both cases the matching is marked by thick edges.}
+\label{fig:3dmatching}
+\end{figure}
+
+We study this specific problem named \emph{perfect 3D matching}:
+given $X$, $Y$, $Z$, and $E$ where $|X|=|Y|=|Z|=n$, to decide
+if there exists a matching $M\subset E$ such that $|M| = n$.
+Equivalently, the problem is to seek if there exists a matching that covers
+all vertices.
+
+We now prove that the perfect 3D matching problem is NP-complete.
+The first step, which is to prove that it is in NP, is straightforward.
+The verifier, which takes an instance $X,Y,Z,E$ where $|X|=|Y|=|Z|=n$ and a certificate
+$c$ as input, verifies whether $c$ is a matching and verifies
+if its size is $n$ and returns ``yes'' if so. It is easy to check that, an instance is ``true''
+if and only if there exists a certificate to allow for the verifier to return ``yes''.
+
+We then pick an existing NP-complete problem and reduce it to the perfect 3D matching problem.
+We again choose 3SAT. The reduction though, is not as easy as for previous problem.
+Assume that the given 3SAT instance consists of $m$ variables and $n$ clauses.
+We start with designing a ``switch'' for each variable. See Figure~\ref{fig:3dvar}.
+We add $n$ vertices to $X$~(marked in blue), $n$ vertices to $Y$~(marked in red), and $2n$ vertices to $Z$~(marked in green).
+We label the green vertices sequentially as $1+$, $1-$, $2+$, $2-$, $\cdots$, $n+$, and $n-$.
+We then add $2n$ edges/triples to $E$. 
+So far, each blue and red vertex appears in exactly two edges, and
+each green vertex appears in exactly one edge.
+Later, we will create new edges to include green vertices~(to model clauses),
+but not for the blue or red vertices. 
+%In other words, the edges we have added so far are the only edges
+%that include these blue and red vertices.
+For a matching to include all the blue and red vertices in a switch, as required by the perfect matching,
+there are only two possibilities: see Figure~\ref{fig:3dvar};
+the first possibility leaves all ``$+$'' green vertices freed, representing that $x$ is true,
+	and the second possibility frees all ``$-$'' green vertices, representing that $x$ is false.
+
+\begin{figure}[!h]
+\centering{\input{3dvar}}
+\caption{Left: the ``switch'' created for a single variable $x$, assuming the
+given 3SAT instances contains 4 clauses. We color vertices
+in $X$, $Y$, and $Z$ blue, red, and green respectively. The edges~(i.e., triples)
+are represented as circles. Middle: the situation where $x$ is true.
+Right: the situation where $x$ is false.}
+\label{fig:3dvar}
+\end{figure}
+
+Next, we model clauses. For each clause $C_j$, $j=1,2,\cdots,n$, we first add one blue vertex one red vertex, forming a blue-red 
+pair for $C_j$.
+We then add 3 edges/triples, corresponding to the 3 literals in $C_j$.
+If a literal is $x_i$, we add an edge consisting of the blue-red pair and the $j+$ green vertex in the switch for $x_i$;
+if a literal is $\overline{x_i}$, we add an edge consisting of the blue-red pair and the $j-$ green vertex in the switch for $x_i$.
+See Figure~\ref{fig:3dclauses}.
+
+\begin{figure}[!h]
+\centering{\input{3dclauses}}
+\caption{Adding vertices and edges for clauses.
+The given 3SAT instance contains $n=4$ clauses, only $C_1$ and $C_3$ are illustrated~(otherwise the figure will be too messy).}
+\label{fig:3dclauses}
+\end{figure}
+
+Consider a literal~($x_i$ or $\overline{x_i}$) in $C_j$ and the corresponding
+edge that consists of the blue-red pair for $C_j$ and a green vertex~(either $j+$ or $j-$) in the switch for $x_i$.
+Picking this edge in the matching implies that the green vertex must be freed. The freed green vertex indicates
+the assignment for $x_i$, and one can verify, in either case the literal must be true, i.e., $C_j$ is satisfied.
+Hence, a perfect matching that cover all vertices, particularly the blue-red pairs for clauses, gives an assignment
+that satisfies all clauses. This is the intuition behind. We include a formal proof at the end.
+
+%If a perfect matching $M$ exists, then one (and only one) of these 3 edges will be picked. %since $b$ and $r$ need to be covered. 
+%Consider the literal corresponding to the picked edge must be tru
+%Without loss of generality, assume that edge correspond to literal is $\overline{x_i}$.
+%Consider the switch for $x_i$, where $j-$ is covered by the said edge.
+%The switch for $x_i$ therefore must be picking the possibility of freeing all ``$-$'' vertices, that is, $x_i$ is false.
+%Consequently, clause $C_j$ will be satisfied.
+%Note also that, two clauses $C_j$ and $C_k$ cannot be satisfied by literals $x_i$ and $\overline{x_i}$~(which they should not be).
+%This is because, in such case, in the switch for $x_i$, vertices $j+$ and $k-$ must be freed, which is not possible.
+
+
+The last step of the algorithm is to add ``clean-up'' vertices and edges, to create an instance of perfect 3D matching where the number
+of blue, red, and green vertices must be equal. So far, we have added $mn+n$ blue vertices, $mn+n$ red vertices,
+and $2mn$ green vertices. We therefor add $2mn-mn-n=mn-n$ blue vertices and $mn-n$ red vertices, forming $mn-n$ blue-red clean-up pairs.
+We add $(mn-n)\cdot 2mn$ new edges, by creating an edge for every clean-up blue-red pair and every green vertex.
+In a perfect 3D matching of all vertices, there will be exactly $mn$ green vertices covered by edges within switches,
+exactly $n$ green vertices covered by edges for clauses.
+No matter what they are, we can always pick $mn-n$ clean-up edges, that is a matching, to cover the remaining $mn-n$ green vertices
+and all clean-up $mn-n$ clean-up pairs.
+
+We prove that the 3SAT instance is satisfiable if and only if the resulting perfect 3D matching instance has a perfect matching.
+Assume that 3SAT is satisfiable. We decide the status of each switch
+following the truth assignment. Specifically, if $x_i$ is true 
+we pick edges in its switch that cover ``$-$'' green vertices, which free all ``$+$'' vertices;
+if $x_i$ is false
+we pick edges in its switch that cover ``$+$'' green vertices, which free all ``$-$'' vertices.
+%we free all ``$+$'' green vertices by picking all edges covering ``$-$'' green vertices,
+%and otherwise we free all ``$-$'' green vertices by picking edges including ``$+$'' green vertices. 
+Now consider each clause $C_j$. There must be a literal that is true.
+If it is in the form of $x_i$, then $x_i$ is true and hence all ``$+$'' green vertices, 
+particularly $j+$, in the switch for $x_i$ must be freed.
+So, we pick the edge consisting of the blue-red clause pair for $C_j$ and $j+$.
+If it is in the form of $\overline{x_i}$, then $x_i$ is false and hence all ``$-$'' green vertices, 
+particularly $j-$ must be freed.
+So, we pick the edge that consisting of the blue-red clause pair for $C_j$ and $j-$.
+Picking edges for all clauses covers all clause pairs.
+The remaining green vertices and clean-up pairs can be matched as discussed above.
+All picked edges form a perfect matching.
+
+On the other side, assume that there exists a perfect matching.
+We assign values to variables depending on
+which edges in each switch are picked. %For each switch, depending on which vertices are freed~(there are only two cases),
+We assign $x_i$ to be true, if all ``$+$'' green in its switch are freed, 
+and to be false if all ``$-$'' green vertices in its switch are freed.
+We now show that this truth assignment satisfied all clauses.
+Consider clause $C_j$. Its blue-red clause pair must be covered by a picked edge in the matching, which corresponds to a literal in $C_j$.
+The picked edge must include a freed green vertex. According to how the edges are built, 
+if in $C_j$ the corresponding literal is in the form of $x_i$, then $j+$ vertex in the switch for $x_i$ is included.
+Since $j+$ is freed, we know that we have assigned $x_i$ to be true, and this satisfies $C_j$.
+If in $C_j$ the corresponding literal is in the form of $\overline{x_i}$, then $j-$ vertex in the switch for $x_i$ is included in the edge.
+Since $j-$ is freed, we know that we have assigned $x_i$ to be false, and again this satisfies $C_j$.
