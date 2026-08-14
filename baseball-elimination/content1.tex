@@ -1,0 +1,177 @@
+%\setcounter{definition}{0} \setcounter{property}{0} \setcounter{claim}{0} \setcounter{fact}{0} \setcounter{corollary}{0} \setcounter{figure}{0}
+%\subsection*{Baseball Elimination Problem}
+
+Close to the end of season, fans often wonder if a team is already eliminated, i.e., 
+whether it no longer has any chance to finish in first place (possibly in a tie) given the current standings and the remaining schedule.
+Formally, assume the league consists of $n$ teams, $T_1, T_2, \cdots, T_n$.
+At present, $T_i$ has $w_i$ wins, and there will be $x_{ij}$ games
+to be played between $T_i$ and $T_j$. We aim to determine if it is still possible for the first team $T_1$ to
+win the first place, i.e., if there exists an outcome of all future games such
+that $T_1$ ends up with the highest number of wins, possibly tied with other team(s).
+
+See one example below: is the first team~(NY) already out?
+A simple analysis reveals that the answer is Yes.
+To see this, first, we can safely assume that NY wins
+all remaining games. (This is because, we seek the best scenario for NY.)
+This brings the total wins of NY to 43~(1 more win against DC and 2 more wins against SF). 
+Denote this number as $m$.
+Note that SF has $43=m$ wins already. So for NY to be the first place,
+SF cannot win any game. So DC wins the game against SF, and LA wins the game against SF,
+which brings the total wins of DC to 41 + 1 = 42, the same for LA.
+But there are 3 more games scheduled between DC and LA, and one of them
+will win at least 2 games, brininging the total wins for that team to 44 wins.
+So, NY is already eliminated.
+
+\begin{table}[ht]
+\renewcommand{\arraystretch}{1.2}
+\centering
+\begin{minipage}{0.45\textwidth}
+\centering
+\caption{Standing Board}
+\begin{tabular}{lrr}
+\hline
+Team ID & Team Name & \#Wins~($w_i$) \\
+\hline
+$T_1$ & New York~(NY) & 40 \\
+$T_2$ & Washington DC~(DC) & 41 \\
+$T_3$ & Los Angeles~(LA) & 41 \\
+$T_4$ & San Francisco~(SF) & 43 \\
+$T_5$ & Chicago~(CH) & 39 \\
+\hline
+\end{tabular}
+\end{minipage}\hfill
+\begin{minipage}{0.45\textwidth}
+\centering
+\caption{Schedule of Remaining Games}
+\begin{tabular}{lr}
+\hline
+Pair of Teams & \#Games-to-Play~($x_{ij}$) \\
+\hline
+NY vs.\ DC & 1 \\
+NY vs.\ SF & 2 \\
+DC vs.\ LA & 3 \\
+DC vs.\ SF & 1 \\
+LA vs.\ SF & 1 \\
+LA vs.\ CH & 2 \\
+\hline
+\end{tabular}
+\end{minipage}
+\end{table}
+
+Here is another reasoning showing that NY is already out.
+Consider a subset of teams, DC, LA, and SF.
+For none of them to surpass NY, their future
+total wins must not exceed $m-w_i$, which are 
+2, 2, and 0 respectively. However, there are $3+1+1=5$ future
+games among them, implying that, at least one of the 3 teams
+will inevitably exceed $m$ wins; hence, NY has been eliminated.
+
+Formally, if there exists a subset of teams $C\subset\{T_2, T_3, \cdots, T_n\}$, 
+satisfying that $$\sum_{T_i\in C} (m-w_i) < \sum_{T_i, T_j\in C} x_{ij},$$
+then we know that $T_1$ has been eliminated. 
+We call such a subset a \emph{certificate}
+as its existence proves that $T_1$ is already out.
+It is not immediately clear that, in the case that $T_1$ is out, such a certificate always exists.
+We will show later, along with the algorithm, that it indeed always does.
+
+We transform the problem into the max-flow problem.
+Recall that the problem can be preprocessed by letting $T_1$ win all remaining games,
+giving it a total of $m$ wins.
+The problem now becomes, to determine if all future wins, i.e., $x_{ij}$, $2\le i < j \le n$,
+can be distributed among the teams so that $T_i$ receives no more than $m-w_i$ additional wins, for all $2 \le i \le n$.
+Such a ``distribution'' can be modeled using max-flow.
+Specifically, we construct a network $(G, s, t, c)$ as follows.
+See Figure~\ref{fig:baseball}.
+The vertices consists a source $s$, a sink $t$,
+a vertex $(T_i,T_j)$ for each pair of teams $(T_i, T_j)$ with scheduled games~(i.e., $x_{ij} > 0$),
+and a vertex for each team $T_i$, $2 \le i \le n$.
+We add an edge from $s$ to each pair $(T_i,T_j)$ with capacity $x_{ij}$, representing that $x_{ij}$ wins must be distributed.
+For each vertex $(T_i, T_j)$ we add two out-edges, one to $T_i$ and one to $T_j$, enforcing that these $x_{ij}$ wins must be distributed
+to $T_i$ and $T_j$; the capacities of these two edges are set to $\infty$.
+(While $x_{ij}$ seems sufficient,
+using $\infty$ simplifies the proof, as will be clear later.)
+We finally add edge from each $T_i$ to $t$ with capacity $m-w_i$, guaranteeing that $T_i$ cannot receive more than $m-w_i$ wins.
+
+\begin{figure}[!h]
+\centering{\input{baseball}}
+\caption{The network constructed from the instance given above.}
+\label{fig:baseball}
+\end{figure}
+
+Next, the algorithm computes an maximum flow $f^*$.
+The algorithm returns true~(i.e., $T_1$ can still win the first place)
+if $|f^*| = \sum_{2\le i< j \le n} x_{ij}$, i.e., all future wins
+\emph{can} be distributed while guaranteeing that $T_i$ receive no 
+more than $m-w_i$ wins for all $2\le i \le n$. Note that
+in this case, such a distribution~(i.e., outcomes of future games)
+is given by $f^*$. The algorithm returns false~(i.e., $T_1$ is already out
+regardless the outcome of future games) if $|f^*| < \sum_{2\le i< j \le n} x_{ij}$.
+
+The correctness of above algorithm follows an argument that,
+there exists a one-to-one correspondence beween
+an outcome of all future games~(i.e., an assignment of all wins to teams)
+that gives no more than $m-w_i$ additional wins to $T_i$
+and a flow $f$ with $|f| = \sum_{2\le i < j \le n} x_{ij}$.
+Since the algorithm decides the latter, it answers the former correctly.
+
+
+
+In the case of $|f^*| < \sum_{2\le i< j \le n} x_{ij}$,
+a certificate can be constructed, by computing an minimum $s$-$t$ cut $(S^*, T^*)$,
+and collect the teams in $S^*$ as the certificate $C$.
+See Figure~\ref{fig:certificate}.
+We now prove this is correct, by starting with characterizing
+the structure of this minimum $s$-$t$ cut $(S^*,T^*)$.
+
+\begin{figure}[!h]
+\centering{\input{certificate}}
+\caption{Constructing a certificate $C$ showing that $T_1$ is already out,
+	by computing a minimum $s$-$t$ cut $(S^*,T^*)$ and collecting the teams in $S^*$.}
+\label{fig:certificate}
+\end{figure}
+
+
+
+\begin{fact}
+$(T_i,T_j) \in S^*$ if and only if $T_i\in S^*$ and $T_j\in S^*$.
+\label{fact:ball}
+\end{fact}
+\emph{Proof.} 
+See Figure~\ref{fig:ballproof}.
+We first prove ``$\Longrightarrow$''.
+Without loss of generality, assume conversely that $T_i \not\in S^*$.
+This means that the edge from $(T_i,T_j)$ to $T_i$ is a cut-edge.
+Since this edge has a capacity of $\infty$, we have $c(S^*,T^*) = \infty$, a contradiction.
+Now we prove ``$\Longleftarrow$''. 
+Assume conversely that $(T_i, T_j)$ is in $T^*$.
+Consider all edges adjacent to $(T_i, T_j)$;
+the edge from $s$ to $(T_i,T_j)$ is one of the cut-edges, but not the other two edges.
+Now, we move $(T_i,T_j)$ to $S^*$.
+In this new $s$-$t$ cut, the edge $s$ to $(T_i,T_j)$ is not a cut-edge any more,
+implying that this new cut has a smaller capacity than $(S^*,T^*)$, a contradiction.  \qed
+
+\begin{figure}[!h]
+\centering{\input{ballproof}}
+\caption{Proof of Fact~\ref{fact:ball}.}
+\label{fig:ballproof}
+\end{figure}
+
+
+Following above fact, the network can be sketched as follows in Figure~\ref{fig:ballsketch}.
+Consider the cut-edges of $(S^*,T^*)$ and its capacity.
+We can write
+$$c(S^*,T^*) = \sum_{T_i \not\in C \textrm{ or } T_j \not\in C} x_{ij} + \sum_{T_i\in C} (m-w_i) \\
+= \sum_{2\le i \le j \le n} x_{ij} - \sum_{T_i,T_j \in C} x_{ij} + \sum_{T_i\in C} (m-w_i) $$
+
+
+\begin{figure}[!h]
+\centering{\input{ballsketch}}
+\caption{Sketch of the network.}
+\label{fig:ballsketch}
+\end{figure}
+
+
+Consider the case that $T_1$ is eliminated, i.e., $|f^*| < \sum_{2\le i< j \le n} x_{ij}$. 
+Using $|f^*| = c(S^*,T^*)$, we can have that
+$\sum_{T_i,T_j \in C} x_{ij} > \sum_{T_i\in C} (m-w_i)$, proving that $C$ is a certificate.
+
