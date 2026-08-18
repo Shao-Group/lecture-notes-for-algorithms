@@ -12,7 +12,6 @@ $p$, which is defined as the smallest capacity~(in the residual graph $G_f$) of 
 written as $x(p) := \min_{e\in p} c_f(e)$. We then examine each edge $e \in p$, and
 update the flow of the corresponding edge in the network with the following rule.
 
-\vspace*{-\topsep}
 \begin{enumerate}
 \item If $e = (u,v) \in p$ is a forward edge, i.e., $(u,v)$ is in the network, we update $f(u,v) \leftarrow f(u,v)+x(p)$;
 \item If $e = (u,v) \in p$ is a backward edge, i.e., $(v,u)$ is in the network, we update $f(v,u) \leftarrow f(v,u)-x(p)$;
@@ -39,7 +38,6 @@ condition remains satisfied owes to how the residual graph and its edge capaciti
 Consider the two cases in augmenting: in either case, after augmenting, the
 flow remains non-negative and bounded by the capacity. Specifically,
 
-\vspace*{-\topsep}
 \begin{enumerate}
 \item if $e=(u,v)\in p$ is a forward edge, we know that $c_f(e)=c(u,v)-f(u,v)$ based on the
 construction of the residual graph. Since $x( p) \le c_f (e)$, after augmenting the

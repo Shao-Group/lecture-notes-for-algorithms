@@ -7,7 +7,6 @@ via a graphical structure. Formally, a (flow) network is a tuple $(G = (V, E), s
 %$t\in V$ represents the sink vertex~(i.e., the out-degree of $t$ is 0),
 %and $c(e) \ge 0$ represents the \emph{capacity} of edge $e\in E$.
 
-\vspace*{-\topsep}
 \begin{enumerate}
 \item $G = (V, E)$ is a directed graph;
 \item $s\in V$ is a source vertex of $G$~(i.e., the in-degree of $s$ is 0), from which the flow is generated;
@@ -20,7 +19,6 @@ describes {how} the flow is transmitted from $s$ to $t$
 via the graph $G$ under the capacity constraints. Formally,
 an $s$-$t$ flow $f$ is a function $f: E\to \mathbb{R}_{\ge 0}$
 that satisfies the following two conditions:
-\vspace*{-\topsep}
 \begin{enumerate}
 \item For every $e\in E$, $0\le f(e) \le c(e)$; this is called the \emph{capacity condition};
 \item For every vertex $v\in V\setminus\{s,t\}$, $\sum_{e\in I(v)} f(e) = \sum_{e\in O(v)} f(e)$, where $I(v) := \{(u,v)\in E\mid u\in V\}$ represents

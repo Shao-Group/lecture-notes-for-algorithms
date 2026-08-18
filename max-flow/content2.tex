@@ -43,7 +43,6 @@ An $s$-$t$ cut $(S, T)$ of a network also partitions all
 edges in the graph into four disjoint subsets, described below. 
 We define the first category, i.e., $E(S, T) := \{(u,v)\in E\mid u\in S, v\in T\}$,
 as the \emph{cut-edges} w.r.t.\ the $s$-$t$ cut $(S, T)$.
-\vspace*{-\topsep}
 \begin{enumerate}
 \item Edges that span the cut and point from $s$-side to $t$-side, formally $E(S, T) := \{(u,v)\in E\mid u\in S, v\in T\}$;
 \item Edges that span the cut and point from $t$-side to $s$-side, formally $E(T, S) := \{(u,v)\in E\mid u\in T, v\in S\}$;
@@ -129,7 +128,6 @@ Note that $|f| = \sum_{e\in O(s)} f(e)$ by definition, so the right side can be 
 Combined, we have $|f| = \sum_{v\in S} \sum_{e\in O(v)} f(e) - \sum_{v\in S} \sum_{e\in I(v)} f(e)$. 
 Now consider the 4 types of edges partitioned by $(S, T)$ and consider if they are taken into account by the two items
 i.e., $\sum_{v\in S} \sum_{e\in O(v)} f(e)$ and $\sum_{v\in S} \sum_{e\in I(v)} f(e)$. 
-\vspace*{-\topsep}
 \begin{enumerate}
 \item All edges in $E(S, T)$ appear in the first item, but not the second one.
 \item All edges in $E(T, S)$ appear in the second item, but not the first one.

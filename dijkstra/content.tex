@@ -240,7 +240,6 @@ The running time of Dijkstra's algorithmd depends on the specific implementation
 Consider using binary heap. The break-down of running time is given below.
 Note that each vertex will be picked from the $PQ$ at most once and each edge will be examined at most once~(for directed graph) or at most twice~(for undirected graph).
 The total running time is $O((|V|+|E|)\log |V|)$.
-\vspace*{-\topsep}
 \begin{enumerate}
 \item initialization: $\Theta(|V|)$;
 \item insert~($PQ$): $|V| \times O(\log |V|)$;

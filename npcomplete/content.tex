@@ -92,7 +92,6 @@ by definition, we have $X' \le_p X$. Since $X\le_p Y$, we must have that $X'\le 
 Combining that $Y$ is in NP, we know that $Y$ is NP-complete.\qed
 
 Above Fact suggest a procedure to prove that a decision problem $Y$ is NP-complete.
-\vspace*{-\topsep}
 \begin{enumerate}
 \item Show that $Y$ is in NP;
 \item Pick an existing NP-complete problem $X$;
@@ -115,7 +114,6 @@ problem, 3SAT. We will use it for proving other problems to be NP-complete.
 An \emph{independent set} of an undirected graph $G = (V, E)$
 is a subset of vertices $V_1\subset V$ satisfying that no two vertices in it is connected by an edge, i.e.,
 for any $u,v\in V_1$, we have $(u,v)\not\in E$. We define two versions of the independent set problem.
-\vspace*{-\topsep}
 \begin{enumerate}
 \item optimization-version: given an undirected graph $G = (V, E)$, to seek an independent set $V_1$ of $G$ such that $V_1$ is maximized; we denote this problem as $IS(G)$;
 \item decision-version: given an undirected graph $G = (V, E)$ and integer $k\ge 0$, to decide if there exists an independent set $V_1$ of $G$ such that $|V_1| \ge k$;

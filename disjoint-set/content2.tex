@@ -77,7 +77,6 @@ In a priority queue, each element is labeled with a \emph{priority}~(also called
 %In other words, each element in a priority queue is a pair (\emph{key, value}),
 %where \emph{key} indicates its priority, while \emph{value} stores the actual data.
 A {priority queue} data structure supports the following operations.
-\vspace*{-\topsep}
 \begin{enumerate}
 \item empty~($PQ$): decides if priority queue $PQ$ is empty;
 \item insert~($PQ$, $x$, \emph{key}): add element $x$ to $PQ$ with priority being \emph{key};
@@ -157,7 +156,6 @@ So, the most inner {if} part will be executed $O(|E|)$ times.
 The break-down of running time is given below~(using binary heap).
 The total running time is $O((|V|+|E|)\log |V|)$.
 
-\vspace*{-\topsep}
 \begin{enumerate}
 \item initialization: $\Theta(|V|)$;
 \item insert~($PQ$): $|V| \times O(\log |V|)$;

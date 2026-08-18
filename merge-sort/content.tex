@@ -6,7 +6,6 @@
 We now start introducing the first algorithm-design technique:
 divide-and-conquer. 
 A typical divide-and-conquer algorithm follows the framework below.
-\vspace*{-\topsep}
 \begin{enumerate}
 \item partition the original problem into smaller problems;
 \item recursively solve all subproblems;
@@ -98,7 +97,6 @@ As we assume that $n = b^k$ and $T(1) = 1$, we have
 $$ T(n) =  a^k + \sum_{i = 0}^{k-1} a^i(n/b^i)^d = \sum_{i = 0}^{k} a^i(n/b^i)^d = n^d \sum_{i = 0}^{k} (a/b^d)^i.$$
 
 Consider the following 3 cases. 
-\vspace*{-\topsep}
 \begin{enumerate}
 \item If $a = b^d$, i.e., $d = \log_b a$, then $T(n) = n^d k = n^d \log_b n = \Theta(n\log n)$.
 \item If $a < b^d$, i.e., $d > \log_b a$, then the series decreases exponentially, and therefore the item of $i = 0$ dominates.  $T(n) = n^d a/b^d = \Theta(n^d)$.

@@ -4,7 +4,6 @@
 \subsection*{Polynomial-Time Reduction Revisit}
 
 Polynomial-time reduction can be used in two different ways. Suppose we have $X\le_p Y$.
-\vspace*{-\topsep}
 \begin{enumerate}
 \item If we know an algorithm to solve $Y$, then we know how to solve $X$. In this way
 we are making use of an (existing) algorithm for $Y$ to solve a (new) problem $X$. Such an example
@@ -60,7 +59,6 @@ to represent the set of all NP-complete problems. See Figure~\ref{fig:PvsNP}.
 \label{fig:PvsNP}
 \end{figure}
 
-\vspace*{-\topsep}
 \begin{enumerate}
 \item P{}~$\neq${}~NP. In this case, we must have P{}~$\cap${}~NPC{}~$=\emptyset$. This is
 because otherwise, if there exists a problem $X\in \textrm{ P } \cap \textrm{ NPC}$, P will be equal to NP according to above Claim). 
@@ -89,7 +87,6 @@ by definition, we have $X' \le_p Y$. Since $Y\le_p X$, we must have that $X'\le 
 Combining that $X$ is in NP, we know that $X$ is NP-complete.\qed
 
 Above Claim suggest a procedure to prove that a decision problem $X$ is NP-complete.
-\vspace*{-\topsep}
 \begin{enumerate}
 \item show that $X$ is in NP;
 \item pick an existing NP-complete problem $Y$;
@@ -109,7 +106,6 @@ Below we give some details for the independent set problem.
 An \emph{independent set} of an undirected graph $G = (V, E)$
 is a subset of vertices $V_1\subset V$ satisfying that no two vertices in it is connected by an edge, i.e.,
 for any $u,v\in V_1$, we have $(u,v)\not\in E$. We define two versions of the independent set problem.
-\vspace*{-\topsep}
 \begin{enumerate}
 \item optimization-version: given an undirected graph $G = (V, E)$, to seek an independent set $V_1$ of $G$ such that $V_1$ is maximized; we denote this problem as $IS(G)$;
 \item decision-version: given an undirected graph $G = (V, E)$ and integer $k\ge 0$, to decide if there exists an independent set $V_1$ of $G$ such that $|V_1| \ge k$;

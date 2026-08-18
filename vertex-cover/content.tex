@@ -10,7 +10,6 @@ we introduced before are also in this category.  Informally, a problem is
 algorithm for it}. To address a NP-hard problem, we therefore have to either
 drop polynomial-time constraint or drop optimality.
 
-\vspace*{-\topsep}
 \begin{enumerate}
 \item Design optimal algorithms but don't run in polynomial-time.
 For example, for the knapsack problem, we designed a DP algorithm~(which
@@ -152,7 +151,6 @@ We have $|V_1| \le \Theta(\log |E|) |V_1^*|$.
 Assume that $|V_1| = k$ and $|V_1^*| = k^*$.
 Assume that the greedy algorithm iteratively picks $v_1, v_2, \cdots, v_k$,
 and assume that in the beginning of the $i$-th iteration, the degree of $v_i$ is $m_i$.  We have the following facts.
-\vspace*{-\topsep}
 \begin{enumerate}
 \item After the $i$-th iteration~(or before the $(i+1)$-th iteration),
 there are $|E| - \sum_{j=1}^i m_j$ edges in the graph,
@@ -170,7 +168,6 @@ Combined with above item, we can write $|E| - \sum_{j=1}^{i-1} m_j \le \sum_{v\i
 
 We therefore have $|E| - \sum_{j=1}^{i-1} m_j \le  m_i \cdot k^*$, for any $1\le i \le k$.
 We now use it to bound $m_i$ and $|E| - \sum_{j=1}^{i} m_j$, i.e., the number of edges remaining after $i$-th iteration. 
-\vspace*{-\topsep}
 \begin{enumerate}
 \item For $i = 1$, $|E| \le m_1 \cdot k^*$ and therefore $m_1 \ge |E| / k^*$.
 Hence $|E| - m_1 \le |E| - |E|/k^* = |E| \cdot (1-1/k^*)$.

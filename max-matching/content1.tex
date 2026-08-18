@@ -135,7 +135,6 @@ We will not design new algorithm for this bipartite maximum matching problem, al
 been a classical problem in computer science and many algorithms exist~(check wikipedia).
 To solve it, we will \emph{transform this problem into a maximum-flow problem}.
 This typically consists of three steps:
-\vspace*{-\topsep}
 \begin{enumerate}
 \item construct an input for the maximum-flow problem, i.e., a network, based
 on the given input, i.e., a bipartite graph;
@@ -231,7 +230,6 @@ In the bipartite graph, there does not exist any edge between $(X\cap S^*)$ and 
 \emph{Proof.} Suppose conversely that there exists an edge $(u,v)\in E$ with $u\in X\cap S^*$ and $v\in Y\cap T^*$.
 Consider $f^*(u,v)$, i.e., the amount of flow carried by this edge in the maximum flow $f^*$.
 There are two possibilities~(as all capacities are 1): either $f^*(u,v) = 0$ or $f^*(u,v) = 1$. See Figure~\ref{fig:matching-proof}.
-\vspace*{-\topsep}
 
 
 \begin{enumerate}
@@ -270,7 +268,6 @@ This gives that the vertex cover $V_1$ has the same size with the matching $M$,
 	 proving that both are optimal. 
 
 We summarize the maximum matching problem and the minimum vertex cover problem below.
-\vspace*{-\topsep}
 \begin{enumerate}
 \item For any \emph{bipartite graph}, its maximum matching
 and minimum vertex cover always have equal cardinality,

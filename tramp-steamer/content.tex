@@ -20,7 +20,6 @@ In other words, we seek an interval of length $\epsilon$ that contains the optim
 \subsection*{Binary Search}
 
 We will use \emph{binary search} to solve above problem. To do it, we need two components:
-\vspace*{-\topsep}
 \begin{enumerate}
 \item An algorithm to decide if a given ratio $r$ is a lower bound of $r^*$~(i.e., $r < r^*$). 
 In other words, to decide if $r$ is achievable~(i.e., if there exists a cycle $C$ such that $r(C) > r$).
@@ -68,7 +67,6 @@ Each vertex $v$ in $G$ will be replaced by two vertices $v_1$ and $v_2$ in $G_1$
 edge $(v_1, v_2)$; this new edge will have a length of $-p(v)$. 
 Each edge $e = (u,v)$ in $G$ will be replaced by edge $(u_2, v_1)$ in $G_1$; this edge will have a length of $r\cdot c(e)$.
 Clearly, based on how $G_1$ is constructed, we have:
-\vspace*{-\topsep}
 \begin{enumerate}
 \item There exists a cycle $u \to v \to w \to \cdots \to u$ if and only if there exists a cycle $u_2 \to v_1 \to v_2 \to w_1 \to w_2 \to \cdots \to u_1 \to u_2$ in $G_1$.
 \item Let $C$ be a cycle in $G$ and let $C_1$ be its corresponding cycle in $G_1$. Then the length of $C_1$ in $G_1$ is 

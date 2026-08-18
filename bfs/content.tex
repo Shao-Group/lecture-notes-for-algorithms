@@ -3,7 +3,6 @@
 
 In many applications, edges of graphs are associated with \emph{lengths}.
 We will consider three cases.
-\vspace*{-\topsep}
 \begin{enumerate}
 \item unit edge length: the length of each edge is 1;
 \item positive edge length: the length of each edge is a positive number;
@@ -66,7 +65,6 @@ The general form is that $V_{k + 1} = \{v \in V \mid u \in V_k \textrm{ and } (u
 This suggests an iterative framework of BFS: to find $V_{k+1}$, explore the out-edges of $V_k$ to collect the \emph{newly} reached 
 vertices~(i.e., those not in $V_0\cup V_1 \cup \cdots \cup V_k$).
 To realize this idea, BFS uses two data structures; the complete algorithm follows. 
-\vspace*{-\topsep}
 \begin{enumerate}
 \item Array $dist$ of size $|V|$, initialized as $dist[v] = \infty$ for any $v\in V$.
 Array $dist$ serves as two purposes: indicating a vertex has been reached or not,
