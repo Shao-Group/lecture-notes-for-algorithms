@@ -1,0 +1,324 @@
+\documentclass[
+  11pt,
+  paper=7.5in:9.25in,
+  twoside,
+  openany,
+  headings=big,
+  numbers=noenddot
+]{scrbook}
+
+% Typography
+\usepackage[T1]{fontenc}
+\usepackage{newtxtext}
+\usepackage{amsmath,amsthm}
+\usepackage{newtxmath}
+\usepackage[scale=0.92]{sourcesanspro}
+\usepackage{microtype}
+
+% CLRS uses its sans face for display-level titles, but keeps ordinary
+% section headings in the same Times family as the body.
+\setkomafont{section}{\normalfont\large\bfseries}
+\setkomafont{subsection}{\normalfont\large\bfseries}
+\setkomafont{subsubsection}{\normalfont\normalsize\bfseries}
+\RedeclareSectionCommand[
+  beforeskip=1.5ex plus 0.2ex minus 0.1ex,
+  afterskip=0.6ex plus 0.1ex
+]{section}
+\RedeclareSectionCommand[
+  beforeskip=1.2ex plus 0.2ex minus 0.1ex,
+  afterskip=0.0ex plus 0.0ex
+]{subsection}
+
+% CLRS-inspired trim and text block.  The broad left margin is intentional:
+% it gives the page its characteristic open appearance and room for notes.
+\usepackage[
+  paperwidth=7.5in,
+  paperheight=9.25in,
+  inner=0.90in,
+  outer=0.70in,
+  top=0.70in,
+  bottom=0.85in,
+  headheight=14pt,
+  headsep=16pt
+]{geometry}
+
+% Structure, mathematics, and figures
+\usepackage{import}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+
+% Code and textbook elements
+\usepackage{listings}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+
+% References
+\usepackage[hidelinks]{hyperref}
+\usepackage[nameinlink,noabbrev]{cleveref}
+
+% Running headers
+\usepackage[automark]{scrlayer-scrpage}
+\clearpairofpagestyles
+\ihead{\normalfont\small\itshape\headmark}
+\ohead{\pagemark}
+
+% Paragraphs
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+% Temporary compatibility for a few old-style declarations in the notes.
+\renewcommand{\it}{\itshape}
+\renewcommand{\bf}{\bfseries}
+
+% Theorem-like environments. These counters remain separate because the
+% existing chapters reset them individually.
+% The zero skips make these flow like ordinary paragraphs instead of
+% introducing additional vertical space before or after them.
+\newtheoremstyle{compactplain}
+  {0pt}{0pt}{\itshape}{}{\bfseries}{.}{.5em}{}
+\newtheoremstyle{compactdefinition}
+  {0pt}{0pt}{\normalfont}{}{\bfseries}{.}{.5em}{}
+
+\theoremstyle{compactplain}
+\newtheorem{property}{Property}[chapter]
+\newtheorem{claim}{Claim}[chapter]
+\newtheorem{fact}{Fact}[chapter]
+\newtheorem{corollary}{Corollary}[chapter]
+
+\theoremstyle{compactdefinition}
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{example}{Example}[chapter]
+
+% Make proofs flow like ordinary paragraphs, with no additional list spacing.
+\makeatletter
+\renewenvironment{proof}[1][\proofname]{%
+  \par
+  \pushQED{\qed}%
+  \normalfont
+  \topsep\z@
+  \partopsep\z@
+  \trivlist
+  \item[\hskip\labelsep\itshape #1\@addpunct{.}]\ignorespaces
+}{%
+  \popQED
+  \endtrivlist
+  \@endpefalse
+}
+\makeatother
+
+% Self-defined, numbered pseudocode from algorithm.tex. Existing chapters can
+% keep using \aaa, \aab, \aaA, etc. directly in their current minipages.
+\newcounter{algorithmlinenumber}
+\newlength{\AlgoNumberWidth}
+\newlength{\AlgoNumberSep}
+\newlength{\AlgoLineGap}
+\newlength{\AlgoLinePitch}
+\newlength{\AlgoBaseIndent}
+\newlength{\AlgoStepIndent}
+\setlength{\AlgoNumberWidth}{1.5em}
+\setlength{\AlgoNumberSep}{0em}
+\setlength{\AlgoLineGap}{0.1cm}
+\setlength{\AlgoBaseIndent}{0.4cm}
+\setlength{\AlgoStepIndent}{0.6cm}
+
+\newcommand{\AlgoIndent}[1]{%
+  \dimexpr\AlgoBaseIndent+#1\AlgoStepIndent\relax
+}
+
+\newcommand{\SetAlgoLinePitch}{%
+  \begingroup
+  \small\ttfamily
+  \global\AlgoLinePitch=\baselineskip
+  \global\advance\AlgoLinePitch by \AlgoLineGap
+  \endgroup
+}
+\SetAlgoLinePitch
+
+\newenvironment{algorithmblock}[1][\linewidth]{%
+  \par\medskip
+  \begingroup
+  \setcounter{algorithmlinenumber}{0}%
+  \small\ttfamily
+  \setlength{\AlgoLinePitch}{\baselineskip}%
+  \addtolength{\AlgoLinePitch}{\AlgoLineGap}%
+  \begin{minipage}{\linewidth}%
+}{%
+  \end{minipage}%
+  \endgroup
+  \par\medskip
+}
+
+\newcommand{\AlgoNumber}{%
+  \stepcounter{algorithmlinenumber}%
+  \makebox[\AlgoNumberWidth][r]{%
+    \normalfont\scriptsize\sffamily\color{gray}%
+    \arabic{algorithmlinenumber}%
+  }%
+  \hspace{\AlgoNumberSep}%
+}
+\newcommand{\AlgoLine}[2]{%
+  \AlgoNumber
+  \hspace{#1}%
+  \parbox[t]{\dimexpr\linewidth-\AlgoNumberWidth-\AlgoNumberSep-#1\relax}{%
+    \small\ttfamily\hangindent=\AlgoStepIndent\hangafter=1 \strut#2\strut}%
+}
+\newcommand{\AlgoBranch}[3]{%
+  \AlgoNumber
+  \hspace{#1}%
+  {\tikz[overlay]\draw
+    (0.1,{-.2 * \AlgoLinePitch}) --
+    (0.1,{-(#2 - .75) * \AlgoLinePitch}) --
+    (0.4,{-(#2 - .75) * \AlgoLinePitch});}%
+  \parbox[t]{\dimexpr\linewidth-\AlgoNumberWidth-\AlgoNumberSep-#1-0.25cm\relax}{%
+    \small\ttfamily\hangindent=\AlgoStepIndent\hangafter=1 \strut#3\strut}%
+}
+\newcommand{\AlgoVertical}[3]{%
+  \AlgoNumber
+  \hspace{#1}%
+  {\tikz[overlay]\draw
+    (0.1,{-.2 * \AlgoLinePitch}) --
+    (0.1,{-(#2 - .45) * \AlgoLinePitch});}%
+  \parbox[t]{\dimexpr\linewidth-\AlgoNumberWidth-\AlgoNumberSep-#1-0.25cm\relax}{%
+    \small\ttfamily\hangindent=\AlgoStepIndent\hangafter=1 \strut#3\strut}%
+}
+
+\newcommand{\aaa}[1]{\AlgoLine{\AlgoIndent{0}}{#1}}
+\newcommand{\aab}[1]{\AlgoLine{\AlgoIndent{1}}{#1}}
+\newcommand{\aac}[1]{\AlgoLine{\AlgoIndent{2}}{#1}}
+\newcommand{\aad}[1]{\AlgoLine{\AlgoIndent{3}}{#1}}
+\newcommand{\aae}[1]{\AlgoLine{\AlgoIndent{4}}{#1}}
+\newcommand{\aaf}[1]{\AlgoLine{\AlgoIndent{5}}{#1}}
+\newcommand{\aaA}[2]{\setcounter{algorithmlinenumber}{0}\AlgoBranch{\AlgoIndent{0}}{#1}{#2}}
+\newcommand{\aaB}[2]{\AlgoBranch{\AlgoIndent{1}}{#1}{#2}}
+\newcommand{\aaC}[2]{\AlgoBranch{\AlgoIndent{2}}{#1}{#2}}
+\newcommand{\aaD}[2]{\AlgoBranch{\AlgoIndent{3}}{#1}{#2}}
+\newcommand{\aaE}[2]{\AlgoBranch{\AlgoIndent{4}}{#1}{#2}}
+\newcommand{\faA}[2]{\setcounter{algorithmlinenumber}{0}\AlgoVertical{\AlgoIndent{0}}{#1}{#2}}
+\newcommand{\faB}[2]{\AlgoVertical{\AlgoIndent{1}}{#1}{#2}}
+\newcommand{\faC}[2]{\AlgoVertical{\AlgoIndent{2}}{#1}{#2}}
+\newcommand{\faD}[2]{\AlgoVertical{\AlgoIndent{3}}{#1}{#2}}
+\newcommand{\faE}[2]{\AlgoVertical{\AlgoIndent{4}}{#1}{#2}}
+% Keep the gap after a row constant even when its statement wraps.  A
+% top-aligned multi-line \parbox has a large depth, so normal interline spacing
+% would otherwise collapse to \lineskip before the following row.
+\newcommand{\xxx}{\par\nointerlineskip\vspace{\AlgoLineGap}}
+
+% Each existing content file begins with \section and uses \subsection for
+% its internal divisions. Promote those commands when assembling the book.
+\let\BookChapter\chapter
+\let\BookSection\section
+\newcommand{\IncludeChapter}[1]{%
+  \begingroup
+  % Each content file's top-level \section becomes a labeled book chapter.
+  % For example, \IncludeChapter{merge-sort} defines chap:merge-sort.
+  \renewcommand{\section}[1]{%
+    \BookChapter{##1}%
+    \label{chap:#1}%
+  }%
+  \let\subsection\BookSection
+  \import{#1/}{content.tex}%
+  \endgroup
+}
+
+% A dedicated opening page for each part. The second argument is reserved
+% for an introduction or summary beneath the part title.
+\newcommand{\PartTitlePage}[2]{%
+  \setpartpreamble[u][0.72\textwidth]{%
+    \vspace{2\baselineskip}%
+    \hrule
+    \vspace{1.5\baselineskip}%
+    \begin{minipage}{\linewidth}
+      \normalfont\normalsize\raggedright
+      #2
+    \end{minipage}%
+  }%
+  \part{#1}%
+}
+
+\begin{document}
+
+\frontmatter
+\title{Algorithms Design and Analysis}
+\subtitle{An Undergraduate Textbook}
+\author{Mingfu Shao}
+\publishers{The Pennsylvania State University}
+\date{\today}
+\maketitle
+
+\chapter*{About This Book}
+This textbook is written for undergraduate students. It emphasizes accessible
+explanations, learning through examples, language-independent pseudocode, and
+the combination of intuition with rigorous correctness and efficiency analysis.
+
+\tableofcontents
+
+\mainmatter
+
+\PartTitlePage{Foundations}{}
+\label{part:foundations}
+\IncludeChapter{introduction}
+\IncludeChapter{asymptotic-notations}
+
+\PartTitlePage{Divide and Conquer}{}
+\label{part:divide-and-conquer}
+\IncludeChapter{merge-sort}
+\IncludeChapter{counting-inversions}
+\IncludeChapter{selection}
+\IncludeChapter{closest-pairs}
+\IncludeChapter{fft}
+\IncludeChapter{convex-hull}
+\IncludeChapter{half-plane-intersection}
+
+\PartTitlePage{Graph Connectivity}{}
+\label{part:graph-connectivity}
+\IncludeChapter{graphs}
+\IncludeChapter{connectivity-undirected}
+\IncludeChapter{dag-meta}
+\IncludeChapter{connectivity-directed}
+\IncludeChapter{2sat}
+
+\PartTitlePage{Shortest Paths}{}
+\label{part:shortest-paths}
+\IncludeChapter{priority-queue}
+\IncludeChapter{bfs}
+\IncludeChapter{dijkstra}
+\IncludeChapter{bellman-ford}
+\IncludeChapter{shortest-path-tree}
+\IncludeChapter{tramp-steamer}
+
+\PartTitlePage{Dynamic Programming}{}
+\label{part:dynamic-programming}
+\IncludeChapter{longest-increasing-subsequence}
+\IncludeChapter{edit-distance}
+\IncludeChapter{rna-secondary-structure}
+\IncludeChapter{shortest-path-dp}
+\IncludeChapter{knapsack}
+
+\PartTitlePage{Greedy Algorithms}{}
+\label{part:greedy-algorithms}
+\IncludeChapter{minimum-spanning-tree}
+\IncludeChapter{disjoint-set}
+\IncludeChapter{interval-scheduling}
+\IncludeChapter{weighted-interval-scheduling}
+
+\PartTitlePage{Network Flow}{}
+\label{part:network-flow}
+\IncludeChapter{max-flow}
+\IncludeChapter{ford-fulkson}
+\IncludeChapter{max-matching}
+\IncludeChapter{project-selection}
+\IncludeChapter{baseball-elimination}
+
+\PartTitlePage{Computational Complexity}{}
+\label{part:computational-complexity}
+\IncludeChapter{reduction}
+\IncludeChapter{npcomplete}
+\IncludeChapter{co-np}
+
+\backmatter
+\chapter*{License}
+This work is distributed under the Creative Commons Attribution--NonCommercial
+(CC BY-NC) license.
+
+\end{document}

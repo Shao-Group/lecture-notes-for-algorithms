@@ -55,14 +55,14 @@ The idea is that, %to keep track of its predecessor of each vertex~(essentially 
 whenever $dist[v]$ gets updated as $dist[u] + l(u,v)$ we also immediately assign $prev[v]$ as $u$.
 See their pseudo-codes below.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {17}{Algorithm BFS~($G = (V, E), s \in V$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {14}{Algorithm BFS~($G = (V, E), s \in V$)}\xxx
 	\aab {$dist[v] = \infty$, for any $v\in V$;}\xxx
 	\aab {\textcolor{blue}{$prev[v] = null$, for any $v\in V$};}\xxx
 	\aab {init an empty queue $Q$;}\xxx
 	\aab {$dist[s] = 0$;}\xxx
 	\aab {insert~($Q, s$);}\xxx
-	\aaB {9}{while~(empty~($Q$) = false)}\xxx
+	\aaB {8}{while~(empty~($Q$) = false)}\xxx
 	\aac {$u$ = find-earliest~($Q$);}\xxx
 	\aac {delete-earliest~($Q$);}\xxx
 	\aaC {5}{for each edge~$(u, v)\in E$}\xxx
@@ -70,57 +70,44 @@ See their pseudo-codes below.
 	\aae {$dist[v] = dist[u] + 1$;}\xxx
 	\aae {\textcolor{blue}{$prev[v] = u$;}}\xxx
 	\aae {insert~($Q$, $v$);}\xxx
-	\aad {end if;}\xxx
-	\aac {end for;}\xxx
-	\aab {end while;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {18}{Algorithm Dijkstra~($G = (V, E)$, $l(e)$ for any $e\in E$, $s \in V$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {16}{Algorithm Dijkstra~($G = (V, E)$, $l(e)$ for any $e\in E$, $s \in V$)}\xxx
 	\aab {$dist[v] = \infty$, for any $v\in V$;}\xxx
 	\aab {\textcolor{blue}{$prev[v] = null$, for any $v\in V$};}\xxx
 	\aab {init an empty priority queue $PQ$;}\xxx
 	\aab {for any $v\in V$: insert~($PQ$, $v$), where the priority of $v$ is $\infty$;}\xxx
 	\aab {$dist[s] = 0$;}\xxx
 	\aab {decrease-key~($PQ, s, 0$);}\xxx
-	\aaB {10}{while~(empty~($PQ$) = false)}\xxx
+	\aaB {8}{while~(empty~($PQ$) = false)}\xxx
 	\aac {$u$ = find-min~($PQ$);}\xxx
 	\aac {delete-min~($PQ$);}\xxx
-	\aaC {6}{for each edge~$(u, v)\in E$}\xxx
+	\aaC {5}{for each edge~$(u, v)\in E$}\xxx
 	\aaD {4}{if~($dist[v] > dist[u] + l(u,v)$)}\xxx
 	\aae {$dist[v] = dist[u] + l(u,v)$;}\xxx
 	\aae {\textcolor{blue}{$prev[v] = u$;}}\xxx
 	\aae {decrease-key~($PQ$, $v$, $dist[v]$);}\xxx
-	\aad {end if;}\xxx
-	\aac {end for;}\xxx
-	\aab {end while;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {9}{Algorithm Bellman-Ford~($G = (V, E)$, $l(e)$ for any $e\in E$, $s \in V$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {8}{Algorithm Bellman-Ford~($G = (V, E)$, $l(e)$ for any $e\in E$, $s \in V$)}\xxx
 	\aab {init an array $dist$ of size $|V|$;}\xxx
 	\aab {$dist[s] = 0$; $dist[v] = \infty$ for any $v\neq s$;}\xxx
 	\aab {\textcolor{blue}{$prev[v] = null$, for any $v\in V$};}\xxx
-	\aaB {4}{for $k = 1 \to |V| - 1$}\xxx
+	\aaB {3}{for $k = 1 \to |V| - 1$}\xxx
 	\aaC {2}{for each edge $(u,v)\in E$}\xxx
 	\aad {$update(u,v)$;}\xxx
-	\aac {end for;}\xxx
-	\aab {end for;}\xxx
 %	\aab {report: $dist[v]$ gives $distance(s,v)$, for any $v\in V$;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {5}{procedure update~(edge $(u,v)\in E$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {4}{procedure update~(edge $(u,v)\in E$)}\xxx
 	\aaB {3}{if~($dist[v] > dist[u] + l(u,v)$)}\xxx
 	\aac {$dist[v] = dist[u] + l(u,v)$;}\xxx
 	\aac {\textcolor{blue}{$prev[v]= u$};}\xxx
-	\aab {end if;}\xxx
-	\aaa {end procedure;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 
 The resulting $prev$ array corresponds to a graph called $T$, in which the vertices are $V$

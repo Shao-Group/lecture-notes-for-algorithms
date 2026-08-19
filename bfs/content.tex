@@ -99,24 +99,20 @@ when the $Q$ becomes empty, $dist[v] = distance(s, v)$ for any $v\in V$.
 Following above invariant and the pseudo-code, we know that the time that vertex $v$ is reached for the first time~(happend when $(u,v)\in E$ is checked and $dist[v] = \infty$),
 is also the time that the shortest path to $v$ is found, that the $dist[v]$ gets assigned, and that $v$ is added to $Q$.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {15}{Algorithm BFS~($G = (V, E), s \in V$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {12}{Algorithm BFS~($G = (V, E), s \in V$)}\xxx
 	\aab {$dist[v] = \infty$, for any $v\in V$;}\xxx
 	\aab {init an empty queue $Q$;}\xxx
 	\aab {$dist[s] = 0$;}\xxx
 	\aab {insert~($Q, s$);}\xxx
-	\aaB {9}{while~(empty~($Q$) = false)}\xxx
+	\aaB {7}{while~(empty~($Q$) = false)}\xxx
 	\aac {$u$ = find-earliest~($Q$);}\xxx
 	\aac {delete-earliest~($Q$);}\xxx
-	\aaC {5}{for each edge~$(u, v)\in E$}\xxx
+	\aaC {4}{for each edge~$(u, v)\in E$}\xxx
 	\aaD {3}{if~($dist[v] = \infty$)}\xxx
 	\aae {$dist[v] = dist[u] + 1$;}\xxx
 	\aae {insert~($Q$, $v$);}\xxx
-	\aad {end if;}\xxx
-	\aac {end for;}\xxx
-	\aab {end while;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 
 

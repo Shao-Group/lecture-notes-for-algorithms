@@ -195,24 +195,21 @@ and $y_o(\omega^{2j}) = y_o(\omega^{2j-n}) = T_o[j-n/2]$.}
 
 The complete pseudo-code for evaluation is given below.
 
-\begin{minipage}{0.8\textwidth}
-        \aaA {11}{function FFT($a_0, a_1, \cdots, a_{n-1}, \omega$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+        \aaA {10}{function FFT($a_0, a_1, \cdots, a_{n-1}, \omega$)}\xxx
         \aab {handle base case for $n \le 2$ and return as needed;}\xxx
         \aab {$T_e =$ FFT($a_0, a_2, \cdots, a_{n-2}, \omega^2$)}\xxx
         \aab {$T_o =$ FFT($a_1, a_3, \cdots, a_{n-1}, \omega^2$)}\xxx
         \aaB {2}{for $j=0$ to $(n-2)/2$}\xxx
 		\aac {$T[j] = y(\omega^j) = y_e(\omega^{2j}) + \omega \cdot y_o(\omega^{2j}) = T_e[j] + \omega \cdot T_o[j]$;}\xxx
 %        \aac {$T[j] = T_e[j] + \omega\cdot T_o[j]$;}\xxx
-        \aab {end}\xxx
-        \aaB {2}{for $j=n/2+1$ to $n-1$}\xxx
+        \aaB {3}{for $j=n/2+1$ to $n-1$}\xxx
 		\aac {$T[j] = y(\omega^j) = y_e(\omega^{2j}) + \omega \cdot
 			y_o(\omega^{2j}) = y_e(\omega^{2j-n}) + \omega \cdot
 				y_o(\omega^{2j-n}) = T_e[j-n/2] + \omega \cdot T_o[j-n/2]$;} \xxx
         %\aac {$T[j] = T_e[j-n/2] + \omega\cdot T_o[j-n/2]$;}\xxx
-        \aab {end}\xxx
         \aab {return $T$}\xxx
-        \aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 Above algorithm clearly runs in $\Theta(n\log n)$ time.
 
@@ -253,8 +250,8 @@ we can rewrite $A(x) = a_0 + a_1x + \cdots a_{n-1}x^{n-1} + 0\cdot x^n + \cdots 
 $B(x) = b_0 + b_1x + \cdots b_{n-1}x^{n-1} + 0\cdot x^n + \cdots + 0\cdot x^{2n-2}$ as polynomials of degree of $2n-2$,
 and then call FFT.  The complete pseudo-code is given below. It clearly runs in $\Theta(n\log n)$ time.
 
-\begin{minipage}{0.8\textwidth}
-        \aaA {10}{function polynomial-multiplication($a=(a_0, a_1, \cdots, a_{n-1}), b=(b_0, b_1, \cdots, b_{n-1})$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+        \aaA {12}{function polynomial-multiplication($a=(a_0, a_1, \cdots, a_{n-1}), b=(b_0, b_1, \cdots, b_{n-1})$)}\xxx
         \aab {let $\omega = e^{i\cdot 2\pi/(2n-1)}$}\xxx
         \aab {let $a' = (a_0, a_1, \cdots, a_{n-1}, 0, 0, \cdots, 0)$, by appending $n-1$ 0s to $a$;}\xxx
         \aab {let $b' = (b_0, b_1, \cdots, b_{n-1}, 0, 0, \cdots, 0)$, by appending $n-1$ 0s to $b$;}\xxx
@@ -262,10 +259,8 @@ and then call FFT.  The complete pseudo-code is given below. It clearly runs in 
         \aab {$Y_B =$ FFT($b', \omega$)}\xxx
         \aaB {2}{for $j=0$ to $2n-1$}\xxx
         \aac {$Y_C[j] = Y_A[j] \cdot Y_B[j]$;}\xxx
-        \aab {end}\xxx
         \aab {return $1/(2n-1) \cdot \textrm{FFT}(Y_C, \omega^{-1})$}\xxx
-        \aaa {end algorithm}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 Let $a=(a_0, a_1, \cdots, a_{n-1})$ and $b=(b_0, b_1, \cdots, b_{n-1})$.
 A new vector $c = (c_0, c_1, \cdots, c_{2n-2})$ defined using $c_k = \sum_{i + j = k, i \ge 0, j \ge 0} a_ib_j$,

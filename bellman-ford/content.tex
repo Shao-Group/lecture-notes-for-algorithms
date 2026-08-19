@@ -9,32 +9,27 @@ $dist$ of size $|V|$, as its data structure. And it just does a bunch of ``updat
 An ``update'' function takes an edge $e = (u,v)$ as input, and updates $dist[v]$ as $dist[u] + l(u,v)$ if
 the former is larger than the latter.  
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {4}{procedure update(edge $(u,v)\in E$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {3}{procedure update(edge $(u,v)\in E$)}\xxx
 	\aaB {2}{if~($dist[v] > dist[u] + l(u,v)$)}\xxx
 	\aac {$dist[v] = dist[u] + l(u,v)$;}\xxx
 %	\aac {\textcolor{black}{$prev[v]= u$};}\xxx
-	\aab {end if;}\xxx
-	\aaa {end procedure;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 
 Bellman-Ford algorithm iterates $(|V| - 1)$ rounds, and in each round, updates \emph{all} edges, in an arbitrary order.
 %If the given $G$ does contain negative cycle reachable from given $s$, when the algorithm terminates, we will have that $dist[v] = distance(s,v)$ for every $v\in V$. 
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {8}{Algorithm Bellman-Ford~($G = (V, E)$, $l(e)$ for any $e\in E$, $s \in V$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {7}{Algorithm Bellman-Ford~($G = (V, E)$, $l(e)$ for any $e\in E$, $s \in V$)}\xxx
 	\aab {init an array $dist$ of size $|V|$;}\xxx
 	\aab {$dist[s] = 0$; $dist[v] = \infty$ for any $v\neq s$;}\xxx
 %	\aab {\textcolor{black}{$prev[v] = null$, for any $v\in V$};}\xxx
-	\aaB {4}{for $k = 1 \to |V| - 1$}\xxx
+	\aaB {3}{for $k = 1 \to |V| - 1$}\xxx
 	\aaC {2}{for each edge $(u,v)\in E$}\xxx
 	\aad {$update(u,v)$;}\xxx
-	\aac {end for;}\xxx
-	\aab {end for;}\xxx
 %	\aab {report: $dist[v]$ gives $distance(s,v)$, for any $v\in V$;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 
 See two examples of running Bellman-Ford algorithm below.
@@ -198,22 +193,18 @@ Dotted lines represent additional updates on the corresponding edge.}
 We can slightly modify Bellman-Ford algorithm to detect if a given graph contains negative cycle that is reachable from $s$.
 The algorithm does one more round of updates, in which it determines if some $dist$ value can be further reduced.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {12}{Algorithm Bellman-Ford-Detect-Negative-Cycle~($G = (V, E)$, $l(e)$ for any $e\in E$, $s \in V$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {11}{Algorithm Bellman-Ford-Detect-Negative-Cycle~($G = (V, E)$, $l(e)$ for any $e\in E$, $s \in V$)}\xxx
 	\aab {init an array $dist$ of size $|V|$;}\xxx
 	\aab {$dist[s] = 0$; $dist[v] = \infty$ for any $v\neq s$;}\xxx
 %	\aab {\textcolor{black}{$prev[v] = null$, for any $v\in V$};}\xxx
-	\aaB {4}{for $k = 1 \to |V| - 1$}\xxx
+	\aaB {3}{for $k = 1 \to |V| - 1$}\xxx
 	\aaC {2}{for each edge $(u,v)\in E$}\xxx
 	\aad {$update(u,v)$;}\xxx
-	\aac {end for;}\xxx
-	\aab {end for;}\xxx
-	\aaB {2}{for each edge $(u,v)\in E$}\xxx
+	\aaB {3}{for each edge $(u,v)\in E$}\xxx
 	\aac {if~($dist[v] > dist[u] + l(u,v)$): report $G$ contains negative cycle and exit}\xxx
-	\aab {end for;}\xxx
 	\aab {report that $G$ does not contain negative cycle}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 
 Let's show that above algorithm is correct.
@@ -263,18 +254,15 @@ and then update the in-edges of vertices following this linearization.
 %%	\aaa {end procedure;}\xxx
 %%\end{minipage}
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {9}{Algorithm BF-DAG~(DAG $G = (V, E)$, $l(e)$ for any $e\in E$, $s \in V$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {8}{Algorithm BF-DAG~(DAG $G = (V, E)$, $l(e)$ for any $e\in E$, $s \in V$)}\xxx
 	\aab {init array $dist$ of size $|V|$: $dist[s] = 0$; $dist[v] = \infty$ for any $v\neq s$;}\xxx
 	\aab {calculate a linearization of $G$;}\xxx
-	\aaB {4}{\textcolor{blue}{for $v\in V$ following the order of linearization}}\xxx
+	\aaB {3}{\textcolor{blue}{for $v\in V$ following the order of linearization}}\xxx
 	\aaC {2}{for each $(u,v)\in E$;}\xxx
 	\aad {$update(u,v)$;}\xxx
-	\aac {end for;}\xxx
-	\aab {end for;}\xxx
 	\aab {for each $v\in V$: report: $distance(s,v) = dist[v]$;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 
 The correctness of above algorithm for DAGs can also be proved in the same way as in the Bellman-Ford algorithm.

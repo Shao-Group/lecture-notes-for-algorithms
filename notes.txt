@@ -1,0 +1,2 @@
+1, postpone worst-case analysis
+2, discuss runtime when integers are not stored in 32 bits

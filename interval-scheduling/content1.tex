@@ -21,17 +21,15 @@ In this framework, we greedily pick intervals;
 once a interval is picked, we never undo it~(this is another character of greedy algorithms);
 hence, intervals that conflict with it can be removed.
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {8}{Algorithm greedy-framework~($n$ intervals $R$)}\xxx
 	\aab {init $X=\emptyset$;}\xxx
-	\aaB {4}{while~($R$ is not empty)}\xxx
+	\aaB {5}{while~($R$ is not empty)}\xxx
 	\aac {\textcolor{blue}{greedily pick an interval $x\in R$;}}\xxx
 	\aac {add $x$ to $X$;}\xxx
 	\aac {remove from $R$ the intervals that overlap/conflict with $x$;}\xxx
-	\aab {end;}\xxx
 	\aab {return $X$;}\xxx
-	\aaa {end;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 Above procedure is a framework, as how to \emph{greedily pick a interval} in the remaining intervals is not specified.
 A common practice in order to design a correct~(i.e., optimal) greedy algorithm is

@@ -39,19 +39,17 @@ must be the 2nd~(i.e, $7-5$) smallest number of $A_2$.
 
 The above analyis is illustrated with the following pseudo-code.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {9}{Algorithm selection~($A$, $k$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {8}{Algorithm selection~($A$, $k$)}\xxx
 	\aab {\textcolor{blue}{$x$ = find-pivot~($A$)};}\xxx
 %	\aab {partition $A$ into $A_1, x, A_2$;}\xxx
 	\aaB {3}{for $i=1$ to $|A|$}\xxx
 	\aac {if $A[i] < x$: add $A[i]$ to $A_1$}\xxx
 	\aac {if $A[i] > x$: add $A[i]$ to $A_2$}\xxx
-	\aab {end}\xxx
 	\aab {if $k \le |A_1|$: return selection~($A_1$, $k$);}\xxx
 	\aab {else if $k = |A_1| + 1$: return $x$;}\xxx
 	\aab {else: return selection~($A_2$, $k - |A_1| - 1$);}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 We don't know how to find a (good) pivot yet.
 But no matter how we do it, the algorithm is always correct, i.e., it always find the $k$-th smallest number of $A$.
@@ -101,15 +99,14 @@ We will see later on that, the resulting algorithm still runs in linear time.
 
 The pseudo-code for find-pivot function is given below.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {6}{function find-pivot~($A$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {7}{function find-pivot~($A$)}\xxx
 	\aab {\textcolor{blue}{if $|A| < 5$: find~(e.g., by sorting $A$) and return the median of $A$;}}\xxx
 	\aab {partition $A$ into $n/5$ subarrays of size 5;}\xxx
 	\aab {calculate the median of each subarray;}\xxx
 	\aab {let $M$ be the array that includes all medians;}\xxx
 	\aab {return selection~($M$, $|M|/2$);}\xxx
-	\aaa {end}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 \subsection*{Running Time of the Selection Algorithm}
 
@@ -278,11 +275,10 @@ We now design a \emph{randomized algorithm} for selection problem.
 The idea is simply pick the pivot uniformly at random from $A$.
 The pseudo-code is given below.
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {2}{function find-pivot-random~($A$)}\xxx
 	\aab {pick pivot $x$ uniformly at random from $A$;}\xxx
-	\aaa {end function ;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 First, note that the selection algorithm combined with above random function to pick pivot is correct, i.e., it will still find the
 $k$-th smallest number of $A$.

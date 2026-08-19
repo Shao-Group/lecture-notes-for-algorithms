@@ -142,23 +142,18 @@ Once $d$ and $i$ are fixed, the ending position of the substring $j$ will be $i 
 The running time of this algorithm is $O(n^3)$, as the calculation
 of each entry takes $\Theta(n)$ time. The space complexity of this algorithm is $\Theta(n^2)$.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {14}{Algorithm rna-secondary-structure~(string $X$ of length $n$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {11}{Algorithm rna-secondary-structure~(string $X$ of length $n$)}\xxx
 	\aab {$P(i,i-1) = 0$, for any $1 \le i \le n$}\xxx
-	\aaB {10}{for $d = 1 \to n$}\xxx
-	\aaC {8}{for $i = 1 \to n-d+1$}\xxx
+	\aaB {8}{for $d = 1 \to n$}\xxx
+	\aaC {7}{for $i = 1 \to n-d+1$}\xxx
 	\aad {$j = i + d -1$;}\xxx
 	\aad {$P(i,j) = P(i, j - 1)$;}\xxx
 	\aaD {4}{for $k = i \to j - 1$}\xxx
-	\aaE {2}{if~($X[k]$ and $X[j]$ can be paired, and $P(i,j) < P(i,k-1) + P(k+1,j-1) + 1$);}\xxx
+	\aaE {3}{if~($X[k]$ and $X[j]$ can be paired, and $P(i,j) < P(i,k-1) + P(k+1,j-1) + 1$);}\xxx
 	\aaf {$P(i,j) = P(i,k-1) + P(k+1,j-1) + 1$;}\xxx
-	\aae {end if;}\xxx
-	\aad {end for;}\xxx
-	\aac {end for;}\xxx
-	\aab {end for;}\xxx
 	\aab {report: $P(1,n)$;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 
 

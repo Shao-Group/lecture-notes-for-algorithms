@@ -41,21 +41,18 @@ we can then simply call $union(u,v)$ to update the
 disjoint-set to reflect the merging.
 The complete algorithm is given below.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {12}{Algorithm Kruskal's~($G = (V,E), w(e) \forall e\in E$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {11}{Algorithm Kruskal's~($G = (V,E), w(e) \forall e\in E$)}\xxx
 	\aab {sort all edges in $E$ by weights in ascending order;}\xxx
 	\aab {$E_1 = \emptyset$;}\xxx
 	\aab {for each $v\in V$: call \emph{make-set~($v$)}; \ // as $E_1 = \emptyset$, each vertex forms a set of its own}\xxx
-	\aaB {7}{for each $e = (u,v)\in E$ following above ordering}\xxx
+	\aaB {6}{for each $e = (u,v)\in E$ following above ordering}\xxx
 	\aac {$r_u = find(u)$}\xxx
 	\aac {$r_v = find(v)$}\xxx
 	\aaC {3}{if~($r_u\neq r_v$)}\xxx
 	\aad {$E_1 = E_1\cup \{e\}$}\xxx
 	\aad {$union(r_u,r_v)$}\xxx
-	\aac {end;}\xxx
-	\aab {end;}\xxx
-	\aaa {end;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 Sorting takes $\Theta(|E|\log|E|) = \Theta(|E|\log|V|)$ time~(note that $\log |E| \le \log |V|^2 = 2\log |V|$).
 Examining all edges takes $\Theta(|E|\log|V|)$ too.
@@ -124,29 +121,25 @@ $e' = (v,w)\in E$ and $w(e') < key[w]$; when this is the case,
 $key[w]$ is updated as $w(e')$ and the pointer $prev[w]$ is updated as $v$.
 The complete algorithm is given below.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {20}{Algorithm Prim's~($G = (V, E)$, $w(e)$ for each $e\in E$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {17}{Algorithm Prim's~($G = (V, E)$, $w(e)$ for each $e\in E$)}\xxx
 	\aab {$E_1 = \emptyset$;}\xxx
 	\aab {init an empty priority queue $PQ$;}\xxx
 	\aab {$key[v] = \infty$, $prev[v] = nul$, for any $v\in V$;}\xxx
 	\aab {for any $v\in V$: insert~($PQ$, $v$, $key[v]$);}\xxx
 	\aab {$key[v] = 0$, where $v$ is an arbitrarily picked vertex;}\xxx
 	\aab {decrease-key~($PQ, v, 0$);}\xxx
-	\aaB {12}{while~(empty~($PQ$) = false)}\xxx
+	\aaB {10}{while~(empty~($PQ$) = false)}\xxx
 	\aac {$v$ = find-min~($PQ$);}\xxx
 	\aac {delete-min~($PQ$);}\xxx
 	\aac {$u$ = $prev[v]$;}\xxx
 	\aac {add edge $(u,v)$ to $E_1$;}\xxx
-	\aaC {6}{for each edge~$e' = (v, w)\in E$}\xxx
+	\aaC {5}{for each edge~$e' = (v, w)\in E$}\xxx
 	\aaD {4}{if~($key[w] > w(e')$)}\xxx
 	\aae {$key[w] = w(e')$;}\xxx
 	\aae {decrease-key~($PQ$, $w$, $key[w]$);}\xxx
 	\aae {$prev[w] = v$;}\xxx
-	\aad {end if;}\xxx
-	\aac {end for;}\xxx
-	\aab {end while;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 
 Let's analyze its runtime.

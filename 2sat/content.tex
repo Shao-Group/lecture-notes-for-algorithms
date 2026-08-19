@@ -88,16 +88,14 @@ Therefore, we can use the algorithm introduced in previous lecture to determine 
 Then we can simply check the resulting $visited$ array: if a pair of literals satisfies $visited[u] = visited[\overline{u}]$ then the 2SAT instance is not satisfiable.
 The pseudo-code is given below.
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {7}{Algorithm decide-2SAT ($C_1, C_2, \cdots, C_n$)}\xxx
 	\aab {build implication graph $G = (V, E)$;}\xxx
 	\aab {run the DFS algorithm to find all connected components of $G$; this gives $visited$ array;}\xxx
 	\aaB {2}{for each pair of literals $\{u, \overline{u}\}$}\xxx
 	\aac {if ($visited[u] = visited[\overline{u}]$): return false;}\xxx
-	\aab {end for;}\xxx
 	\aab {return true;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 We showed that if there exists $u$ and $\overline{u}$ that are in the same connected
 component, then the 2SAT instance is not satisfiable, i.e., the above
@@ -109,17 +107,15 @@ build an assignment that satisfies all clauses.
 The algorithm to find such an assignment is as follows. %~(see Figure~\ref{fig:instance2}).
 %We find a linearization $X$ of the meta-graph of $G$. (Think: how?)
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {8}{Algorithm build-assignment~($C_1, C_2, \cdots, C_n$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {12}{Algorithm build-assignment~($C_1, C_2, \cdots, C_n$)}\xxx
 	\aab {run above decide-2SAT algorithm and assume it returns true;}\xxx
 	\aab {build a linearization $X$ of the meta-graph $G^M$ of the implication graph $G$;}\xxx
-	\aaB {4}{for each pair of literals $\{u, \overline{u}\}$}\xxx
+	\aaB {7}{for each pair of literals $\{u, \overline{u}\}$}\xxx
 	\aac {let $C(u) = visited[u]$ and  $C(\overline{u}) = visited[\overline{u}]$ be the components that include $u$ and $\overline{u}$, respectively;}\xxx
 	\aac {if $C(u)$ is before $C(\overline{u})$ in $X$: set literal $u$ to false and $\overline{u}$ to true;}\xxx
 	\aac {if $C(u)$ is after $C(\overline{u})$ in $X$: set literal $u$ to true and $\overline{u}$ to false;}\xxx
-	\aab {end for;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 %Before proving that above algorithm gives an assignment that satisfies all clauses,
 Try to run above algorithm on the example given in Figure~\ref{fig:instance2}.

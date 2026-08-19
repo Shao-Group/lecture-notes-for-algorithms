@@ -26,32 +26,28 @@ element, we can directly remove the one \emph{tail} points to.
 The pseudo-code for implementing above functions are given below. Note
 that the input $Q$ represents above 3 data structures, the array $S$, the two pointers \emph{head} and \emph{tail}. 
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {3}{function empty($Q$)}\xxx
 	\aab {if \emph{head} = \emph{tail}: return true;}\xxx
 	\aab {else: return false;}\xxx
-	\aaa {end function;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {3}{function insert($Q$, $x$)}\xxx
 	\aab {$S[head] = x$;}\xxx
 	\aab {head = head + 1;}\xxx
-	\aaa {end function;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {2}{function find-earliest($Q$)}\xxx
 	\aab {return $S[tail]$;}\xxx
-	\aaa {end function;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {3}{function delete-earliest($Q$)}\xxx
 	\aab {if empty($Q$) = true: return;}\xxx
 	\aab {tail = tail + 1;}\xxx
-	\aaa {end function;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 Note, a queue data structure exhibits a first-in-first-out property.
 This is because delete-earliest is the only function that removes element and
@@ -132,16 +128,14 @@ and they can adjust the heap to make it satisfy the heap property.
 
 The \emph{bubble-up} function applies when a vertex has a smaller key than its parent.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {7}{function bubble-up~($S$, $k$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {6}{function bubble-up~($S$, $k$)}\xxx
 	\aab {if $k \le 1$: return;}\xxx
 	\aab {$p = \lfloor k / 2 \rfloor $;}\xxx
 	\aaB {3}{if ($S[k].key < S[p].key$);}\xxx
 	\aac {swap $S[p]$ and $S[k]$;}\xxx
 	\aac {bubble-up~($S$, $p$);}\xxx
-	\aab {end if;}\xxx
-	\aaa {end function;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 \begin{figure}[h!]
 \centering{\input{bubble-up}}
@@ -152,7 +146,7 @@ The \emph{bubble-up} function applies when a vertex has a smaller key than its p
 The \emph{sift-down} function applies when a vertex has a larger key than its children.
 We use $n$ to denote the size of array $S$, i.e., the number of elements stored in $S$.
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {8}{function sift-down~($S$, $k$)}\xxx
 	\aab {if $2k > n$: return;}\xxx
 	\aab {if $2k = n$: $c = 2k$;}\xxx
@@ -160,9 +154,7 @@ We use $n$ to denote the size of array $S$, i.e., the number of elements stored 
 	\aaB {3}{if ($S[k].key > S[c].key$);}\xxx
 	\aac {swap $S[c]$ and $S[k]$;}\xxx
 	\aac {sift-down~($S$, $c$);}\xxx
-	\aab {end if;}\xxx
-	\aaa {end function;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 \begin{figure}[h!]
 \centering{\input{sift-down}}
@@ -180,41 +172,36 @@ of recursive calls is $\log n$.
 We finally give the pseudo-code for implementing the binary heap.
 In them the input $PQ$ means the array $S$ and its size $n$.
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {3}{function empty($PQ$)}\xxx
 	\aab {if $n = 0$: return true;}\xxx
 	\aab {else: return true;}\xxx
-	\aaa {end function;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {4}{function insert($PQ$, $x$)}\xxx
 	\aab {$n = n + 1$;}\xxx
 	\aab {$S[n] = x$;}\xxx
 	\aab {bubble-up~($S$, $n$);}\xxx
-	\aaa {end function;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {2}{function find-min($PQ$)}\xxx
 	\aab {return $S[1]$;}\xxx
-	\aaa {end function;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {4}{function delete-min($PQ$)}\xxx
 	\aab {$S[1] = S[n]$;}\xxx
 	\aab {$n = n - 1$;}\xxx
 	\aab {sift-down~($S$, $1$);}\xxx
-	\aaa {end function;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {3}{function decrease-key($PQ$, $k$, new-key)}\xxx
 	\aab {$S[k].key = $ new-key;}\xxx
 	\aab {bubble-up~($S$, $k$);}\xxx
-	\aaa {end function;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 The empty and find-min procedures takes $\Theta(1)$ time; the other 3 procedures takes $O(\log n)$ time, as they are dominated by either bubble-up or sift-down.
 

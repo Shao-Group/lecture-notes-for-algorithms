@@ -1,139 +1,237 @@
 \setcounter{definition}{0} \setcounter{property}{0} \setcounter{claim}{0} \setcounter{fact}{0} \setcounter{corollary}{0} \setcounter{figure}{0}
 \section{Introduction to Algorithms}
 
-\subsection*{Algorithm, Problem, and Instance}
+\subsection*{Problems and Instances}
 
-What's an algorithm? Algorithm is a sequence of unambiguous specifications/instructions for solving a problem.
-Such specifications can be followed by a human, or implemented with a machine program.
-The \emph{problem} studied in theoretical computer science needs to be formally defined,
-usually described using input and output.
+Algorithms are for solving problems.
+See Figure~\ref{fig:problem-algorithm}.
+In (theoretical) computer science, a \emph{problem} must be
+defined formally, usually by specifying the allowable inputs and the required
+output for each input.
 
-For example, consider the \emph{sorting problem}: its input is an array $A =
-[a_1, a_2, \cdots, a_n]$, and its output is the sorted array, say in ascending
-order, of $A$.
+For example, consider the \emph{sorting problem}. The input is an array
+$A=[a_1,a_2,\ldots,a_n]$, and the output is an array containing the same
+elements in nondecreasing order.
 
-A problem describes a template.  It's concrete, instantiated version is called
-an \emph{instance}.  For example, an instance for above sorting problem would
-be $A = [4, 2, 10, -5, 8]$, with the corresponding output being $[-5, 2, 4, 8, 10]$.
-The relationship between problem and instance is
-very similar to that between \emph{class} and \emph{object} in object-oriented
-programming languages.  You may also think a problem is the set of all its
-possible instances.
+A problem is a general specification; a particular input to the problem is
+called an \emph{instance}. For example, one instance of the sorting problem is
+$A=[4,2,10,-5,8]$, and its corresponding output is
+$[-5,2,4,8,10]$. The
+relationship between a problem and an instance is similar to that between a
+\emph{class} and an \emph{object} in an object-oriented programming language.
+Equivalently, we may think of a problem as the collection of all its possible
+instances together with the required output for each one.
 
-Consider the so-called \emph{selection problem}.
-Its input consists of an array $A = [a_1, a_2, \cdots, a_n]$ and an integer $k$, $1\le k \le n$,
-and the output asks for the $k$-th smallest number of $A$. An instance of selection problem
-can be $A = [4, 2, 10, -5, 8]$ and $k = 2$, for which the output should be 2.
+\begin{figure}[h]
+\centering{\input{problem-algorithm}}
+\caption{The relationship among a problem instance, an algorithm, and its output.}
+\label{fig:problem-algorithm}
+\end{figure}
+
+
+As another example, consider the \emph{selection problem}. Its input consists
+of an array $A=[a_1,a_2,\ldots,a_n]$ and an integer $k$ satisfying
+$1\le k\le n$; its output is the $k$-th smallest element of $A$. For the
+instance $A=[4,2,10,-5,8]$ and $k=2$, the output is 2.
 
 \subsection*{Principles of Algorithm Design}
 
-There is always a straightforward algorithm to solve a problem, which is just enumerating all possible solution~(and then pick the correct/best one).
-This is called \emph{brute-force}. Brute-force may work for instances of size small, but in general it is \emph{not efficient}.
+An algorithm is a finite sequence of unambiguous instructions for solving a
+problem; it takes an instance of the problem and produces the correct output.
+These instructions may be carried out by a person or implemented
+as a computer program. For many problems, a straightforward approach is to
+enumerate all candidate solutions and return the correct one~(e.g., satisfying the required
+specifications). This approach is called \emph{brute force}. Although it may work
+for small instances, it is generally \emph{inefficient} because the number of
+candidates can be prohibitively large.
 
-We focus on designing \emph{efficient} algorithms in this course. Here,
-``efficient'' means ``runs in polynomial-time'', which we will formally define later in this course.
-There are two basic principles in designing efficient algorithms.
-Recall that an \emph{algorithm} produces a \emph{solution} for a \emph{problem}.
+This book focuses on the design of \emph{efficient} algorithms. Here,
+``efficient'' means ``runs in polynomial time,'' a notion that we will elaborate
+in \Cref{part:computational-complexity}.
+Two principles underlie efficient algorithms covered in this book.
+
 \begin{enumerate}
-\item \emph{Partitioning problem into smaller subproblems.} This principle is from the perspective of problem.
-There are two strategies to reduce the size of a problem. 
-First, we can partition a problem of size $n$ into smaller subproblems with size of $n - 1$; this strategy leads to \emph{dynamic programming} algorithms.
-Second, we can partition a problem of size $n$ into smaller subproblems with size of $n/2$; this strategy leads to \emph{divide-and-conquer} algorithms.
-\item \emph{Iteratively Improving.} This principle is from the perspective of solution, i.e., we start with an initial/trivial solution,
-and we then gradually improve it to finally obtain the (optimal) solution.
-There are two strategies. First, we can start with a feasible but non-optimal solution, and then gradually improve it to achieve an optimal solutions;
-\emph{linear programming} and \emph{network flow} algorithms follow this strategy.
-Second, we can start with a partial-solution, and then gradually make it to a complete-solution;
-\emph{greedy } algorithms follow this strategy.
+
+  \item \emph{Partition the problem into smaller subproblems.} This principle
+  focuses on the structure of the problem. One strategy reduces a problem of
+  size $n$ by a constant size, such as transforming it to subproblems of
+  size $n-1$. This strategy leads to dynamic programming
+  algorithms~(Part~\ref{part:dynamic-programming}). Another strategy divides a
+  problem of size $n$ into subproblems whose size is a
+  fraction of the original size, such as $n/2$. This strategy leads to
+  divide-and-conquer algorithms~(Part~\ref{part:divide-and-conquer}).
+
+  \item \emph{Improve the solution iteratively.} This principle focuses on the
+  solution itself. We begin with an initial solution and gradually refine it
+  until we obtain a correct or optimal solution. One strategy starts with a
+  feasible but nonoptimal solution and repeatedly improves it; network-flow
+  algorithms~(Part~\ref{part:network-flow}) follow this idea. Another strategy
+  starts with a partial solution and extends it step by step until it becomes a
+  complete solution; greedy algorithms~(Part~\ref{part:greedy-algorithms}) follow
+  this approach.
+
 \end{enumerate}
 
-\subsection*{Relationship between Problems}
+\subsection*{Relationships among Problems}
 
-We not only design algorithms for individual problems, but also study the relationship between problems.
-This is very important. Studying how problems relate help in the following three folds.
+In addition to designing algorithms for individual problems~(the first goal
+of this book) we study the relationships among problems. Understanding these
+relationships is the second goal of this book and is important for the following
+two major reasons.
 \begin{enumerate}
-\item Allow us to build the hierarchy~(i.e., classes of problems) and understand them. This is the targets of \emph{theory of computational complexity}.
-\item Allow us to solve new problems using existing algorithms. For example, if we know that problem $X$ can be transformed into problem $Y$~(we will formally define what does this mean)
-	and we know a good algorithm for problem $Y$, and we know that we can use this algorithm for $Y$ to solve $X$.
-\item Allow us to prove that a problem is hard to solve. For example, if we know that problem $X$ can be transformed into problem $Y$, and that there does not exist
-any efficient algorithhm for $X$, then we know that there does not exist efficient algorithm for problem $Y$.
+\item They allow us to solve new problems using existing algorithms. For
+example, suppose that we can transform problem $X$ into problem $Y$~(\Cref{chap:reduction})
+and we already know an efficient algorithm for $Y$, then we can use that problem
+to solve $X$ efficiently. 
+Such transformations are powerful as they enable a relatively small
+collection of algorithms to solve a much broader range of problems. Examples
+include \Cref{chap:half-plane-intersection,chap:2sat,chap:tramp-steamer,chap:max-matching,chap:project-selection,chap:baseball-elimination}.
+\item They allow us to show that a problem is hard. Suppose 
+problem $X$ can be transformed into problem $Y$, and we already know that
+there does not exist
+efficient algorithm for $X$, then we can conclude that problem $Y$ 
+cannot be solved efficiently either~(because, otherwise, 
+that algorithm for $Y$ would then yield an efficient algorithm for $X$).
+Establishing such relationship therefore help us
+avoid an unproductive search for an efficient algorithm as such algorithms
+may not exist. We develop techniques for proving hardness in
+\Cref{chap:reduction,chap:npcomplete}.
+%\item They allow us to organize problems into classes and understand the
+%relationships among those classes. This classification is a central goal of
+%the \emph{theory of computational complexity}, which we study in
+%Part~\ref{part:computational-complexity}.
 \end{enumerate}
 
 \subsection*{Example of Algorithm Design and Analysis}
 
-Let's consider the problem of \emph{merging two sorted arrays}. The input of this problem is two sorted arrays, in ascending order, $A$ and $B$,
-and the output is a sorted array $C$ that consists of all elements in $A$ and $B$.
+Consider the problem of \emph{merging two sorted arrays}. The input consists
+of arrays $A[1\cdots m]$ and $B[1\cdots n]$, each sorted in nondecreasing
+order, and the output is a sorted array $C$ containing all $m+n$ elements of
+$A$ and $B$, including duplicates. For example, if
+$A=[-4,2,5,8]$ and $B=[-3,2,3,4]$, then the output is
+$C=[-4,-3,2,2,3,4,5,8]$.
 
-An instance of this problem is: $A = [-4, 2, 5, 8]$ and $B = [-3, 2, 3, 4]$. For this instance, the output should be $C = [-4, -3, 2, 2, 3, 4, 5, 8]$.
+Let us design an algorithm for this problem. You may wish to pause first and
+think about how to construct one. The algorithm builds $C$ incrementally and
+can therefore be viewed as a greedy algorithm. At each step, it appends the
+smallest element of $A$ or $B$ that has not yet been copied to $C$. To identify
+this element efficiently, we maintain two pointers/indices, $k_A$ and $k_B$. Each index
+points to the first unprocessed element of its corresponding array. We compare
+$A[k_A]$ with $B[k_B]$, append the smaller element to $C$, and advance the
+corresponding index. The pseudocode appears below.
 
-An algorithm usually requires \emph{data structures} to store key intermediate information.
-In this case, we maintain two pointers, $k_A$ and $k_B$. Throughout the algorithm,
-we guarantee that $k_A$ and $k_B$ point to the smallest number in $A$ and $B$ that haven't been added to $C$.
-
-The idea of the algorithm is to iteratively construct $C$~(so you may call it a greedy algorithm).
-In each step, we compare the two numbers at the two pointers: the smaller one of the two will be the smallest one
-in \emph{all} numbers that haven't been added to $C$; we then add it to $C$ and update the pointers accordingly.
-The pseudo-code for this algorithm is given below~(next page).
-
-
-To analyze an algorithm, we need to (1) prove it's correct, and (2) analyze its running time.
-
-We first prove this algorithm is correct, i.e., the resulting $C$ is sorted and includes all numbers in $A$ and $B$.
-This seems obvious. To give a formal and complete proof, we define the following \emph{invariant}. 
-
-\emph{Invariant:} for any $k = 0, 1, 2, \cdots, m + n$,
-at the end of the $k$-th iteration of above algorithm, we must have that $C$ stores the smallest $k$ numbers in $A$ and $B$, $k_A$ and $k_B$
-points to the smallest number of $A\setminus C$ and $B\setminus C$, respectively. 
-
-We now prove above invariant is correct, by \emph{induction}. The base case is $k = 0$. At this time~(i.e., before the for-loop and after the initialization), $C$ is empty and $k_A$ and $k_B$ points
-to the first number in $A$ and $B$ respectively~(and therefore the smallest one, as the given $A$ and $B$ are sorted). We now show the inductive step:
-assume that the invariant is correct for $k = 0, 1, \cdots, i$, we prove that the invariant is correct for $k = i + 1$.
-The inductive assumption tells that at the end of the $i$-th iteration, $C[1\cdots i]$ stores the first $i$ smallest numbers.
-Consider what the algorithm does in the $(i+1)$-th iteration: it compare the numbers at the pointers, and adds the smaller one to $C$.
-As each pointer now points to the smallest one in $A\setminus C$ and $B\setminus C$, we have that the smaller one is the $(i+1)$-th smallest number 
-in $A$ and $B$. Besides, how the algorithm updates the pointers guarantees the pointers always point to the smallest one
-in $A\setminus C$ and $B\setminus C$, respectively. Therefore, the invariant holds after $(i + 1)$-th iteration.
-
-\begin{minipage}{0.8\textwidth}
-	\aaA {15}{function merge-two-sorted-arrays ($A[1\cdots m], B[1\cdots n]$)}\xxx
-	\aab {init an empty array $C$; \textcolor{blue}{(\#units = 1)}}\xxx
-	\aab {init pointers $k_A = 1$ and $k_B = 1$; \textcolor{blue}{(\#units = 2)}}\xxx
-	\aab {add a big number $M$~(larger than any number in $A$ and $B$) 
-		to the end of $A$ and $B$: $A[m + 1] = M$ and $B[n + 1] = M$; (think: why we do it?); \textcolor{blue}{(\#units = 2)}}\xxx
-	\aaB {8}{for $k = 1 \to m + n$ \textcolor{blue}{(advancing $k$ from 1 to $m+n$; \#units = $m + n$)}}\xxx
-	\aaC {3}{if $A[k_A] \le B[k_B]$ \textcolor{blue}{(\#units = $m + n$)}}\xxx
-	\aad {$C[k] = A[k_A]$; \textcolor{blue}{(\#units = $a$)}}\xxx
-	\aad {$k_A = k_A + 1$; \textcolor{blue}{(\#units = $a$)}}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {12.8}{function merge-two-sorted-arrays ($A[1\cdots m], B[1\cdots n]$)}\xxx
+	\aab {initialize an empty array $C$;}\xxx
+	\aab {initialize indices $k_A = 1$ and $k_B = 1$;}\xxx
+	\aab {choose a sentinel $M$ larger than every element of $A$ and $B$;
+		set $A[m + 1] = M$ and $B[n + 1] = M$; (think: why is this useful and necessary?)}\xxx
+	\aaB {7}{for $k = 1 \to m + n$ }\xxx
+	\faC {3}{if $A[k_A] \le B[k_B]$ }\xxx
+	\aad {$C[k] = A[k_A]$; }\xxx
+	\aad {$k_A = k_A + 1$; }\xxx
 	\aaC {3}{else}\xxx
-	\aad {$C[k] = B[k_B]$; \textcolor{blue}{(\#units = $m + n - a$)}}\xxx
-	\aad {$k_B = k_B + 1$; \textcolor{blue}{(\#units = $m + n - a$)}}\xxx
-	\aac {end if;}\xxx
-	\aab {end for;}\xxx
-	\aab {return $C$; \textcolor{blue}{(\#units = 1)}}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
-
-We then analyze its running time.
-The running time is measured with the \emph{basic computing units} used by the algorithm in the \emph{worst case}.
-The definition of basic computing units depends on the computing model. Usually, we think each operation like assignment, basic arithmetic operation, comparison, etc,
-takes 1 unit. The worst case is w.r.t.\ all instances, i.e., the instance takes largest number of computing units.
-
-The required units in each step of the algorithm is marked with blue text. 
-Let $T(m,n)$ be the running time of this algorithm when $|A| = m$ and $|B| = n$.
-We can write $T(m,n) = 4m + 4n + 6$.  
-
-Note that the running time of an algorithm is a function of \emph{input size}, rather than the \emph{input}.
-The input size is usually the amount of memory needed to store the actually input.
-In this example, array of size $m$ can be stored in a block of memory with $m$ memory units.
-An implicit assumption here is that, every number in the given arrays can be
-stored in a single memory unit~(for example, 32 bits to store an integer in C++).
-This is reasonable and widely used. In certain cases, where we study very large number~(which cannot be stored in 32 bits for example),
-then we cannot assume that such number takes 1 memory unit; instead, a (large) number $x$ uses $\log_2 x$ bits in memory.
-
-The running time of $T(m,n) = 4m + 4n + 6$ a brief, coarse estimation, as it depends on the computing model.  
-Therefore, it doesn't make much sense to keep the coefficients 4 and the constants 5.
-Besides, we care how the running time grows as $m$ and $n$ grows.
-Hence, it suffices to write $T(m,n) = \Theta(m + n)$, meaning it grows as fast as function $m + n$.
-We will introduce asymptotic notations to facilitate this way of analyzing running time in next lecture.
+	\aad {$C[k] = B[k_B]$; }\xxx
+	\aad {$k_B = k_B + 1$; }\xxx
+	\aab {return $C$;}\xxx
+\end{algorithmblock}
 
 
+An analysis of an algorithm has two main components: proving its correctness
+and determining its running time.
+
+We first prove correctness: the resulting array $C$ is in nondecreasing order
+and contains every element of $A$ and $B$ with the correct multiplicity.
+Although this claim may seem evident, it requires a formal argument. We prove the
+following \emph{invariant}. An invariant is a statement about the algorithm's data structures
+that remains true throughout the algorithm. Here, the data structures consists of $C$ and the indices
+$k_A$ and $k_B$.
+
+\emph{Invariant:} For each $k=0,1,2,\ldots,m+n$, after the $k$-th iteration of the for-loop,
+$C[1\cdots k]$ contains the $k$ smallest elements in $A$ and $B$, in nondecreasing order, 
+and $k_A$ and $k_B$ index the first elements of $A$ and $B$, respectively, that have not yet been
+copied to $C$. 
+%if an array has been exhausted, its index points to the sentinel $M$.
+
+\begin{proof}
+We prove the invariant by \emph{induction} on $k$. For the base case $k=0$,
+$C$ is empty, and $k_A=k_B=1$. Thus, each index points to the first, and hence
+smallest, unprocessed element of its sorted array. The invariant therefore
+holds before the first iteration.
+
+For the inductive step, assume that the invariant holds after iteration $k$,
+i.e., $C[1\cdots k]$ contains the $k$ smallest input elements
+in nondecreasing order, and the values $A[k_A]$ and $B[k_B]$ are the smallest
+unprocessed elements of their respective arrays. 
+Their minimum is therefore the smallest unprocessed input
+element overall. During iteration $k+1$, the algorithm appends this value to
+$C$ and advances the corresponding index. Consequently, $C[1\cdots k+1]$
+contains the $k+1$ smallest input elements in nondecreasing order, and both
+indices again identify the first unprocessed elements of their arrays. 
+Hence, the invariant holds after iteration $k+1$.
+\end{proof}
+
+After iteration $m+n$, the invariant states that $C$ contains all $m+n$ input
+elements in nondecreasing order. Thus, the algorithm returns the correct
+merged array.
+
+
+
+% \begin{algorithmblock}[0.8\textwidth]
+% 	\aaA {15}{function merge-two-sorted-arrays ($A[1\cdots m], B[1\cdots n]$)}\xxx
+% 	\aab {init an empty array $C$; \textcolor{blue}{(\#units = 1)}}\xxx
+% 	\aab {init pointers $k_A = 1$ and $k_B = 1$; \textcolor{blue}{(\#units = 2)}}\xxx
+% 	\aab {add a big number $M$~(larger than numbers in $A$ and $B$)
+% 		to the end of $A$ and $B$: $A[m + 1] = M$ and $B[n + 1] = M$; (think: why we do it?); \textcolor{blue}{(\#units = 2)}}\xxx
+% 	\aaB {8}{for $k = 1 \to m + n$ \textcolor{blue}{(advancing $k$ from 1 to $m+n$; \#units = $m + n$)}}\xxx
+% 	\faC {3}{if $A[k_A] \le B[k_B]$ \textcolor{blue}{(\#units = $m + n$)}}\xxx
+% 	\aad {$C[k] = A[k_A]$; \textcolor{blue}{(\#units = $a$)}}\xxx
+% 	\aad {$k_A = k_A + 1$; \textcolor{blue}{(\#units = $a$)}}\xxx
+% 	\aaC {3}{else}\xxx
+% 	\aad {$C[k] = B[k_B]$; \textcolor{blue}{(\#units = $m + n - a$)}}\xxx
+% 	\aad {$k_B = k_B + 1$; \textcolor{blue}{(\#units = $m + n - a$)}}\xxx
+% 	\aab {return $C$; \textcolor{blue}{(\#units = 1)}}\xxx
+% \end{algorithmblock}
+
+We next analyze the algorithm's running time. We measure the running time
+by counting its \emph{basic operational units}. The precise cost of an operation depends on the computational
+model and hardware. In practice, we treat a variable assignment, 
+an elementary arithmetic operation, an array access, or a comparison as taking one unit.
+%The worst case is w.r.t.\ all instances, i.e., the instance takes largest number of computing units.
+
+%Let $T(m,n)$ be the running time of this algorithm when $|A| = m$ and $|B| = n$.
+
+Let's count the number of basic operations required by above algorithm.
+Let $|A|=m$ and $|B|=n$. Line 2 takes one unit to initialize $C$; line 3
+takes two units to initialize the two indices; and line 4 takes two units to
+store the sentinels. The loop performs $m+n$ iterations, so the loop-index
+advance on line 5 contributes $m+n$ units, and the comparison on line 6
+contributes another $m+n$ units. During each iteration, exactly one branch is
+executed: either lines 7--8 or lines 10--11. Each branch copies one element to
+$C$ and increments one index, for a total of $2(m+n)$ units over all
+iterations. Finally, line 12 takes one unit to return $C$. 
+We use $T(m,n)$ to denote the total number of units; we have
+\[
+T(m,n)=1+2+2+(m+n)+(m+n)+2(m+n)+1=4m+4n+6.
+\]
+
+It is important to distinguish the \emph{input} from the \emph{input size},
+and to emphasize that the running time of an algorithm is a function of the input size.
+Here, the actual input consists of two arrays, $A$ and $B$, whereas the
+input size is their total lengths $m+n$. 
+%The running time of the above algorithm depends only
+%on the input size; in other words, the actual numbers stored in $A$ and $B$
+%do not affect the running time.
+More precisely, the input size is defined as the amount of memory needed to
+store the actual input. In most practical settings,
+each number fits in a fixed-size word, such as a 32-bit integer.
+Under this assumption, the total amount of memory needed to store $A$ and
+$B$ is $32(m+n)$ bits, i.e., proportional to $m+n$, confirming that the running time of the algorithm
+is a function of the memory storing the input.
+
+The exact coefficients and constant term in $T(m,n)=4m+4n+6$ depend on which
+operations the model counts and how their costs are assigned. For algorithm
+analysis, we are usually more interested in how the running time grows as the
+input size grows. We therefore write $T(m,n)=\Theta(m+n)$, meaning that the
+running time grows asymptotically at the same rate as function $m+n$. The next chapter
+introduces the notation used to describe such growth rates for algorithm analysis.

@@ -68,13 +68,12 @@ $VC(G, k)\le_p VC(G)$.
 we need to design an algorithm for $VC(G, k)$, in which we can assume and use, up to polynomial number of calls,
 a solver for $VC(G)$. Here is such an algorithm:
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {4}{algorithm-for-$VC(G, k)$}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {5}{algorithm-for-$VC(G, k)$}\xxx
 	\aab {call the solver for $VC(G)$ to get the minimum vertex cover of $G$: $V_1^* \leftarrow $ solver-for-$VC(G)$;}\xxx
 	\aab {if $|V_1^*| \le k$: return ``yes'';}\xxx
 	\aab {else: return ``no'';}\xxx
-	\aaa {end;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 Clearly, this algorithm for $VC(G, k)$ is correct; it calls once (and hence polynomial number)
 a solver for $VC(G)$, and the additional procedure~(which just compares $|V_1^*|$ with the given $k$)
@@ -93,14 +92,12 @@ by testing all possible sizes of a subset of vertices in \emph{increasing} order
    i.e., $0, 1, 2, \cdots, |V|$;
 the first achievable value is the \emph{cardinality} of the minimum vertex cover.
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {5}{algorithm-for-cardinality-$VC(G)$}\xxx
-	\aaB {3}{for $k = 0 \to |V|$}\xxx
+	\aaB {4}{for $k = 0 \to |V|$}\xxx
 	\aac {call the solver for the decision-version to test the given $G$ and this $k$: $B \leftarrow $ solver-for-$VC(G, k)$;}\xxx
 	\aac {if $B$ = ``yes'': return $k$;}\xxx
-	\aab {end for;}\xxx
-	\aaa {end;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 \begin{figure}[!b]
 \centering{\input{vertex-cover}}
@@ -130,18 +127,16 @@ Note that, the solver for the decision-version can be used to answer
 whether any graph, in this case the remaining graph $G_{-v}$, can be covered by $(k^* - 1)$ vertices. 
 
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {9}{algorithm-for-$VC(G)$}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {12}{algorithm-for-$VC(G)$}\xxx
 	\aab {$k^* \leftarrow $ algorithm-for-cardinality-$VC(G)$;}\xxx
-	\aaB {4}{for each $v \in V$}\xxx
+	\aaB {7}{for each $v \in V$}\xxx
 	\aac {build the remaining graph $G_{-v}$ by removing $v$ and its adjacent edges from $G$;}\xxx
 	\aac {call the solver for the decision-version to test $G_{-v}$ and $k^*-1$: $B \leftarrow $ solver-for-$VC(G_{-v}, k^*-1)$;}\xxx
 	\aac {if $B$ = ``yes'': save this $v$ as $u$ and break the for-loop;}\xxx
-	\aab {end for;}\xxx
 	\aab {resolve the remaining graph $G_{-u}$: $V_2^* \leftarrow $ algorithm-for-$VC(G_{-u})$;}\xxx
 	\aab {return $\{u\}\cup V_2^*$;}\xxx
-	\aaa {end;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 The complete algorithm for the optimization version is given above.
 Note that this algorithm is a recursive algorithm, and we define
@@ -215,14 +210,13 @@ conditions. For $VC(G, k)$, the certificate is a subset of vertices, which
 can be represented as a vector.
 The verifier, given below, will verify its size, and verify if it covers all edges.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {5}{verifier~$(x = (G, k), c)$}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {7}{verifier~$(x = (G, k), c)$}\xxx
 	\aab {verify $c$ is a subset of vertices of $G$: if not, return ``no'';}\xxx
 	\aab {verify the size of $c$ is at most $k$: if not, return ``no'';}\xxx
 	\aab {verify the vertices in $c$ can cover all edges of $G$: if not, return ``no'';}\xxx
 	\aab {return ``yes'';}\xxx
-	\aaa {end;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 Above verifier takes an instance and a certificate as input.
 If $x = (G, k)$ is an ``true''-instance, then it means there exists a subset of vertices $V_1$

@@ -32,15 +32,14 @@ We will resolve about two components later on. Suppose they are available, we ca
 search algorithm. This algorithm, called binaray-search~($G$, $a$, $b$), is recursive.
 Whenever it is called, it is guaranteed that $a < r^* \le b$.
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {6}{Algorithm binary-search~($G = (V, E)$, $a$, $b$)}\xxx
 	\aab {if $b - a \le \epsilon$: report interval $(a,b]$ and exit;}\xxx
 	\aab {let $m = (a + b) / 2$;}\xxx
 	\aab {let $z$ = decide-lower-bound~($G$, $m$);}\xxx
 	\aab {if $z$ = true: return binary-search~($G$, $m$, $b$);}\xxx
 	\aab {else: return binary-search~($G$, $a$, $m$);}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 With available bounds $r_1$ and $r_2$, we can call binary-search~($G$, $r_1$, $r_2$), which will return
 the desired interval of length at most $\epsilon$ that includes $r^*$.
@@ -93,14 +92,13 @@ We therefore successfully transformed the problem of deciding if $r < r^*$ into 
 which we know how to solve.
 The pseudo-code is given below.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {5}{Algorithm decide-lower-bound~($G = (V, E)$, $r$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {7}{Algorithm decide-lower-bound~($G = (V, E)$, $r$)}\xxx
 	\aab {build $G_1 = (V_1, E_1)$;}\xxx
 	\aab {call an algorithm to decide if $G_1$ contains negative cycle;}\xxx
 	\aab {if $G_1$ contains negative cycle: return true~(i.e., $r < r^*$);}\xxx
 	\aab {else: return false~(i.e., $r \ge r^*$);}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 The running time of above algorithm is dominated by the procedure of deciding negativ cycles, which is $O(|V_1|\cdot |E_1|)$.
 Notice that $|V_1| = 2|V|$ and $|E_1| = |V| + |E|$. Hence, the running time of above algorithm is $O(|V|^2 + |V| \cdot |E|)$.
@@ -130,14 +128,13 @@ Hence, the entire algorithm runs in polynomial-time.
 
 To comapre, consider the linear-search algorithm given below.
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {5}{Algorithm linear-search~($G = (V, E)$, $a$, $b$)}\xxx
 	\aab {init $r = 0$;}\xxx
 	\aab {let $z$ = decide-lower-bound~($G$, $r$);}\xxx
 	\aab {if $z$ = true: $r = r + \epsilon$;}\xxx
 	\aab {else: return $(r - \epsilon, r]$;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 This algorithm is correct, but it may call decide-lower-bound $r_2 / \epsilon$ times.
 So its overall running time is $O(r_2 / \epsilon (|V|^2 + |V||E|))$.

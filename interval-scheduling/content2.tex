@@ -102,20 +102,17 @@ The pseudo-code is given below.
 The for-loop takes linear time. The entire algorithm takes $O(n\log n)$ time, as it is dominated by sorting.
 An example of running this algorithm follows.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {11}{Algorithm greedy~(intervals $\{(s(i), f(i))\}, 1\le i \le n$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {9}{Algorithm greedy~(intervals $\{(s(i), f(i))\}, 1\le i \le n$)}\xxx
 	\aab {sort $A$ by their finish-time;}\xxx
 	\aab {init $X=\{1\}$;}\xxx
 	\aab {let $j=1$;\ \ // maintain the last interval added to $X$}\xxx
-	\aaB {5}{for $i = 2 \to n$}\xxx
+	\aaB {4}{for $i = 2 \to n$}\xxx
 	\aaC {3}{if~($s(i) \ge f(j)$)}\xxx
 	\aad {pick $i$ and add it to $X$;}\xxx
 	\aad {$j = i$;}\xxx
-	\aac {end;}\xxx
-	\aab {end;}\xxx
 	\aab {return $X$;}\xxx
-	\aaa {end;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 \vspace*{-0.8cm}
 

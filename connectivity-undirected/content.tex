@@ -38,14 +38,12 @@ This array will be initialized as 0 for all entries.
 The following recursive algorithm, named \emph{explore}, finds all vertices that are reachable from $v_i$
 and stores these vertices in $visited$ array properly.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {5}{function explore ($G = (V, E), v_i \in V$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {4}{function explore ($G = (V, E), v_i \in V$)}\xxx
 	\aab {$visited[i] = 1$;}\xxx
 	\aaB {2}{for each $v_j$ where $(v_i, v_j) \in E$}\xxx
 	\aac {if ($visited[j] = 0$): explore ($G, v_j$);}\xxx
-	\aab {end for;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 In above algorithm, we can assume that $G$ is represented/stored with adjacency list.
 In this case, the tranverse of $v_j$ can be done by simply tranversing the list associated with $v_i$
@@ -120,28 +118,23 @@ This new algorithm that traverses all vertices and edges of a graph is named as 
 We also slightly changed the explore function, which allows to store which connected component each vertex is in.
 The pseudo-codes are given below.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {9}{function DFS ($G = (V, E)$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {7}{function DFS ($G = (V, E)$)}\xxx
 	\aab {num-cc = 0;}\xxx
 	\aab {$visited[i] = 0$, for all $1\le i \le |V|$;}\xxx
-	\aaB {5}{for $i = 1 \to |V|$}\xxx
+	\aaB {4}{for $i = 1 \to |V|$}\xxx
 	\aaC {3}{if ($visited[i] = 0$)}\xxx
 	\aad {num-cc = num-cc + 1;}\xxx
 	\aad {explore ($G, v_i$);}\xxx
-	\aac {end if;}\xxx
-	\aab {end for;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {5}{function explore ($G = (V, E), v_i \in V$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {4}{function explore ($G = (V, E), v_i \in V$)}\xxx
 	\aab {$visited[i] = $ \textcolor{blue}{num-cc};}\xxx
 	\aaB {2}{for each $v_j$ where $(v_i, v_j) \in E$}\xxx
 	\aac {if ($visited[j] = 0$): explore ($G, v_j$);}\xxx
-	\aab {end for;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 Below we gave examples of running DFS on undirected graphs and undirected graphs.
 

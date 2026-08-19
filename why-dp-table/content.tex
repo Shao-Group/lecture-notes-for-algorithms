@@ -26,7 +26,7 @@ F(i,j) = \min\left\{
 We write a recursive procedure: define $F(i,j)$
 returns the edit distance between $X[1\cdots i]$ and $Y[1\cdots j]$.
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {7}{function $F(i,j)$}\xxx
 	\aab {if $i = 0$: return $j$;}\xxx
 	\aab {if $j = 0$: return $i$;}\xxx
@@ -34,8 +34,7 @@ returns the edit distance between $X[1\cdots i]$ and $Y[1\cdots j]$.
 	\aab {$z_2 = F(i-1,j) + 1$;}\xxx
 	\aab {$z_3 = F(i,j-1) + 1$;}\xxx
 	\aab {return $\min\{z_1,z_2,z_3\}$;}\xxx
-	\aaa {end function;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 We then call $F(m,n)$, where $m=|X|$ and $n=|Y|$.
 This is a correct algorithm.

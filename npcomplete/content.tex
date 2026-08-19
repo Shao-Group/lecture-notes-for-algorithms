@@ -48,13 +48,12 @@ which can be represented as a binary vector. The verifier, given below, will che
 if the given binary vector is in correct length, and if it satisfies all clauses,
 and these can be done in polynomial-time.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {4}{verifier~$(x, c)$}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {6}{verifier~$(x, c)$}\xxx
 	\aab {verify that the length of $c$ equals to the number of variables in instance $x$: if not, return ``no'';}\xxx
 	\aab {verify that every clause in instance $x$ is true when $x_i$ is assigned with $c[i]$: if not, return ``no'';}\xxx
 	\aab {return ``yes'';}\xxx
-	\aaa {end;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 Now we prove that above verifier satisfies the two conditions.
 It clearly takes an instance and a certificate as input.

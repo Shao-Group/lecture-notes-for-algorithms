@@ -133,22 +133,19 @@ Formally, it is proved that, unless the exponential time hypothesis is false, th
 algorithm for any $\epsilon > 0$.
 
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {13}{Algorithm DP-optimal-alignment~(two strings $X$, $Y$)}\xxx
 	\aab {$F(0,j) = j$, for any $0 \le j \le n$}\xxx
 	\aab {$F(i,0) = i$, for any $0 \le i \le m$}\xxx
 	\aab {$T(0,j) = null$, for any $0 \le j \le n$}\xxx
 	\aab {$T(i,0) = null$, for any $0 \le i \le m$}\xxx
 	\aaB {5}{for $i = 1 \to m$}\xxx
-	\aaC {3}{for $j = 1 \to n$}\xxx
+	\aaC {4}{for $j = 1 \to n$}\xxx
 	\aad {$F(i,j) = \min\{F(i-1,j-1) + \delta(X[i] \neq Y[j]), F(i-1,j) + 1, F(i,j-1) + 1\}$;}\xxx
 	\aad {let $T(i,j)$ store the best case}\xxx
-	\aac {end for;}\xxx
-	\aab {end for;}\xxx
 	\aab {report: $F(m,n) = d(X,Y)$;}\xxx
 	\aab {the optimal alignment can be obtained by tracing back following $T$;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 
 \subsection*{Transforming into Shortest Path Problem}
@@ -225,7 +222,7 @@ F(i,j) = \min\left\{
 We write a recursive procedure: define $F(i,j)$
 returns the edit distance between $X[1\cdots i]$ and $Y[1\cdots j]$.
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {7}{function $F(i,j)$}\xxx
 	\aab {if $i = 0$: return $j$;}\xxx
 	\aab {if $j = 0$: return $i$;}\xxx
@@ -233,8 +230,7 @@ returns the edit distance between $X[1\cdots i]$ and $Y[1\cdots j]$.
 	\aab {$z_2 = F(i-1,j) + 1$;}\xxx
 	\aab {$z_3 = F(i,j-1) + 1$;}\xxx
 	\aab {return $\min\{z_1,z_2,z_3\}$;}\xxx
-	\aaa {end function;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 We then call $F(m,n)$, where $m=|X|$ and $n=|Y|$.
 This is a correct algorithm.
@@ -280,14 +276,13 @@ Both divide-and-conquer algorithms and dynamic programming algorithm
 rely on a recursive formula that reduces larger subproblems into smallers.
 See the merge-sort algorithm given below.
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
         \aaA {5}{Algorithm merge-sort~($S[1\cdots n]$)}\xxx
         \aab {if $n \le 1$: return $S$;}\xxx
         \aab {$S'_1 =$ merge-sort~($S[1\cdots n/2]$);}\xxx
         \aab {$S'_2 =$ merge-sort~($S[n/2 + 1\cdots n]$);}\xxx
         \aab {return merge-two-sorted-arrays~($S_1', S_2'$);}\xxx
-        \aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 Why for D\&C algorithm we do not maintain a table?
 There are two reasons.

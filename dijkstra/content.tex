@@ -77,17 +77,15 @@ We therefore have the following algorithm~(framework), in which we follow above 
 to iteratively construct $R_k$, $k = 1, 2, \cdots, n$.
 We again use array $dist$ of size $n$ to store the distance for vertices in $R_k$.
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {8}{Algorithm Dijkstra-Framework~($G = (V, E), s \in V$)}\xxx
 	\aab {let $R_1 = \{s\}$;}\xxx
 	\aab {$dist[s] = 0$; $dist[v] = \infty$ for any $v \neq s$;}\xxx
-	\aaB {4}{for $k = 1 \to n-1$}\xxx
+	\aaB {5}{for $k = 1 \to n-1$}\xxx
 	\aac {calculate $(u',v') := \arg\min_{u\in R_k, v\in V \setminus R_k, (u, v)\in E} (dist[u] + l(u,v))$;}\xxx
 	\aac {$R_{k+1} = R_k\cup \{v'\}$;}\xxx
 	\aac {$dist[v'] = dist[u'] + l(u',v')$;}\xxx
-	\aab {end for;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 A naive implementation of above framework takes $O(|V|\cdot|E|)$ time,
 as for each $k$, the calculation of the minimization may take $O(|E|)$ time.
@@ -150,15 +148,12 @@ Before calling this updating procedure, we assume $dist_{k+1}$ is initialized as
 that is the update-dist procedure below just update for vertices whose dist values might be reduced.
 (In the complete algorithm, you will see that we will use one $dist$ array for all $k$, hence such initialization is not necessary.)
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {6}{procedure update-dist~($v_{k+1}^*$)}\xxx
-	\aaB {4}{for $(v_{k+1}^*, v) \in E$}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {4}{procedure update-dist~($v_{k+1}^*$)}\xxx
+	\aaB {3}{for $(v_{k+1}^*, v) \in E$}\xxx
 	\aaC {2}{if~($dist_k(v_{k+1}^*) + l(v_{k+1}^*, v) < dist_{k+1}(v) $)}\xxx
 	\aad {$dist_{k+1}(v) = dist_k(v_{k+1}^*) + l(v_{k+1}^*, v)$;}\xxx
-	\aac {end if;}\xxx
-	\aab {end for;}\xxx
-	\aaa {end procedure;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 Try above procedure with the example below.
 
@@ -215,25 +210,21 @@ is that $dist(u)$ is always an upper bound of $distance(s,u)$.
 When $u$ gets removed from $PQ$, this bound is reached, i.e., $dist(u) = distance(s, u)$.
 Hence after that $dist(u)$ will remain this minimized value and hence cannot get further reduced.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {16}{Algorithm Dijkstra~($G = (V, E)$, $l(e)$ for any $e\in E$, $s \in V$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {14}{Algorithm Dijkstra~($G = (V, E)$, $l(e)$ for any $e\in E$, $s \in V$)}\xxx
 	\aab {$dist[v] = \infty$, for any $v\in V$;}\xxx
 	\aab {init an empty priority queue $PQ$;}\xxx
 	\aab {for any $v\in V$: insert~($PQ$, $v$), where the priority of $v$ is $\infty$;}\xxx
 	\aab {$dist[s] = 0$;}\xxx
 	\aab {decrease-key~($PQ, s, 0$);}\xxx
-	\aaB {9}{while~(empty~($PQ$) = false)}\xxx
+	\aaB {7}{while~(empty~($PQ$) = false)}\xxx
 	\aac {$u$ = find-min~($PQ$);}\xxx
 	\aac {delete-min~($PQ$);}\xxx
-	\aaC {5}{for each edge~$(u, v)\in E$}\xxx
+	\aaC {4}{for each edge~$(u, v)\in E$}\xxx
 	\aaD {3}{if~($dist[v] > dist[u] + l(u,v)$)}\xxx
 	\aae {$dist[v] = dist[u] + l(u,v)$;}\xxx
 	\aae {decrease-key~($PQ$, $v$, $dist[v]$);}\xxx
-	\aad {end if;}\xxx
-	\aac {end for;}\xxx
-	\aab {end while;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 
 The running time of Dijkstra's algorithmd depends on the specific implementation of priority queue used.

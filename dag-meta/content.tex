@@ -63,16 +63,14 @@ We will design an algorithm~(see below), that constructs a linearization for any
 The idea of the algorithm is to iteratively
 finds source vertex and removes it and its out-edges.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {7}{Algorithm find-linearization ($G = (V, E)$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {6}{Algorithm find-linearization ($G = (V, E)$)}\xxx
 	\aab {init $X$ as empty list;}\xxx
 	\aaB {4}{while ($G$ is not empty)}\xxx
 	\aac {arbitrarily find a source vertex $u$ of $G$;}\xxx
 	\aac {add $u$ to the end of $X$;}\xxx
 	\aac {update $G$ by removing $u$ and its out-edges;}\xxx
-	\aab {end while;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 This algorithm is correct. First, when a vertex $u$ is added to $X$,
 it is a source vertex of the current graph, which means that

@@ -29,13 +29,13 @@ of \emph{find} operation is proportional to the height of the tree~(see below).
 
 An implementation of the \emph{node} class of a tree will look like this~(in C++):
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaa {class node~\{}\xxx
 	\aab {void* data; \ // storing the actual data}\xxx
 	\aab {int height; \ // storing the height of the subtree rooted at this node}\xxx
 	\aab {node* parent; \ // pointer to the parent node of this node}\xxx
 	\aaa {\};}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 We define the root of each tree always being the representative of the corresponding set.
 And we always use a pointer that points to itself, i.e., $x.parent = x$, to label
@@ -43,26 +43,23 @@ that a node is a root.
 Below we give the pseudo-code for these 3 operations.
 We assume that elements~($x$, $y$, etc, used below) are with above \emph{node} type.
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {3}{function make-set~($x$)}\xxx
 	\aab {$x.height = 1$;}\xxx
 	\aab {$x.parent = x$;}\xxx
-	\aaa {end;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 The \emph{find} operation traverses the path following the parent pointers 
 until reaching the root. It then returns the root as it is the representative
 of the set. Note that the running time of this procedure
 is propotional to the height of the tree.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {5}{function find~($x$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {4}{function find~($x$)}\xxx
 	\aaB {2}{while~($x.parent \neq x$)}\xxx
 	\aac {$x = x.parent$;}\xxx
-	\aab {end;}\xxx
 	\aab {return $x$;}\xxx
-	\aaa {end;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 The union operation first finds the roots of the two trees that contains $x$ and
 $y$ respectively, and then merge them by hanging one of the tree under the root
@@ -74,21 +71,19 @@ if the two trees have the same height, then after merging
 the height of the new root will be increased by 1.
 See Figure~\ref{fig:union}.
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {12}{function union~($x,y$)}\xxx
 	\aab {$r_x = find(x)$;}\xxx
 	\aab {$r_y = find(y)$;}\xxx
 	\aab {if~($r_x = r_y$): return; \ // $x$ and $y$ already in the same tree}\xxx
-	\aaB {2}{if~($r_x.height < r_y.height$)}\xxx
+	\faB {2}{if~($r_x.height < r_y.height$)}\xxx
 	\aac {$r_x.parent = r_y$}\xxx
-	\aaB {2}{else if~($r_x.height > r_y.height$)}\xxx
+	\faB {2}{else if~($r_x.height > r_y.height$)}\xxx
 	\aac {$r_y.parent = r_x$}\xxx
 	\aaB {3}{else}\xxx
 	\aac {$r_x.parent = r_y$}\xxx
 	\aac {$r_y.height = r_y.height + 1$}\xxx
-	\aab {end}\xxx
-	\aaa {end}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 
 \begin{figure}[h]

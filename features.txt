@@ -1,0 +1,9 @@
+This textbook is written for undergraduate students and is guided by four principles:
+
+- Accessible exposition. Explanations should be clear, readable, and logically complete, with no important steps left implicit. The goal is to make algorithms approachable to every motivated student, not only those with extensive mathematical or programming experience.
+
+- Learning through examples. Each major idea should be developed with concrete examples that students can trace, test, and modify. Working through examples is one of the best ways to build algorithmic intuition.
+
+- Language-independent pseudocode. Every algorithm should include precise, readable pseudocode. A student familiar with any programming language should be able to translate it into a working implementation.
+
+- Intuition and rigor. Each algorithm should be accompanied by an intuitive explanation of why it works, followed by a formal correctness argument and a careful analysis of its efficiency.

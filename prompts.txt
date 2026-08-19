@@ -1,0 +1,8 @@
+revise introduction/content.txt, 
+carefully examine every sentence, including figure caption, section and subsection titles;
+try your best to be more precise; 
+make the writing more native-speaker like; 
+fix errors; 
+
+keep the logical flow, and
+if possible, make the logical flow more fluent; keep the structure of the section

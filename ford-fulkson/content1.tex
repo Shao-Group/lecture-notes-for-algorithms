@@ -44,17 +44,15 @@ The value of $f$ will be increased after each iteration,
 and the algorithm will terminate when such path cannot be found.
 Below see the pseudo-code of the Ford-Fulkson's algorithm.
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {8}{Algorithm Ford-Fulkson~($G = (V, E), s, t, c$)}\xxx
 	\aab {init an $s$-$t$ flow $f$ with $f(e) = 0$ for any $e\in E$;}\xxx
-	\aaB {5}{while~(true)}\xxx
+	\aaB {6}{while~(true)}\xxx
 	\aac {build the residual graph $G_f$ w.r.t.\ the current flow $f$;}\xxx
 	\aac {find an $s$-$t$ path $p$ in $G_f$;}\xxx
 	\aac {if such path cannot be found: return $f$;}\xxx
 	\aac {$f \leftarrow augment(f,p)$;}\xxx
-	\aab {end;}\xxx
-	\aaa {end;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 
 

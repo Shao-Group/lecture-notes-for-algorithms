@@ -98,32 +98,28 @@ pushed into $S$ and become the top element of $S$. We will give a formal proof a
 
 The complete Gramham-Scan algorithm is illustrated with pseudo-code below.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {5}{Algorithm Graham-Scan ($P$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {7}{Algorithm Graham-Scan ($P$)}\xxx
 	\aab {calculate point $p_*$ in $P$ with smallest $y$-coordinate;}\xxx
 	\aab {sort $P$ in ascending order of the angles w.r.t.\ $p_*$ and $(\infty, 0)$;}\xxx
 	\aab {rename points in $P$ so that points in $P$ are following above order;}\xxx
 	\aab {Graham-Scan-Core ($P$);}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {14}{Algorithm Graham-Scan-Core ($P = \{p_1, p_2, \cdots, p_n\}$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {13}{Algorithm Graham-Scan-Core ($P = \{p_1, p_2, \cdots, p_n\}$)}\xxx
 	\aab {init empty stack $S$;}\xxx
 	\aab {\emph{push ($S, p_1$)};}\xxx
 	\aab {\emph{push ($S, p_2$)};}\xxx
 	\aab {\emph{push ($S, p_3$)};}\xxx
 	\aaB {8}{for $k = 4$ to $n$}\xxx
-	\aaC {5}{while ($S$ is not empty)}\xxx
+	\aaC {6}{while ($S$ is not empty)}\xxx
 	\aad {let $p_a$ and $p_b$ be the top two elements of $S$;}\xxx
 	\aad {check the orientation of $p_b \to p_a \to p_k$;}\xxx
 	\aad {if ``turning right'': \emph{pop ($S$)} and then continue the while loop;}\xxx
 	\aad {if ``turning left'': break the while loop;}\xxx
-	\aac {end while;}\xxx
 	\aac {\emph{push ($S, p_k$)};}\xxx
-	\aab {end for;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 %%Second, notice that $p_k$ must be on $CH(p_1, p_2, \cdots, p_k)$. Why?
 %%This can be proved using line $p_1p_k$ following Property 1: line $p_1p_k$ goes through point $p_k$
@@ -215,14 +211,13 @@ As usual, we define recursive function, say, CHDC~($P$), which takes
 a set of points $P$ as input and returns $CH(P)$, represented
 as the list of vertices of the convex polygon in counter-clockwise order.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {5}{function CHDC~($P = \{p_1, p_2, \cdots, p_n\}$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {6}{function CHDC~($P = \{p_1, p_2, \cdots, p_n\}$)}\xxx
 	\aab {if $n \le 3$: resolve this base case and return the convex hull;}\xxx
 	\aab {$C_1$ = CHDC~($P[1..n/2]$);}\xxx
 	\aab {$C_2$ = CHDC~($P[n/2 + 1..n]$);}\xxx
 	\aab {return \textcolor{blue}{combine~($C_1, C_2$)};}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 The ``combine'' function in above pseudo-code is missing.
 Before design an algorithm for ``combine'', we first make sure that
@@ -241,8 +236,8 @@ it just requires that all points in its input is sorted in counter-clockwise ord
 The pseudo-code for combine procedure is given below.
 See figure below for explaining.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {14.5}{function combine~($C_1, C_2$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {24}{function combine~($C_1, C_2$)}\xxx
 	\aab {find $p_*$ in $C_1\cup C_2$ with smallest $y$-coordinate;}\xxx
 	\aab {assume that $p_*\in C_1$; otherwise exchange $C_1$ and $C_2$;}\xxx
 	\aab {rewrite $C_1$ into $C_1'$ with circular shifting so that $p_*$ is the first point of $C_1'$; 
@@ -258,8 +253,7 @@ See figure below for explaining.
 	\aab {$C' = $ merge-two-sorted-arrays~($C_1', C_2'$);
 		(\emph{Note: merging is by the angle w.r.t.\ $p_*$ and $p_\infty$; after it points in $C'$, i.e., points in $C_1\cup C_2$, is sorted w.r.t.\ $p_*$ in counter-clockwise order.})}\xxx
 	\aab {return Graham-Core-Scan~($C'$);}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 
 

@@ -7,17 +7,14 @@ The length of the LIS of the input array $A$ is given by $\max_{1\le k \le n} L(
 The pseudo-code is given below. 
 This algorithm runs in $\Theta(n^2)$ time and $\Theta(n)$ space.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {8}{Algorithm LIS-DP~(array $A[1\cdots n]$)}\xxx
-	\aaB {5}{for $k = 1 \to n$}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {6}{Algorithm LIS-DP~(array $A[1\cdots n]$)}\xxx
+	\aaB {4}{for $k = 1 \to n$}\xxx
 	\aac {$L[k] = 1$;}\xxx
 	\aaC {2}{for $j = 1 \to k - 1$}\xxx
 	\aad {if~($A[j] < A[k]$ and $L(j) + 1 > L(k)$): $L[k] = L[j] + 1$;}\xxx
-	\aac {end for;}\xxx
-	\aab {end for;}\xxx
 	\aab {return: $\max_{1\le k \le n} L[k]$;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 Let $k^* = \arg\max_{1\le k \le n} L(k)$, i.e., the LIS of $A$ ends at $A[k^*]$.
 We know the length of the LIS of $A$ is $L[k^*]$.
@@ -63,15 +60,13 @@ So, $opt(P_5) = [A[1],A[4],A[5]] = [3, 4, 6]$.
 
 The pseudo-code for constructing $opt(P_k)$ for \emph{any} $k$ is given below.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {6}{Algorithm LIS-traceback~($A[1\cdots n]$, $T[1\cdots n]$, $k$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {5}{Algorithm LIS-traceback~($A[1\cdots n]$, $T[1\cdots n]$, $k$)}\xxx
 	\aaB {3}{while~($k\neq nul$)}\xxx
 	\aac {add $A[k]$ to the front of $opt$;}\xxx
 	\aac {$k = T[k]$;}\xxx
-	\aab {end while;}\xxx
 	\aab {return $opt$;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 Of course, to construct the LIS of $A$, i.e., the optimal solution to the original problem,
 we can simply call LIS-traceback($A$, $T$, $k^*$), where $k^* = \arg\max_{1\le k \le n} L(k)$.
@@ -89,18 +84,15 @@ Whenever $L[k]$ gets updated, meaning a larger $L[j]$, where $1\le j \le k$ and 
 we update $T[k]$ accordingly to keep track of $j$, i.e., the index of currently the best second last element.
 The pseudo-code for constructing $T$ (and $L$) is given below.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {9}{Algorithm LIS-DP-T~(array $A[1\cdots n]$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {8}{Algorithm LIS-DP-T~(array $A[1\cdots n]$)}\xxx
 	\aaB {6}{for $k = 1 \to n$}\xxx
 	\aac {$L[k] = 1$;}\xxx
 	\aac {$T[k] = nul$;}\xxx
-	\aaC {2}{for $j = 1 \to k - 1$}\xxx
+	\aaC {3}{for $j = 1 \to k - 1$}\xxx
 	\aad {if~($A[j] < A[k]$ and $L(j) + 1 > L(k)$): $L[k] = L[j] + 1$ and $T[k] = j$}\xxx
-	\aac {end for;}\xxx
-	\aab {end for;}\xxx
 	\aab {return $T$;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 
 %%The pseudo-code is given above.
@@ -194,41 +186,35 @@ All these combined proves that, for this case, simply replacing $S_k[i]$ with $A
 The pseudo-code is given below.  Note that we will not maintain separate arrays $S_k$; 
 we only maintain one array $S$ and update it as $k$ increases.
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {7}{Algorithm faster-LIS~(array $A[1\cdots n]$)}\xxx
 	\aab {$S=\emptyset$;}\xxx
-	\aaB {3}{for $k = 1 \to n$}\xxx
+	\aaB {4}{for $k = 1 \to n$}\xxx
 	\aac {if $|S| = 0$ or $A[k] > S[|S|]$:  append $A[k]$ to $S$;}\xxx
 	\aac {else: binary-search($S$, $A[k]$) to locate the smallest $i$ such that $S[i] > A[k]$, then $S[i] = A[k]$;}\xxx
-	\aab {end for;}\xxx
 	\aab {return $|S|$;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 Above algorithm computes the length of the LIS. To construct the actual LIS, we need two modifications.
 First, instead of storing the numbers in $A$, we use $S$ to store the corresponding indexes.
 Second, we maintain tracing back pointers stored in an array $T$.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {18}{Algorithm faster-LIS-full~(array $A[1\cdots n]$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {16}{Algorithm faster-LIS-full~(array $A[1\cdots n]$)}\xxx
 	\aab {$S=\emptyset$; }\xxx
 	\aaB {9}{for $k = 1 \to n$}\xxx
-	\aaC {3}{if $|S| = 0$ or $A[k] > S[|S|]$}\xxx
+	\faC {3}{if $|S| = 0$ or $A[k] > S[|S|]$}\xxx
 	\aad {$T[k] = S[|S|]$ or $T[k] = null$ if $|S|=0$;}\xxx
 	\aad {append $k$ to $S$;}\xxx
-	\aaC {4}{else}\xxx
+	\aaC {5}{else}\xxx
 	\aad {binary-search to locate the smallest $i$ such that $A[S[i]] > A[k]$;}\xxx
 	\aad {$S[i] = k$;}\xxx
 	\aad {$T[k] = S[i-1]$ or $T[k] = nul$ if $i=1$;}\xxx
-	\aac {end if;}\xxx
-	\aab {end for;}\xxx
 	\aab {$j = S[|S|]$; $opt=\emptyset$;}\xxx
 	\aaB {3}{while~($j\neq nul$)}\xxx
 	\aac {add $A[j]$ to the front of $opt$;}\xxx
 	\aac {$j = T[j]$;}\xxx
-	\aab {end while;}\xxx
 	\aab {return $opt$;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 Both algorithms runs in $\Theta(n\log n)$ time as binary-search takes $\Theta(\log n)$ time.

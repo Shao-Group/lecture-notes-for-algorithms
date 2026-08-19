@@ -1,0 +1,148 @@
+\documentclass[
+  11pt,
+  paper=7.5in:9.25in,
+  twoside,
+  openany,
+  headings=big,
+  numbers=noenddot
+]{scrbook}
+
+
+% Typography
+\usepackage[T1]{fontenc}
+\usepackage{newtxtext}
+\usepackage{amsmath,amsthm}
+\usepackage{newtxmath}
+\usepackage[scale=0.92]{sourcesanspro}
+\usepackage{microtype}
+
+% Structure, mathematics, and figures
+\usepackage{import}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+
+\usepackage[
+  paperwidth=7.5in,
+  paperheight=9.25in,
+  inner=0.90in,
+  outer=0.70in,
+  top=0.70in,
+  bottom=0.85in,
+  headheight=14pt,
+  headsep=16pt
+]{geometry}
+
+
+% Self-defined pseudocode. The existing \aaa, \aab, ... commands remain the
+% authoring interface; every such command produces one numbered line.
+\newcounter{algorithmlinenumber}
+\newlength{\AlgoNumberWidth}
+\newlength{\AlgoNumberSep}
+\newlength{\AlgoLineGap}
+\newlength{\AlgoLinePitch}
+\newlength{\AlgoBaseIndent}
+\newlength{\AlgoStepIndent}
+\setlength{\AlgoNumberWidth}{1.5em}
+\setlength{\AlgoNumberSep}{0.0em}
+\setlength{\AlgoLineGap}{0.1cm}
+\setlength{\AlgoBaseIndent}{0.15cm}
+\setlength{\AlgoStepIndent}{0.65cm}
+
+% Indentation at level n = base indent + n * step indent.
+\newcommand{\AlgoIndent}[1]{%
+  \dimexpr\AlgoBaseIndent+#1\AlgoStepIndent\relax
+}
+
+\newenvironment{algorithmblock}[1][1.0\linewidth]{%
+  \par\medskip
+  \begingroup
+  \setcounter{algorithmlinenumber}{0}%
+  \small\ttfamily
+  % The true distance between source-level rows is the font's baseline
+  % distance plus the explicit vertical gap inserted by \xxx.
+  \setlength{\AlgoLinePitch}{\baselineskip}%
+  \addtolength{\AlgoLinePitch}{\AlgoLineGap}%
+  \begin{minipage}{#1}%
+}{%
+  \end{minipage}%
+  \endgroup
+  \par\medskip
+}
+
+\newcommand{\AlgoNumber}{%
+  \stepcounter{algorithmlinenumber}%
+  \makebox[\AlgoNumberWidth][r]{%
+    \normalfont\scriptsize\sffamily\color{gray}%
+    \arabic{algorithmlinenumber}%
+  }%
+  \hspace{\AlgoNumberSep}%
+}
+
+\newcommand{\AlgoLine}[2]{%
+  \AlgoNumber
+  \hspace{#1}%
+  \parbox[t]{\dimexpr\linewidth-\AlgoNumberWidth-\AlgoNumberSep-#1\relax}{%
+    \hangindent=\AlgoStepIndent\hangafter=1 \strut#2\strut}%
+}
+\newcommand{\AlgoBranch}[3]{%
+  \AlgoNumber
+  \hspace{#1}%
+  {\tikz[overlay]\draw
+    (0.1,{-.2 * \AlgoLinePitch}) --
+    (0.1,{-(#2 - .75) * \AlgoLinePitch}) --
+    (0.4,{-(#2 - .75) * \AlgoLinePitch});}%
+  \parbox[t]{\dimexpr\linewidth-\AlgoNumberWidth-\AlgoNumberSep-#1-0.25cm\relax}{%
+    \hangindent=\AlgoStepIndent\hangafter=1 \strut#3\strut}%
+}
+\newcommand{\AlgoVertical}[3]{%
+  \AlgoNumber
+  \hspace{#1}%
+  {\tikz[overlay]\draw
+    (0.1,{-.2 * \AlgoLinePitch}) --
+    (0.1,{-(#2 - .45) * \AlgoLinePitch});}%
+  \parbox[t]{\dimexpr\linewidth-\AlgoNumberWidth-\AlgoNumberSep-#1-0.25cm\relax}{%
+    \hangindent=\AlgoStepIndent\hangafter=1 \strut#3\strut}%
+}
+
+\newcommand{\aaa}[1]{\AlgoLine{\AlgoIndent{1}}{#1}}
+\newcommand{\aab}[1]{\AlgoLine{\AlgoIndent{2}}{#1}}
+\newcommand{\aac}[1]{\AlgoLine{\AlgoIndent{3}}{#1}}
+\newcommand{\aad}[1]{\AlgoLine{\AlgoIndent{4}}{#1}}
+\newcommand{\aae}[1]{\AlgoLine{\AlgoIndent{5}}{#1}}
+\newcommand{\aaf}[1]{\AlgoLine{\AlgoIndent{6}}{#1}}
+\newcommand{\aaA}[2]{\AlgoBranch{\AlgoIndent{1}}{#1}{#2}}
+\newcommand{\aaB}[2]{\AlgoBranch{\AlgoIndent{2}}{#1}{#2}}
+\newcommand{\aaC}[2]{\AlgoBranch{\AlgoIndent{3}}{#1}{#2}}
+\newcommand{\aaD}[2]{\AlgoBranch{\AlgoIndent{4}}{#1}{#2}}
+\newcommand{\aaE}[2]{\AlgoBranch{\AlgoIndent{5}}{#1}{#2}}
+\newcommand{\faA}[2]{\AlgoVertical{\AlgoIndent{1}}{#1}{#2}}
+\newcommand{\faB}[2]{\AlgoVertical{\AlgoIndent{2}}{#1}{#2}}
+\newcommand{\faC}[2]{\AlgoVertical{\AlgoIndent{3}}{#1}{#2}}
+\newcommand{\faD}[2]{\AlgoVertical{\AlgoIndent{4}}{#1}{#2}}
+\newcommand{\faE}[2]{\AlgoVertical{\AlgoIndent{5}}{#1}{#2}}
+
+% End an algorithm row with an explicit edge-to-edge gap.  Suppressing TeX's
+% normal interline calculation keeps the gap unchanged after a multi-line
+% \parbox, whose large depth would otherwise trigger the smaller \lineskip.
+\newcommand{\xxx}{\par\nointerlineskip\vspace{\AlgoLineGap}}
+
+\begin{document}
+
+\begin{algorithmblock}[1.0\textwidth]
+	\aaA {12}{function merge-two-sorted-arrays ($A[1\cdots m], B[1\cdots n]$)}\xxx
+	\aab {init an empty array $C$; \textcolor{blue}{(\#units = 1)}}\xxx
+	\aab {init pointers $k_A = 1$ and $k_B = 1$; \textcolor{blue}{(\#units = 2)}}\xxx
+	\aab {add a big number $M$ to the end of $A$ and $B$}\xxx
+	\aaB {7}{for $k = 1 \to m + n$ \textcolor{blue}{(advancing $k$ from 1 to $m+n$; \#units = $m + n$)}}\xxx
+	\faC {3}{if $A[k_A] \le B[k_B]$ \textcolor{blue}{(\#units = $m + n$)}}\xxx
+	\aad {$C[k] = A[k_A]$; \textcolor{blue}{(\#units = $a$)}}\xxx
+	\aad {$k_A = k_A + 1$; \textcolor{blue}{(\#units = $a$)}}\xxx
+	\aaC {3}{else}\xxx
+	\aad {$C[k] = B[k_B]$; \textcolor{blue}{(\#units = $m + n - a$)}}\xxx
+	\aad {$k_B = k_B + 1$; \textcolor{blue}{(\#units = $m + n - a$)}}\xxx
+	\aab {return $C$; \textcolor{blue}{(\#units = 1)}}\xxx
+\end{algorithmblock}
+
+
+\end{document}

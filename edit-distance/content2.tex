@@ -8,19 +8,16 @@ the one number in the current row. There is absolutely no need to restore the ro
 Hence, we can modify that algorithm, by simply using two vectors and alternating them as previous and current rows.
 The pseudo-code is given below. It runs in $\Theta(mn)$ time and in $\Theta(m+n)$ space.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {10}{Algorithm DP-edit-distance~($X[1\cdots m]$, $Y[1\cdots n]$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {8}{Algorithm DP-edit-distance~($X[1\cdots m]$, $Y[1\cdots n]$)}\xxx
 	\aab {$F_1[j] = j$, for any $0 \le j \le n$}\xxx
-	\aaB {6}{for $i = 1 \to m$}\xxx
+	\aaB {5}{for $i = 1 \to m$}\xxx
 	\aac {$F_2[0] = i$;}\xxx
 	\aaC {2}{for $j = 1 \to n$}\xxx
 	\aad {$F_2[j] = \min\{F_1[j-1] + \delta(X[i] \neq Y[j]), F_1[j] + 1, F_2[j-1] + 1\}$;}\xxx
-	\aac {end for;}\xxx
 	\aac {$F_1 = F_2$;}\xxx
-	\aab {end for;}\xxx
 	\aab {return: $F_1[n]$;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 Note that, prior to the algorithm returns $F_1[n]$, 
 $F_1[j]$ stores the length of the shortest path from $(0,0)$ to $(m, j)$ for
@@ -50,15 +47,14 @@ and to find the path from $(m/2, j^*)$ to $(m,n)$ and concatenate them together.
 can be solved using recursive calls. The framework of this algorithm is given below.
 
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {6}{Algorithm DC-optimal-alignment~($X[1\cdots m]$, $Y[1\cdots n]$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {7}{Algorithm DC-optimal-alignment~($X[1\cdots m]$, $Y[1\cdots n]$)}\xxx
 	\aab {if $m \le 1$: handle basecase and return as needed;}\xxx
 	\aab {$j^* = $ find-middle~($X$, $Y$);}\xxx
 	\aab {$P_1 = $ DC-optimal-alignment~($X[1\cdots m/2]$, $Y[1\cdots j^*]$);}\xxx
 	\aab {$P_2 = $ DC-optimal-alignment~($X[m/2\cdots m]$, $Y[j^*\cdots n]$);}\xxx
 	\aab {return $P_1$ followed by $P_2$ but make sure the middle $(m/2, j^*)$ is only used once;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 
 The remaining task is to find $j^*$.
@@ -80,16 +76,14 @@ directions of each edge in the graph is reversed. This suggests we call DC-edit-
 In the returned $F_1$ array, $F_1[j]$ gives the length of shortest path from $(m,n)$ to $(m/2, n+1-j)$.
 Hence, $B[j] = F_1[n+1-j]$. See below for the complete pseudo-code.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {7}{function find-middle~($X[1\cdots m]$, $Y[1\cdots n]$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {6}{function find-middle~($X[1\cdots m]$, $Y[1\cdots n]$)}\xxx
 	\aab {$F_1^A = $ DP-edit-distance~($X[1\cdots m/2]$, $Y[1\cdots n]$);}\xxx
 	\aab {$F_1^B = $ DP-edit-distance~($X[m\cdots m/2]$, $Y[n\cdots 1]$);}\xxx
 	\aaB {2}{for $j = 1$ to $n$}\xxx
 	\aac {$Z[j] = F_1^A[j] + F_1^B[n+1-j]$;}\xxx
-	\aab {end for;}\xxx
 	\aab {return $\arg\min_{1\le j \le n} Z[j]$;}\xxx
-	\aaa {end function}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 
 \subsection*{Analysis of the Divide-and-Conquer Algorithm}

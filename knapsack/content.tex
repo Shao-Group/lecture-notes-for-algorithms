@@ -29,20 +29,17 @@ we pick it, reduce the total capacity by its weight; %, and then either stay at 
 if the weight of the current item exceeds the remaining capacity of the knapsack, move to the next item. 
 The pseudo-code is given below.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {11}{Algorithm knapsack-greedy~(weights $(w_1,w_2,\cdots,w_n)$, values $(v_1,v_2,\cdots,v_n)$, capacity $W$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {10}{Algorithm knapsack-greedy~(weights $(w_1,w_2,\cdots,w_n)$, values $(v_1,v_2,\cdots,v_n)$, capacity $W$)}\xxx
 	\aab {sort items in descending order of $v_i$;}\xxx
 	\aab {$S = \emptyset$;}\xxx
 	\aab {$c = W$;}\xxx
-	\aaB {5}{for $i = 1 \to n$}\xxx
+	\aaB {4}{for $i = 1 \to n$}\xxx
 	\aaC {3}{if~($w_i \le c$)}\xxx
 	\aad {$S = S \cup \{i\}$;}\xxx
 	\aad {$c = c - w_i$;}\xxx
-	\aac {end if;}\xxx
-	\aab {end for;}\xxx
 	\aab {report: $S$;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 
 This algorithm is good heuristic but may not always find the optimal solution.
@@ -103,21 +100,17 @@ The algorithm fills out the DP table of size $n(W+1)$
 using above recurrence. 
 See the pseudo-code below.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {12}{Algorithm knapsack-DP~(weights $(w_1,w_2,\cdots,w_n)$, values $(v_1,v_2,\cdots,v_n)$, capacity $W$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {10}{Algorithm knapsack-DP~(weights $(w_1,w_2,\cdots,w_n)$, values $(v_1,v_2,\cdots,v_n)$, capacity $W$)}\xxx
 	\aab {$P(0,c) = 0$, for $0 \le c \le W$;}\xxx
-	\aaB {8}{for $k = 1 \to n$}\xxx
-	\aaC {6}{for $c = 0 \to W$}\xxx
-	\aaD {4}{if~($w_k \le c$)}\xxx
+	\aaB {6}{for $k = 1 \to n$}\xxx
+	\aaC {5}{for $c = 0 \to W$}\xxx
+	\aaD {2}{if~($w_k \le c$)}\xxx
 	\aae {$P(k,c) = \max(P(k-1,c), P(k-1,c-w_k) + v_k)$;}\xxx
 	\aad {else;}\xxx
 	\aae {$P(k,c) = P(k-1,c)$;}\xxx
-	\aad {end if;}\xxx
-	\aac {end for;}\xxx
-	\aab {end for;}\xxx
 	\aab {report: $P(n,W)$;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 
 The running time is therefore $O(nW)$, as solving

@@ -21,17 +21,14 @@ A brute-force algorithm can be easily designed, that simply
 enumerates all pairs and counts the inversions:
 
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {8}{Algorithm~\#1: brute-force-count-inv~($A[1\cdots n]$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {6}{Algorithm~\#1: brute-force-count-inv~($A[1\cdots n]$)}\xxx
 	\aab {let inv = 0;}\xxx
-	\aaB {4}{for $i = 1$ to $n$}\xxx
+	\aaB {3}{for $i = 1$ to $n$}\xxx
 	\aaC {2}{for $j = i + 1$ to $n$}\xxx
 	\aad {if($A[i] > A[j]$): inv = inv + 1;}\xxx
-	\aac {end for;}\xxx
-	\aab {end for;}\xxx
 	\aab {return inv;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 Clearly, above brute-force-count-inv algorithm takes $\Theta(n^2)$ time. Can we design a faster algorithm?
 Let's try the divide-and-conquer idea. We define a recursive function DC-count-inv~($A$) that returns the number
@@ -44,30 +41,26 @@ we introduce a new function count-inv-two-arrays~($S[1\cdots m]$, $T[1\cdots n]$
 inversions between $S$ and $T$, formally defined as $|\{(i,j)\mid 1\le i \le m, 1\le j \le n, S[i]> T[j]\}|$.
 We first give the pseudo-code for function DC-count-inv:
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {6}{Algorithm~\#2: DC-count-inv~($A[1\cdots n]$)}\xxx
 	\aab {if $n \le 1$: return 0;}\xxx
 	\aab {$I_1$ = DC-count-inv~($A[1\cdots n/2]$);}\xxx
 	\aab {$I_2$ = DC-count-inv~($A[n/2 + 1\cdots n]$);}\xxx
 	\aab {$I_3$ = count-inv-two-arrays~($A[1\cdots n/2], A[n/2 + 1\cdots n]$);}\xxx
 	\aab {return $I_1 + I_2 + I_3$;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 To complete above algorithm~\#2 we need to implement count-inv-two-arrays~($S$, $T$). 
 Let's again use the ``brute-force'' idea, that compares all pairs between $S$ and $T$:
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {8}{function count-inv-two-arrays~($S[1\cdots m], T[1\cdots n]$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {6}{function count-inv-two-arrays~($S[1\cdots m], T[1\cdots n]$)}\xxx
 	\aab {let inv = 0;}\xxx
-	\aaB {4}{for $i = 1$ to $m$}\xxx
+	\aaB {3}{for $i = 1$ to $m$}\xxx
 	\aaC {2}{for $j = 1$ to $n$}\xxx
 	\aad {if($S[i] > T[j]$): inv = inv + 1;}\xxx
-	\aac {end for;}\xxx
-	\aab {end for;}\xxx
 	\aab {return inv;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 Function count-inv-two-arrays runs in $\Theta(mn)$ time.
 Hence, count-inv-two-arrays~($A[1\cdots n/2], A[n/2 + 1\cdots n]$) takes $\Theta(n/2\cdot n/2) = \Theta(n^2)$ time.
@@ -93,39 +86,35 @@ the number of inversions in $A$. The framework of algorithm~\#3 is the same with
 It's pseudo-code is given below, where the merging step, merge-count-inv-two-sorted-arrays, takes two \emph{sorted} arrays
 as input, and return the merged/sorted array \emph{and} the number of inversions between the two input arrays.
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {6}{Algorithm~\#3: DC-sort-count-inv~($A[1\cdots n]$)}\xxx
 	\aab {if $n \le 1$: return ($A$, 0);}\xxx
 	\aab {($A'_1, I_1$) = DC-sort-count-inv~($A[1\cdots n/2]$);}\xxx
 	\aab {($A'_2, I_2$) = DC-sort-count-inv~($A[n/2 + 1\cdots n]$);}\xxx
 	\aab {($A', I_3$) = merge-count-inv-two-sorted-arrays~($A'_1, A'_2$);}\xxx
 	\aab {return ($A', I_1 + I_2 + I_3$);}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 The remaining (key) step is to implement function merge-count-inv-two-sorted-arrays~($S[1\cdots, m]$, $T[1\cdots n]$).
 Again, we aim for doing it faster~(than brute-force which takes $\Theta(mn)$ time) by making use of the fact that
 both $S$ and $T$ are already sorted. It's pseudo-code is given below; it just adds a single line to the merge-two-sorted-arrays function.
 
-\begin{minipage}{0.8\textwidth}
-        \aaA {16}{function merge-count-inv-two-sorted-arrays ($S[1\cdots m], T[1\cdots n]$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+        \aaA {15}{function merge-count-inv-two-sorted-arrays ($S[1\cdots m], T[1\cdots n]$)}\xxx
         \aab {init an emity array $C$; }\xxx
         \aab {init pointers $i = 1$ and $j = 1$;}\xxx
         \aab {\textcolor{blue}{init inv = 0;}}\xxx
         \aab {$S[m + 1] = M$ and $T[n + 1] = M$; }\xxx
-        \aaB {9}{for $k = 1 \to m + n$}\xxx
-        \aaC {3}{if $S[i] \le T[j]$}\xxx
+        \aaB {8}{for $k = 1 \to m + n$}\xxx
+        \faC {3}{if $S[i] \le T[j]$}\xxx
         \aad {$C[k] = S[i]$;}\xxx
         \aad {$i = i + 1$;}\xxx
         \aaC {4}{else}\xxx
         \aad {$C[k] = T[j]$;}\xxx
         \aad {$j = j + 1$;}\xxx
         \aad {\textcolor{blue}{inv = inv + $(m-i+1)$};}\xxx
-        \aac {end if;}\xxx
-        \aab {end for;}\xxx
         \aab {\textcolor{blue}{return $(C, inv)$};}\xxx
-        \aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 Let's explain/prove why above algorithm works. We have proved that $C$ is the merged, sorted array of $S$ and $T$~(in Lecture~01)
 so now we focus on showing that inv stores that correct number of inversions between $S$ and $T$, 

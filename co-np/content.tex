@@ -157,14 +157,12 @@ and seeks if there exists a factor $a$ of $X$ such that $a\le t$.
 
 You might think this problem can be solved in polynomial-time. Consider the following:
 
-\begin{minipage}{0.8\textwidth}
-        \aaA {5}{algorithm-for-integer-factorization~($X,t$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+        \aaA {4}{algorithm-for-integer-factorization~($X,t$)}\xxx
         \aaB {2}{for $a = 2 \to t$}\xxx
         \aac {if $X \textrm{ mod } a = 0$: return ``yes''}\xxx
-        \aab {end for;}\xxx
         \aab {return ``no'';}\xxx
-        \aaa {end}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 This algorithm is certainly correct, but it runs in exponential time.
 Recall that runtime is a function of input size.

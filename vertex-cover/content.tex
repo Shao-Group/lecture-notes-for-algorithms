@@ -64,18 +64,16 @@ edges~(i.e., edges that are covered by the picked vertex) from $E_1$.
 The pseudo-code is given below. See Figure~\ref{fig:greedy1} for an example.
 %this example also shows that this greedy greedy is not optimal.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {9}{Algorithm greedy-vertex-based~($G = (V, E)$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {8}{Algorithm greedy-vertex-based~($G = (V, E)$)}\xxx
 	\aab {$V_1 = \emptyset$;}\xxx
 	\aab {$E_1 = E$;}\xxx
 	\aaB {4}{while~($E_1 \neq \emptyset$)}\xxx
 	\aac {pick $v$ with largest degree in graph $(V, E_1)$}\xxx
 	\aac {$V_1 = V_1\cup \{v\}$;}\xxx
 	\aac {remove all adjacent edges of $v$ from $E_1$;}\xxx
-	\aab {end;}\xxx
 	\aab {return $V_1$;}\xxx
-	\aaa {end;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 %%An equivalent intepretation of above algorithm is that,
 %%we always keep the graph $G = (V, E)$ up-to-date, and in each iteration,
@@ -210,18 +208,16 @@ we \emph{arbitrarily} pick an edge $e=(u,v)$ from $E_1$, add both $u$ and $v$ to
 and then remove all adjacent edges of $u$ and $v$ from $E_1$.
 The pseudo-code is given below. See Figure~\ref{fig:greedy2} for an example.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {9}{Algorithm greedy-edge-based~($G = (V, E)$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {8}{Algorithm greedy-edge-based~($G = (V, E)$)}\xxx
 	\aab {$E_1 = E$; $M = \emptyset$; $V_1 = \emptyset$;}\xxx
 	\aaB {5}{while~($E_1 \neq \emptyset$)}\xxx
 	\aac {arbitrarily pick $e=(u,v)\in E_1$}\xxx
 	\aac {$M = M\cup \{e\}$;}\xxx
 	\aac {$V_1 = V_1\cup \{u,v\}$;}\xxx
 	\aac {remove all adjacent edges of $u,v$ from $E_1$;}\xxx
-	\aab {end;}\xxx
 	\aab {return $V_1$;}\xxx
-	\aaa {end;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 %%An equivalent intepretation of above algorithm is that,
 %%we always keep the graph $G = (V, E)$ up-to-date, and in each iteration,

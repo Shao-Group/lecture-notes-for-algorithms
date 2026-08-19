@@ -85,18 +85,15 @@ and in each iteration, pick the smallest edge that doesn't produce a cycle}.
 The pseudo-code is given below, where we use $E_1$ to store
 the edges picked. See an example in Figure~\ref{fig:mst1}.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {9}{Algorithm Kruskal's~(graph $G = (V, E)$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {7}{Algorithm Kruskal's~(graph $G = (V, E)$)}\xxx
 	\aab {sort all edges in increasing order w.r.t.\ weights;}\xxx
 	\aab {init $E_1 = \emptyset$;}\xxx
-	\aaB {5}{for $e\in E$ in above order}\xxx
+	\aaB {4}{for $e\in E$ in above order}\xxx
 	\aaC {3}{if~($E_1\cup\{e\}$ doesn't form a cycle)}\xxx
 	\aad {$E_1 = E_1\cup\{e\}$;}\xxx
 	\aad {if~($|E_1| = |V| -1$): report $E_1$ and exit;}\xxx
-	\aac {end if;}\xxx
-	\aab {end for;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 Note that above algorithm is a framework, as how to decide if $E_1\cup\{e\}$
 produces cycles is not specified. Later on we will introduce a new data
@@ -124,17 +121,15 @@ We again use $E_1$ to store the picked edges.
 We also use $S$ to store the vertices that have been connected.
 The pseudo-code is given below.  See an example in Figure~\ref{fig:mst2}.
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {8}{Algorithm Prim's~(graph $G = (V, E)$)}\xxx
 	\aab {init $E_1 = \emptyset$;}\xxx
 	\aab {init $S$ with an arbitrarily picked vertex;}\xxx
-	\aaB {4}{for $k = 1 \to |V| - 1$}\xxx
+	\aaB {5}{for $k = 1 \to |V| - 1$}\xxx
 	\aac {pick the smallest edge $e = (u,v)$ that connects to a new vertex~(i.e., $u\in S$ and $v\not\in S$);}\xxx
 	\aac {$E_1 = E_1\cup\{e\}$;}\xxx
 	\aac {$S = S\cup\{v\}$;}\xxx
-	\aab {end for;}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 \begin{figure}[h]
 \centering{\input{mst2}}

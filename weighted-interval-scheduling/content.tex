@@ -106,35 +106,31 @@ Its pseudo-code is given below.
 Clearly, this binary-search procedure runs in $O(\log n)$ time.
 To find $pre[k]$, we actually call: \emph{binary-search~($A$, $k$, $1$, $k-1$)}.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {11}{function binary-search~($A[1\cdots n]$, $k$, $a$, $b$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {10}{function binary-search~($A[1\cdots n]$, $k$, $a$, $b$)}\xxx
 	\aab {$m = (a + b) / 2$;}\xxx
-	\aaB {2}{if~($t(m) \le s(k) \le t(m + 1)$)\ \ // $pre[k] = m$}\xxx
+	\faB {2}{if~($t(m) \le s(k) \le t(m + 1)$)\ \ // $pre[k] = m$}\xxx
 	\aac {return $m$;}\xxx
-	\aaB {2}{else if~($t(m) > s(k)$)\ \ // $pre[k]$ must be in $[a\cdots m]$}\xxx
+	\faB {2}{else if~($t(m) > s(k)$)\ \ // $pre[k]$ must be in $[a\cdots m]$}\xxx
 	\aac {return binary-search~($A$, $k$, $a$, $m$);}\xxx
-	\aaB {2}{else if~($s(k) > t(m + 1)$) \ \ // $pre[k]$ must be in $[m + 1\cdots b]$}\xxx
+	\faB {2}{else if~($s(k) > t(m + 1)$) \ \ // $pre[k]$ must be in $[m + 1\cdots b]$}\xxx
 	\aac {return binary-search~($A$, $k$, $m + 1$, $b$);}\xxx
 	\aaB {2}{else}\xxx
 	\aac {return 0;}\xxx
-	\aab {end;}\xxx
-	\aaa {end;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 The complete DP algorithm for solving the weighted interval scheduling problem is given below.
 Its running time is $O(n\log n)$: the sorting step takes $\Theta(n\log n)$, and for each $k$,
 the binary-search takes $O(\log n)$, and hence the entire for-loop takes $O(n\log n)$ as
 well.
 
-\begin{minipage}{0.8\textwidth}
-	\aaA {8}{Algorithm DP-weighted~(intervals $A[1\cdots n]$, $v(i)$, $1\le i \le n$)}\xxx
+\begin{algorithmblock}[0.8\textwidth]
+	\aaA {7}{Algorithm DP-weighted~(intervals $A[1\cdots n]$, $v(i)$, $1\le i \le n$)}\xxx
 	\aab {sort $A$ by their finish-time;}\xxx
 	\aab {init array $F$ of size $n + 1$ and set $F[0] = 0$;}\xxx
 	\aaB {3}{for $k = 1 \to n$}\xxx
 	\aac {$pre[k]$ = binary-search~($A$, $k$, $1$, $k-1$);}\xxx
 	\aac {$F[k] = \max\{F[k-1], F[pre[k]] + v(k)\}$;}\xxx
-	\aab {end;}\xxx
 	\aab {return $F[n]$;}\xxx
-	\aaa {end;}\xxx
-\end{minipage}
+\end{algorithmblock}
 

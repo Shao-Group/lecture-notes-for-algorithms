@@ -27,14 +27,13 @@ We have introduced such an algorithm to merge two sorted arrays into a single so
 That's exactly the algorithm we need here in the combining step.
 The pseudo-code for the merge-sort function is given below.
 
-\begin{minipage}{0.8\textwidth}
+\begin{algorithmblock}[0.8\textwidth]
 	\aaA {5}{Algorithm merge-sort~($S[1\cdots n]$)}\xxx
 	\aab {if $n \le 1$: return $S$;}\xxx
 	\aab {$S'_1 =$ merge-sort~($S[1\cdots n/2]$);}\xxx
 	\aab {$S'_2 =$ merge-sort~($S[n/2 + 1\cdots n]$);}\xxx
 	\aab {return merge-two-sorted-arrays~($S_1', S_2'$);}\xxx
-	\aaa {end algorithm;}\xxx
-\end{minipage}
+\end{algorithmblock}
 
 \subsection*{Analysis of Merge-Sort}
 
