@@ -6,8 +6,8 @@
 Algorithms are for solving problems.
 See Figure~\ref{fig:problem-algorithm}.
 In (theoretical) computer science, a \emph{problem} must be
-defined formally, usually by specifying the allowable inputs and the required
-output for each input.
+defined formally, usually by specifying the input and the required
+output.
 
 For example, consider the \emph{sorting problem}. The input is an array
 $A=[a_1,a_2,\ldots,a_n]$, and the output is an array containing the same
@@ -45,10 +45,10 @@ specifications). This approach is called \emph{brute force}. Although it may wor
 for small instances, it is generally \emph{inefficient} because the number of
 candidates can be prohibitively large.
 
-This book focuses on the design of \emph{efficient} algorithms. Here,
+We focus on the design of \emph{efficient} algorithms. Here,
 ``efficient'' means ``runs in polynomial time,'' a notion that we will elaborate
 in \Cref{part:computational-complexity}.
-Two principles underlie efficient algorithms covered in this book.
+Two principles underlie the design of efficient algorithms in this book.
 
 \begin{enumerate}
 
@@ -120,7 +120,7 @@ points to the first unprocessed element of its corresponding array. We compare
 $A[k_A]$ with $B[k_B]$, append the smaller element to $C$, and advance the
 corresponding index. The pseudocode appears below.
 
-\begin{algorithmblock}[0.8\textwidth]
+\begin{algorithmblock}[0.8\textwidth] \label{code:merge-two-sorted-arrays}
 	\aaA {12.8}{function merge-two-sorted-arrays ($A[1\cdots m], B[1\cdots n]$)}\xxx
 	\aab {initialize an empty array $C$;}\xxx
 	\aab {initialize indices $k_A = 1$ and $k_B = 1$;}\xxx
@@ -224,10 +224,11 @@ input size is their total lengths $m+n$.
 %do not affect the running time.
 More precisely, the input size is defined as the amount of memory needed to
 store the actual input. In most practical settings,
-each number fits in a fixed-size word, such as a 32-bit integer.
-Under this assumption, the total amount of memory needed to store $A$ and
-$B$ is $32(m+n)$ bits, i.e., proportional to $m+n$, confirming that the running time of the algorithm
-is a function of the memory storing the input.
+each number fits in a fixed-size word, such as 32 bits.
+Under this assumption, the amount of memory needed to store $A$ and
+$B$ is $32\cdot (m+n)$ bits. The running time $T(m, n)$ can be written
+as $(32\cdot(m+n)) / 8 + 6$, in terms of the input size.
+Clearly, this running time grows linearly with the input size.
 
 The exact coefficients and constant term in $T(m,n)=4m+4n+6$ depend on which
 operations the model counts and how their costs are assigned. For algorithm
@@ -235,3 +236,42 @@ analysis, we are usually more interested in how the running time grows as the
 input size grows. We therefore write $T(m,n)=\Theta(m+n)$, meaning that the
 running time grows asymptotically at the same rate as function $m+n$. The next chapter
 introduces the notation used to describe such growth rates for algorithm analysis.
+
+\subsection*{Exercises}
+  \begin{exercises}
+    \item \label{ex:first} 
+	Line 4 of Code~\ref{code:merge-two-sorted-arrays}: why adding $M$ to the end of $A$ and $B$?
+
+	\item For each piece of the pseudo-code given below, derive the number of times line (*) will be executed
+	in terms of $m$ and $n$.
+    %\item Above analysis of Code~\ref{code:merge-two-sorted-arrays} assumed that each number is stored in 32 bits; so the running time is a linear function of the memory. Now let us do not assume this.
+
+\begin{minipage}[t]{0.33\textwidth}
+\begin{algorithmblock*}
+	\aaA {4}{for $i = 1 \to m$ }\xxx
+	\aab {$j = 1$;}\xxx
+	\aaB {2}{while $j \le i$ }\xxx
+	\aac {$j \leftarrow j + 1$;\ (*) }\xxx
+\end{algorithmblock*}
+\end{minipage}
+\begin{minipage}[t]{0.33\textwidth}
+\begin{algorithmblock*} 
+	\aaA {4}{for $i = 1 \to m$ }\xxx
+	\aab {$j = 1$;}\xxx
+	\aaB {2}{while $j \le n$ }\xxx
+	\aac {$j \leftarrow 2\cdot j$;\ (*) }\xxx
+\end{algorithmblock*}
+\end{minipage}
+\begin{minipage}[t]{0.33\textwidth}
+\begin{algorithmblock*} 
+	\aaA {4}{for $i = 1 \to m$ }\xxx
+	\aab {$j = 1$;}\xxx
+	\aaB {2}{while $j \le n$ }\xxx
+	\aac {$j \leftarrow j + i$;\ (*) }\xxx
+\end{algorithmblock*}
+\end{minipage}
+
+
+
+
+\end{exercises}

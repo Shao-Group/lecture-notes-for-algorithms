@@ -17,7 +17,8 @@
 
 % CLRS uses its sans face for display-level titles, but keeps ordinary
 % section headings in the same Times family as the body.
-\setkomafont{section}{\normalfont\large\bfseries}
+%%\setkomafont{section}{\normalfont\large\bfseries}
+\setkomafont{section}{\normalfont\Large\sffamily\bfseries}
 \setkomafont{subsection}{\normalfont\large\bfseries}
 \setkomafont{subsubsection}{\normalfont\normalsize\bfseries}
 \RedeclareSectionCommand[
@@ -90,6 +91,41 @@
 \newtheorem{definition}{Definition}[chapter]
 \newtheorem{example}{Example}[chapter]
 
+% Exercise lists. Use one of these below each chapter's Exercises section:
+%   \begin{exercises}
+%     \item \label{ex:introduction-example} Exercise text.
+%     \item Exercise text with parts.
+%       \begin{exercises}
+%         \item First part.
+%         \item Second part.
+%       \end{exercises}
+%   \end{exercises}
+% Top-level numbering restarts with each list; references include the chapter
+% number so that \cref{ex:introduction-example} is unambiguous.
+\newlist{exercises}{enumerate}{2}
+\setlist[exercises,1]{
+  label=\textbf{\arabic*.},
+  ref=\thechapter.\arabic*,
+  leftmargin=*,
+  labelsep=0.65em,
+  itemsep=0.3\baselineskip,
+  topsep=0.4\baselineskip,
+  parsep=0pt
+}
+\setlist[exercises,2]{
+  label=(\alph*),
+  ref=\theexercisesi(\alph*),
+  leftmargin=*,
+  labelsep=0.5em,
+  itemsep=0.25\baselineskip,
+  topsep=0.25\baselineskip,
+  parsep=0pt
+}
+\crefname{exercisesi}{exercise}{exercises}
+\Crefname{exercisesi}{Exercise}{Exercises}
+\crefname{exercisesii}{exercise}{exercises}
+\Crefname{exercisesii}{Exercise}{Exercises}
+
 % Make proofs flow like ordinary paragraphs, with no additional list spacing.
 \makeatletter
 \renewenvironment{proof}[1][\proofname]{%
@@ -110,6 +146,11 @@
 % Self-defined, numbered pseudocode from algorithm.tex. Existing chapters can
 % keep using \aaa, \aab, \aaA, etc. directly in their current minipages.
 \newcounter{algorithmlinenumber}
+\newcounter{code}[chapter]
+\renewcommand{\thecode}{\thechapter.\arabic{code}}
+\crefname{code}{code}{codes}
+\Crefname{code}{Code}{Codes}
+\newif\ifAlgoShowCodeLabel
 \newlength{\AlgoNumberWidth}
 \newlength{\AlgoNumberSep}
 \newlength{\AlgoLineGap}
@@ -138,6 +179,25 @@
 \newenvironment{algorithmblock}[1][\linewidth]{%
   \par\medskip
   \begingroup
+  \AlgoShowCodeLabeltrue
+  \refstepcounter{code}%
+  \setcounter{algorithmlinenumber}{0}%
+  \small\ttfamily
+  \setlength{\AlgoLinePitch}{\baselineskip}%
+  \addtolength{\AlgoLinePitch}{\AlgoLineGap}%
+  \begin{minipage}{\linewidth}%
+}{%
+  \end{minipage}%
+  \endgroup
+  \par\medskip
+}
+
+% An unlabelled pseudocode block. It retains line numbering but neither shows
+% nor advances the chapter-level Code counter.
+\newenvironment{algorithmblock*}[1][\linewidth]{%
+  \par\medskip
+  \begingroup
+  \AlgoShowCodeLabelfalse
   \setcounter{algorithmlinenumber}{0}%
   \small\ttfamily
   \setlength{\AlgoLinePitch}{\baselineskip}%
@@ -157,11 +217,19 @@
   }%
   \hspace{\AlgoNumberSep}%
 }
+\newcommand{\AlgoCodeLabel}{%
+  \ifAlgoShowCodeLabel
+    \ifnum\value{algorithmlinenumber}=1
+      \llap{\normalfont\small\bfseries (Code~\thecode)}%
+    \fi
+  \fi
+}
 \newcommand{\AlgoLine}[2]{%
   \AlgoNumber
   \hspace{#1}%
   \parbox[t]{\dimexpr\linewidth-\AlgoNumberWidth-\AlgoNumberSep-#1\relax}{%
     \small\ttfamily\hangindent=\AlgoStepIndent\hangafter=1 \strut#2\strut}%
+  \AlgoCodeLabel
 }
 \newcommand{\AlgoBranch}[3]{%
   \AlgoNumber
@@ -172,6 +240,7 @@
     (0.4,{-(#2 - .75) * \AlgoLinePitch});}%
   \parbox[t]{\dimexpr\linewidth-\AlgoNumberWidth-\AlgoNumberSep-#1-0.25cm\relax}{%
     \small\ttfamily\hangindent=\AlgoStepIndent\hangafter=1 \strut#3\strut}%
+  \hspace{0.25cm}\AlgoCodeLabel
 }
 \newcommand{\AlgoVertical}[3]{%
   \AlgoNumber
@@ -181,6 +250,7 @@
     (0.1,{-(#2 - .45) * \AlgoLinePitch});}%
   \parbox[t]{\dimexpr\linewidth-\AlgoNumberWidth-\AlgoNumberSep-#1-0.25cm\relax}{%
     \small\ttfamily\hangindent=\AlgoStepIndent\hangafter=1 \strut#3\strut}%
+  \hspace{0.25cm}\AlgoCodeLabel
 }
 
 \newcommand{\aaa}[1]{\AlgoLine{\AlgoIndent{0}}{#1}}
@@ -216,7 +286,14 @@
     \BookChapter{##1}%
     \label{chap:#1}%
   }%
-  \let\subsection\BookSection
+  % Promote source-level subsections to book sections. Starred subsections
+  % remain unnumbered while receiving a section-level table-of-contents entry.
+  \RenewDocumentCommand{\subsection}{s m}{%
+    \IfBooleanTF{##1}{%
+      \BookSection*{##2}%
+      \addcontentsline{toc}{section}{##2}%
+    }{\BookSection{##2}}%
+  }%
   \import{#1/}{content.tex}%
   \endgroup
 }
@@ -260,61 +337,61 @@ the combination of intuition with rigorous correctness and efficiency analysis.
 \IncludeChapter{introduction}
 \IncludeChapter{asymptotic-notations}
 
-\PartTitlePage{Divide and Conquer}{}
-\label{part:divide-and-conquer}
-\IncludeChapter{merge-sort}
-\IncludeChapter{counting-inversions}
-\IncludeChapter{selection}
-\IncludeChapter{closest-pairs}
-\IncludeChapter{fft}
-\IncludeChapter{convex-hull}
-\IncludeChapter{half-plane-intersection}
-
-\PartTitlePage{Graph Connectivity}{}
-\label{part:graph-connectivity}
-\IncludeChapter{graphs}
-\IncludeChapter{connectivity-undirected}
-\IncludeChapter{dag-meta}
-\IncludeChapter{connectivity-directed}
-\IncludeChapter{2sat}
-
-\PartTitlePage{Shortest Paths}{}
-\label{part:shortest-paths}
-\IncludeChapter{priority-queue}
-\IncludeChapter{bfs}
-\IncludeChapter{dijkstra}
-\IncludeChapter{bellman-ford}
-\IncludeChapter{shortest-path-tree}
-\IncludeChapter{tramp-steamer}
-
-\PartTitlePage{Dynamic Programming}{}
-\label{part:dynamic-programming}
-\IncludeChapter{longest-increasing-subsequence}
-\IncludeChapter{edit-distance}
-\IncludeChapter{rna-secondary-structure}
-\IncludeChapter{shortest-path-dp}
-\IncludeChapter{knapsack}
-
-\PartTitlePage{Greedy Algorithms}{}
-\label{part:greedy-algorithms}
-\IncludeChapter{minimum-spanning-tree}
-\IncludeChapter{disjoint-set}
-\IncludeChapter{interval-scheduling}
-\IncludeChapter{weighted-interval-scheduling}
-
-\PartTitlePage{Network Flow}{}
-\label{part:network-flow}
-\IncludeChapter{max-flow}
-\IncludeChapter{ford-fulkson}
-\IncludeChapter{max-matching}
-\IncludeChapter{project-selection}
-\IncludeChapter{baseball-elimination}
-
-\PartTitlePage{Computational Complexity}{}
-\label{part:computational-complexity}
-\IncludeChapter{reduction}
-\IncludeChapter{npcomplete}
-\IncludeChapter{co-np}
+%% \PartTitlePage{Divide and Conquer}{}
+%% \label{part:divide-and-conquer}
+%% \IncludeChapter{merge-sort}
+%% \IncludeChapter{counting-inversions}
+%% \IncludeChapter{selection}
+%% \IncludeChapter{closest-pairs}
+%% \IncludeChapter{fft}
+%% \IncludeChapter{convex-hull}
+%% \IncludeChapter{half-plane-intersection}
+%% 
+%% \PartTitlePage{Graph Connectivity}{}
+%% \label{part:graph-connectivity}
+%% \IncludeChapter{graphs}
+%% \IncludeChapter{connectivity-undirected}
+%% \IncludeChapter{dag-meta}
+%% \IncludeChapter{connectivity-directed}
+%% \IncludeChapter{2sat}
+%% 
+%% \PartTitlePage{Shortest Paths}{}
+%% \label{part:shortest-paths}
+%% \IncludeChapter{priority-queue}
+%% \IncludeChapter{bfs}
+%% \IncludeChapter{dijkstra}
+%% \IncludeChapter{bellman-ford}
+%% \IncludeChapter{shortest-path-tree}
+%% \IncludeChapter{tramp-steamer}
+%% 
+%% \PartTitlePage{Dynamic Programming}{}
+%% \label{part:dynamic-programming}
+%% \IncludeChapter{longest-increasing-subsequence}
+%% \IncludeChapter{edit-distance}
+%% \IncludeChapter{rna-secondary-structure}
+%% \IncludeChapter{shortest-path-dp}
+%% \IncludeChapter{knapsack}
+%% 
+%% \PartTitlePage{Greedy Algorithms}{}
+%% \label{part:greedy-algorithms}
+%% \IncludeChapter{minimum-spanning-tree}
+%% \IncludeChapter{disjoint-set}
+%% \IncludeChapter{interval-scheduling}
+%% \IncludeChapter{weighted-interval-scheduling}
+%% 
+%% \PartTitlePage{Network Flow}{}
+%% \label{part:network-flow}
+%% \IncludeChapter{max-flow}
+%% \IncludeChapter{ford-fulkson}
+%% \IncludeChapter{max-matching}
+%% \IncludeChapter{project-selection}
+%% \IncludeChapter{baseball-elimination}
+%% 
+%% \PartTitlePage{Computational Complexity}{}
+%% \label{part:computational-complexity}
+%% \IncludeChapter{reduction}
+%% \IncludeChapter{npcomplete}
+%% \IncludeChapter{co-np}
 
 \backmatter
 \chapter*{License}
