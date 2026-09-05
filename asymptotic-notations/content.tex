@@ -3,11 +3,10 @@
 
 \subsection*{Definitions and Properties}
 
-When analyzing an algorithm, we often care more about how its running time grows with
-input size than about its exact number of operations. Asymptotic notation describes
-this growth for sufficiently large inputs, ignoring constant factors. For example,
-$3n^2 + 5n + 2$ behaves like $n^2$ as $n$ becomes large: the quadratic term
-eventually dominates the other terms. The definitions below make this idea precise.
+When analyzing an algorithm, we care more about how its running time grows with
+input size than about its exact number of operations.  Asymptotic notation
+formalizes this idea by describing growth for sufficiently large inputs while
+ignoring constant factors.
 
 \begin{definition}[Big-O]
 Let $f = f(n)$ and $g=g(n)$ be two positive functions over integers $n$.
@@ -15,13 +14,13 @@ We say $f = O(g)$ if there exists a positive number $c > 0$ and an integer $N \g
 such that $f(n) \le c\cdot g(n)$ for all $n\ge N$.
 \end{definition}
 
-Intuitively, Big-O is analogous to ``$\le$'', with constant factors ignored.
-Big-O gives an upper bound on growth.
+Big-O gives an upper bound for sufficiently large input size, with constant factor ignored.
 %Think of $c\cdot g(n)$ as an upper bound that $f(n)$ stays below once $n$ reaches the threshold $N$.
-The constant $c$ allows us to scale $g(n)$ by a fixed factor when bounding $f(n)$,
-and the threshold $N$ lets us ignore behavior on
-small inputs. Once chosen, $c$ and $N$ must work for \emph{every} $n\ge N$;
+The constant $c$ allows us to scale $g(n)$ by a fixed factor ``for free'' when upper bounding $f(n)$,
+and the threshold $N$ lets us ignore behavior on small inputs. 
+Once chosen, $c$ and $N$ must work for \emph{every} $n\ge N$;
 we cannot choose a new $c$ for each input size.
+Intuitively, Big-O is analogous to ``$\le$''.
 
 \emph{Example.} Let $f(n)=3n^2+5n+2$ and $g(n)=n^2$. To prove $f=O(g)$ using the definition,
 we need just one pair of constants $c$ and $N$ for which we can show that $f(n) \le c\cdot g(n)$ when $n\ge N$.
@@ -50,8 +49,8 @@ and $n\ge N$.
 
 \emph{Example.} Let $f(m,n) = 4m + 4n + 5$ and $g(m,n) = m + n$. We now show that $f = O(g)$,
 using the above definition. To show it, we need to find $c$, $M$, and $N$.
-One possible choice is $c = 7$, $M = 1$, and $N = 1$.
-To verify this, observe that $f(m,n) - c\cdot g(m,n) = 4m + 4n + 5 - 7m - 7n = 5 - 3m - 3n \le 5 - 3 - 3 = -1 \le 0$,
+There are many choices and one of them is $c = 7$, $M = 1$, and $N = 1$.
+Let's verify: $f(m,n) - c\cdot g(m,n) = 4m + 4n + 5 - 7m - 7n = 5 - 3m - 3n \le 5 - 3 - 3 = -1 \le 0$,
 where we use that $m \ge M = 1$ and $n \ge N = 1$. This proves that $f = O(g)$.
 
 \begin{definition}[Big-Omega]
@@ -60,12 +59,12 @@ We say $f = \Omega(g)$ if there exists a positive number $c > 0$ and an integer 
 such that $f(n) \ge c\cdot g(n)$ for all $n\ge N$.
 \end{definition}
 
-Big-Omega gives a \emph{lower bound} on growth.
+Big-Omega gives a \emph{lower bound} for large input, with constant factors ignored.
 %after some threshold, $f(n)$ stays above the floor $c\cdot g(n)$.
-It is analogous to ``$\ge$'', with constant factors ignored.
-For example, let $f(n) = 3n^2+5n+2$ and $g(n) = n^2$.
-We can write $f = \Omega(g)$, because
-we can pick $c = 1$ and $N =1$ and verify that
+Big-Omega is analogous to ``$\ge$''.
+
+\emph{Example.} Let $f(n) = 3n^2+5n+2$ and $g(n) = n^2$.
+We have $f = \Omega(g)$, because we can pick $c = 1$ and $N =1$ and verify that
 $f(n) - c\cdot g(n) = 3n^2+5n+2- n^2 = 2n^2 + 5n+2\ge 0$ for all $n\ge N$.
 
 Similarly, we can define Big-Omega for multiple-variable functions.
@@ -80,11 +79,11 @@ such that $f(m,n) \ge c\cdot g(m,n)$ for all $m\ge M$ and $n\ge N$.
 %constant $c$ works for every pair beyond the two thresholds, regardless of
 %the relative sizes of $m$ and $n$.
 
-\emph{Example.} Let $f(m,n) = 4m + 4n + 5$ and $g(m,n) = m + n$. We now show that $f = \Omega(g)$,
-using the above definition. To show it, we need to find $c$, $M$, and $N$.
+\emph{Example.} Let $f(m,n) = 4m + 4n + 5$ and $g(m,n) = m + n$. We now show that $f = \Omega(g)$.
+%using the above definition. To show it, we need to find $c$, $M$, and $N$.
 We can choose $c = 1$, $M = 0$, and $N = 0$.
-To verify this, observe that $f(m,n) - c\cdot g(m,n) = 4m + 4n + 5 - m - n = 5 + 3m + 3n \ge 5 \ge 0$,
-where we use that $m \ge M = 0$ and $n \ge N = 0$. This proves that $f = \Omega(g)$.
+Verify: $f(m,n) - c\cdot g(m,n) = 4m + 4n + 5 - m - n = 5 + 3m + 3n \ge 5 \ge 0$,
+where $m \ge M = 0$ and $n \ge N = 0$. 
 
 \begin{claim}
 $f = O(g)$ if and only if $g = \Omega(f)$.
@@ -107,22 +106,31 @@ We say $f = \Theta(g)$ if and only if $f = O(g)$ and $f = \Omega(g)$.
 \end{definition}
 
 Big-Theta gives a \emph{tight bound}: $f$ grows at the same rate as $g$,
-up to constant factors.
-Big-Theta is analogous to ``$=$'' for growth rates.
-For a single variable, this means that there are
-constants $c_1,c_2>0$ and a common threshold $N$ such that
-\[
-    c_1 \cdot g(n) \le f(n) \le c_2 \cdot g(n) \qquad\text{for all } n\ge N.
-\]
+up to constant factors and for large enough input size.
+Big-Theta is analogous to ``$=$''.
 
-The upper and lower bounds may use different constants. If their thresholds
-differ, take the larger threshold so that both bounds hold at once. For two
-variables, take the larger threshold for each variable.
+%For a single variable, this means that there are
+%constants $c_1,c_2>0$ and a common threshold $N$ such that
+%\[
+%    c_1 \cdot g(n) \le f(n) \le c_2 \cdot g(n) \qquad\text{for all } n\ge N.
+%\]
+%
+%The upper and lower bounds may use different constants. If their thresholds
+%differ, take the larger threshold so that both bounds hold at once. For two
+%variables, take the larger threshold for each variable.
 
 \emph{Example.}
-Let $f(n) = 3n^2 + 5n + 2$ and $g(n) = n^2$. We have $f = \Theta(g)$
-as we proved that both $f = O(g)$ and $f = \Omega(g)$.
-Similarly, for $f(m,n) = 4m + 4n + 5$ and $g(m,n) = m + n$, we also have $f = \Theta(g)$.
+$3n^2 + 5n + 2 = \Theta(n^2)$ as we proved both sides $f = O(g)$ and $f = \Omega(g)$.
+For the same reason, $4m + 4n + 5 = \Theta(m + n)$.
+
+\emph{Example.} For any fixed $a, b > 1$,
+we have \[ \log_a n = \Theta(\log_b n). \]
+This is because, by the change-of-base formula, we have
+\[
+    \log_a n=\frac{\log_b n}{\log_b a}.
+\]
+For this reason, we often write simply $\log n$ in asymptotic notations.
+
 
 \begin{definition}[small-o]
 Let $f = f(n)$ and $g=g(n)$ be two positive functions over integers $n$.
@@ -133,21 +141,23 @@ such that $f(n) \le c\cdot g(n)$ for all $n\ge N_c$.
 
 The key change from Big-O is from \emph{some} constant $c>0$ to
 \emph{every} constant $c>0$. No matter how small a fraction of $g(n)$ we
-choose, $f(n)$ eventually stays below it. A smaller $c$ may require a larger
-threshold $N_c$.
+choose, $f(n)$ eventually stays below it once $n \ge N_c$. 
+A smaller $c$ may require a larger threshold $N_c$.
+$f=o(g)$ means $f$ grows strictly more slowly than $g$, beyond any fixed factor;
+small-o is analogous to ``$<$''.
+
 %Equivalently, $f(n)/g(n)$ tends to zero, so $f$ becomes negligible compared with $g$.
 
 \emph{Example.} Let $f(n) = n$ and $g(n) = n^2$. We now show that $f = o(g)$,
 using the above definition.
 To prove it, we need to show that for any possible $c>0$ there exists $N_c \ge 0$ such that $f(n) -c\cdot g(n) \le 0$ when $n \ge N_c$.
 We write $f(n) - c\cdot g(n) = n - cn^2 = n(1-cn)$. Since $n\ge 0$, it suffices to require $1-cn \le 0$, leading to $n \ge 1/c$.
-Therefore, we can choose $N_c = \lceil 1/c \rceil$. This completes the proof.
+Therefore, we can choose $N_c = \max\{1, \lceil 1/c \rceil\}$: 
+when $n \ge N_c$, $cn > 1$, resulting in the desired $f(n) - c\cdot g(n) \le 0$. 
 
-Intuitively, small-o is analogous to ``$<$''.
-$f=o(g)$ means $f$ grows strictly more slowly than $g$, not merely that $f(n)<g(n)$.
-For example, $n<2n$ for every positive $n$, but $n$ is not
-$o(2n)$: their ratio is always $1/2$, so choosing $c=1/4$ makes the required
-inequality impossible. Instead, $n=\Theta(2n)$.
+%For example, $n<2n$ for every positive $n$, but $n$ is not
+%$o(2n)$: their ratio is always $1/2$, so choosing $c=1/4$ makes the required
+%inequality impossible. Instead, $n=\Theta(2n)$.
 
 \begin{definition}[small-omega]
 Let $f = f(n)$ and $g=g(n)$ be two positive functions over integers $n$.
@@ -156,27 +166,54 @@ such that $f(n) \ge c\cdot g(n)$ for all $n\ge N_c$.
 \end{definition}
 
 Small-omega requires $f(n)$ to eventually exceed \emph{every} fixed
-multiple of $g(n)$, however large that multiple is. Equivalently,
-$f(n)/g(n)$ tends to infinity. It is analogous to ``$>$'' for growth rates:
-$f$ grows strictly faster than $g$. A fixed factor is not enough;
-$2n$ is $\Omega(n)$ but is not $\omega(n)$.
+multiple of $g(n)$, however large that multiple is.  
+$f = \omega(g)$ means $f$ grows strictly faster than $g$, beyond any fixed factor; 
+small-omega is analogous to ``$>$'';
+%A fixed factor is not enough;
+%$2n$ is $\Omega(n)$ but is not $\omega(n)$.
 
-\emph{Example.} We have $n^2=\omega(n)$. To prove this, for any $c>0$, choose
-$N_c=\max\{1,\lceil c\rceil\}$. Then $n\ge N_c$ implies $n\ge c$, so
-$n^2 - c\cdot n \ge 0$.
+\emph{Example.} We have $n^2=\omega(4n)$. To prove this, for any $c>0$, choose
+$N_c=\max\{1,\lceil 4c\rceil\}$. Then $n\ge N_c$ implies $n\ge 4c$, so
+$n^2 - c\cdot 4n = n(n-4c)\ge 0$.
 
+The fact below is straightforward; its proof is the sole use of definitions.
+\begin{claim}
+$f = o(g)$ if and only if $g = \omega(f)$.
+\end{claim}
+\emph{Proof.} We have\\
+		\begin{displaymath}
+		\begin{array}{llll}
+		& & f = o(g) \\
+		& \Leftrightarrow & \textrm{for any } c > 0, \exists N_c \ge 0, \textrm{ s.t.\ } f(n) \le c\cdot g(n), \forall n \ge N_c\\
+		& \Leftrightarrow & \textrm{for any } c > 0, \exists N_c \ge 0, \textrm{ s.t.\ } 1/c \cdot f(n) \le g(n), \forall n \ge N_c\\
+		& \Leftrightarrow & \textrm{for any } c' = 1/c > 0, \exists N_c' \ge 0, \textrm{ s.t.\ } g(n) \ge c'\cdot f(n), \forall n \ge N_c'\\
+		& \Leftrightarrow & g = \omega(f) \\
+		\end{array}
+		\end{displaymath}
+\qed
+
+
+\begin{claim}
 If $f = o(g)$ then $f = O(g)$; if $f = \omega(g)$ then $f = \Omega(g)$.
+\end{claim}
 This matches the intuition that ``$<$'' implies ``$\le$'' and ``$>$'' implies
-``$\ge$''. To prove the first implication, choose $c=1$ in the definition of
+``$\ge$''. However, this is an intuitive explanation, but does not constitute a proof.
+To formally see this, choose $c=1$~(or any other positive value) in the definition of
 small-o. It provides a threshold $N_1$ such that $f(n)\le g(n)$ for all
 $n\ge N_1$, which satisfies the definition of Big-O. The same argument,
 with the inequality reversed, proves the second implication.
 
-Limits provide another way to compare growth rates. The ratio $f(n)/g(n)$
-measures the size of $f(n)$ relative to $g(n)$. If this ratio approaches zero,
-$f$ becomes negligible compared with $g$; if it approaches a positive constant,
-the functions differ by roughly a constant factor; if it tends to infinity,
-$f$ eventually exceeds every fixed multiple of $g$. More precisely,
+\subsection*{Limits}
+You might find above definitions similar to limit.
+Indeed, the limit of ratio $f(n)/g(n)$, if exists, provides the asympototic relationship
+between $f$ and $g$.
+Below, we presents the facts, without proving them, which allows to infer the aysmptotic relationship
+by computing the limits of $f(n)/g(n)$.
+%measures the size of $f(n)$ relative to $g(n)$. If this ratio approaches zero,
+%$f$ becomes negligible compared with $g$; if it approaches a positive constant,
+%the functions differ by roughly a constant factor; if it tends to infinity,
+%$f$ eventually exceeds every fixed multiple of $g$. 
+More precisely,
 \[
 \begin{aligned}
 \lim_{n\to\infty}\frac{f(n)}{g(n)}=0
@@ -212,26 +249,25 @@ base. Using $\log_b x=\ln x/\ln b$ and applying L'H\^opital's rule once,
     =\frac{1}{\ln b}\lim_{x\to\infty}\frac{\ln x}{x}
     =\frac{1}{\ln b}\lim_{x\to\infty}\frac{1/x}{1}=0.
 \]
-Therefore $\log_b n=o(n)$. Although both functions grow without bound,
-the logarithm becomes an arbitrarily small fraction of $n$.
+Therefore $\log_b n=o(n)$. 
+%Although both functions grow without bound, the logarithm becomes an arbitrarily small fraction of $n$.
 
-The base of a logarithm does not affect its asymptotic order. By the
-change-of-base formula,
+
+\emph{Example.} Let $f(n) = 2^n$ and $g(n) = 3^n$.
 \[
-    \log_a n=\frac{\log_b n}{\log_b a}=\Theta(\log_b n)
-    \qquad\text{for fixed }a,b>1.
+    \lim_{n\to\infty}\frac{2^n}{3^n}
+    =\lim_{n\to\infty}\frac{1}{(3/2)^n} = 0.
 \]
-For this reason, we often write simply $\log n$ in asymptotic bounds.
-
-Exponential bases, however, matter: $2^n/3^n=(2/3)^n\to 0$, so
-$2^n=o(3^n)$.
+Hence, $2^n = o(3^n)$. 
+Note that, exponential base matter in asympototic comparisons.
 
 
-If the ratio oscillates without approaching a limit, this limit test alone
-does not settle the comparison; we can still use the definitions directly.
-For example, let $f(n)=(2+(-1)^n)n$ and $g(n)=n$ for $n\ge 1$.
-Their ratio alternates between $1$ and $3$~(i.e., oscillates), but $g(n)\le f(n)\le 3 g(n)$,
-so $f=\Theta(g)$.
+\emph{Example.} Let $f(n)=(2+(-1)^n)n$ and $g(n)=n$ for $n\ge 1$.
+Note that the ratio of $f(n)/g(n)$ alternates between 1 and 3, in other words
+the ratio \emph{oscillates} without approaching a limit.
+In this case, we cannot use above rule to reach a conclusion.
+We can still use the definition directly.
+Specifically, note that $g(n)\le f(n)\le 3 g(n)$. Hence, $f=\Theta(g)$.
 %Thus a positive finite limit implies Big-Theta, but Big-Theta does not require the ratio to have a limit.
 
 
@@ -286,9 +322,11 @@ Hence,
     a^n=o(n!).
 \]
 
-Even more, any arbitrarily large fixed power of an above function
-is in small-o relationship with any arbitrarily small fixed power 
-of next. Formally, for any arbitrary large, fixed constant $p > 0$ 
+Even more, any (arbitrarily large) fixed power of an above function
+is still in small-o relationship with any (arbitrarily small) fixed power 
+of next. Formally, we have
+\begin{claim}\label{claim:growth}
+for any arbitrary large, fixed constant $p > 0$ 
 and any arbitrarily small, fixed constant $\epsilon > 0$, we have
 \[
     \lim_{n\to\infty}\frac{(\log n)^p}{n^\epsilon}=0, \qquad
@@ -301,13 +339,19 @@ Hence,
     n^p =o(a^{\epsilon n}),\qquad
     a^{pn} = o((n!)^\epsilon).
 \]
+\end{claim}
 
 These basic functions can be combined using sums, products, and composition.
-The following examples show how to compare the resulting growth rates.
+The following examples show how to compare them.
+
+\emph{Example (a sum of terms).} Let $f(n)=3n^2+5n+20$.
+The quadratic term \emph{dominates}, as it grows
+at least as fast as every other term.
+Hence, we have $f = \Theta(n^2)$.
 
 
 \emph{Example.}
-Compare $n (\log n)^3$ and $n^{1.01}$. Using above conclusion,
+Compare $n (\log n)^3$ and $n^{1.01}$. Using Claim~\ref{claim:growth},
 we have
 \[
     \lim_{n\to\infty}\frac{n (\log n)^3}{n^{1.01}}
@@ -316,39 +360,22 @@ we have
 \]
 Hence $n (\log n)^3 = o(n^{1.01})$.
 
-\emph{Example (a sum of terms).} Let $f(n)=3n^2+5n\log n+20$.
-The quadratic term \emph{dominates}, as it grows
-at least as fast as every other term.
-Hence, we have $f = \Omega(n^2)$.
 
 \emph{Example.}
-Compare $n^2 2^n$ and $3^n$:
+Compare $n^2 2^n$ and $3^n$. Using Claim~\ref{claim:growth},
 \[
     \lim_{n\to\infty}\frac{n^2 2^n}{3^n}
     =\lim_{n\to\infty}\frac{n^2}{(3/2)^n}=0.
 \]
 Hence $n^2 2^n = o(3^n)$.
 
-\emph{Example.} An exponential applied to a logarithm can
-simplify to a polynomial. For any fixed $a,b>1$,
-\[
-    a^{\log_b n}
-    =\exp\left(\frac{\ln a\,\ln n}{\ln b}\right)
-    =n^{\log_b a}.
-\]
-For instance, $2^{\log_2 n}=n$ and $4^{\log_2 n}=n^2$.
-Here the base of the logarithm affects the exponent of $n$, so it must be
-kept explicit. Although logarithms of different fixed bases differ only
-by a constant factor, putting them in an exponent can change the
-asymptotic order.
-
-\emph{Example.} Compare $\log\log n$ and $\log n$,
-where all logarithms have the same fixed base $b>1$. 
-Set $s=\log_b n$.
+\emph{Example.} Compare $\log\log n$ and $\log n$.
+%where all logarithms have the same fixed base $b>1$. 
+Set $s=\log n$.
 As $n\to\infty$, we also have $s\to\infty$, so
 \[
-    \lim_{n\to\infty}\frac{\log_b(\log_b n)}{\log_b n}
-    =\lim_{s\to\infty}\frac{\log_b s}{s}=0.
+    \lim_{n\to\infty}\frac{\log(\log n)}{\log n}
+    =\lim_{s\to\infty}\frac{\log s}{s}=0.
 \]
 %The last equality is the logarithm-versus-linear comparison proved earlier.
 Hence $\log\log n=o(\log n)$. 
@@ -360,8 +387,8 @@ $n\log n$. Taking a logarithm turns the product defining $n!$ into a sum:
 \]
 Each term is at most $\log n$, giving $\log(n!)\le n\log n$.
 Hence, $\log(n!) = O(n\log n)$.
-For a lower bound, at least $n/2$ of the integers from $1$ to $n$ are
-at least $n/2$. Keeping just their terms gives, 
+For a lower bound, note that at least $n/2$ of the integers from $1$ to $n$ are
+at least $n/2$. Keeping just these terms gives, 
 \[
     \log(n!)=\sum_{k=1}^{n}\log k \ge  \sum_{k=n/2}^n \log k 
 \ge \sum_{k=n/2}^n \log \frac{n}{2} = \frac{n}{2}\log \frac{n}{2} = \frac{n}{2} (\log n - \log 2).
