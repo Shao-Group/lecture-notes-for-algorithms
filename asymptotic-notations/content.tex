@@ -273,6 +273,13 @@ faster than exponential functions.
 \end{enumerate}
 
 These functions form a hierarchy in small-o relationship: for any fixed $a>1$,
+	  we have
+\[
+    \lim_{n\to\infty}\frac{\log n}{n}=0, \qquad
+    \lim_{n\to\infty}\frac{n}{a^n}=0, \qquad
+    \lim_{n\to\infty}\frac{a^n}{n!}=0, \qquad
+\]
+Hence,
 \[
     \log n=o(n),\qquad
     n=o(a^n),\qquad
@@ -283,14 +290,82 @@ Even more, any arbitrarily large fixed power of an above function
 is in small-o relationship with any arbitrarily small fixed power 
 of next. Formally, for any arbitrary large, fixed constant $p > 0$ 
 and any arbitrarily small, fixed constant $\epsilon > 0$, we have
-
+\[
+    \lim_{n\to\infty}\frac{(\log n)^p}{n^\epsilon}=0, \qquad
+    \lim_{n\to\infty}\frac{n^p}{a^{\epsilon n}}=0, \qquad
+    \lim_{n\to\infty}\frac{a^{pn}}{(n!)^\epsilon}=0, \qquad
+\]
+Hence,
 \[
     (\log n)^p =o(n^\epsilon),\qquad
     n^p =o(a^{\epsilon n}),\qquad
     a^{pn} = o((n!)^\epsilon).
 \]
 
-These functions might be combined to form more complicated functions, see examples below.
+These basic functions can be combined using sums, products, and composition.
+The following examples show how to compare the resulting growth rates.
 
-TODO: add some examples below.
+
+\emph{Example.}
+Compare $n (\log n)^3$ and $n^{1.01}$. Using above conclusion,
+we have
+\[
+    \lim_{n\to\infty}\frac{n (\log n)^3}{n^{1.01}}
+    = \lim_{n\to\infty}\frac{(\log n)^3}{n^{0.01}} = 0
+.
+\]
+Hence $n (\log n)^3 = o(n^{1.01})$.
+
+\emph{Example (a sum of terms).} Let $f(n)=3n^2+5n\log n+20$.
+The quadratic term \emph{dominates}, as it grows
+at least as fast as every other term.
+Hence, we have $f = \Omega(n^2)$.
+
+\emph{Example.}
+Compare $n^2 2^n$ and $3^n$:
+\[
+    \lim_{n\to\infty}\frac{n^2 2^n}{3^n}
+    =\lim_{n\to\infty}\frac{n^2}{(3/2)^n}=0.
+\]
+Hence $n^2 2^n = o(3^n)$.
+
+\emph{Example.} An exponential applied to a logarithm can
+simplify to a polynomial. For any fixed $a,b>1$,
+\[
+    a^{\log_b n}
+    =\exp\left(\frac{\ln a\,\ln n}{\ln b}\right)
+    =n^{\log_b a}.
+\]
+For instance, $2^{\log_2 n}=n$ and $4^{\log_2 n}=n^2$.
+Here the base of the logarithm affects the exponent of $n$, so it must be
+kept explicit. Although logarithms of different fixed bases differ only
+by a constant factor, putting them in an exponent can change the
+asymptotic order.
+
+\emph{Example.} Compare $\log\log n$ and $\log n$,
+where all logarithms have the same fixed base $b>1$. 
+Set $s=\log_b n$.
+As $n\to\infty$, we also have $s\to\infty$, so
+\[
+    \lim_{n\to\infty}\frac{\log_b(\log_b n)}{\log_b n}
+    =\lim_{s\to\infty}\frac{\log_b s}{s}=0.
+\]
+%The last equality is the logarithm-versus-linear comparison proved earlier.
+Hence $\log\log n=o(\log n)$. 
+
+\emph{Example.} Compare $\log(n!)$ and
+$n\log n$. Taking a logarithm turns the product defining $n!$ into a sum:
+\[
+    \log(n!)=\sum_{k=1}^{n}\log k.
+\]
+Each term is at most $\log n$, giving $\log(n!)\le n\log n$.
+Hence, $\log(n!) = O(n\log n)$.
+For a lower bound, at least $n/2$ of the integers from $1$ to $n$ are
+at least $n/2$. Keeping just their terms gives, 
+\[
+    \log(n!)=\sum_{k=1}^{n}\log k \ge  \sum_{k=n/2}^n \log k 
+\ge \sum_{k=n/2}^n \log \frac{n}{2} = \frac{n}{2}\log \frac{n}{2} = \frac{n}{2} (\log n - \log 2).
+\]
+This gives $\log (n!) = \Omega(n\log n)$.
+Combined, $\log(n!)=\Theta(n\log n)$.
 
