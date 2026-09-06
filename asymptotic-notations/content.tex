@@ -398,3 +398,43 @@ The last inequality uses $\log n\ge 2\log 2$ for $n\ge 4$.
 This gives $\log(n!)=\Omega(n\log n)$.
 Combined, $\log(n!)=\Theta(n\log n)$.
 
+
+\subsection*{Exercises}
+\begin{exercises}
+\item
+For each pair of functions below, determine whether $f = O(g)$,
+$f = \Omega(g)$, or $f = \Theta(g)$.
+Use $\Theta$ when both the upper and lower bounds hold.
+%\vspace{-\topsep}
+\begin{exercises}
+%\item $f(n) = n^{1.01}$, $g(n) = n^{0.99}\cdot \log n$
+%\item $f(n) = n$, $g(n) = n^{0.99}\cdot (\log n)^2$
+%\item $f(n) = 100 \cdot \log (100\cdot n^3)$, $g(n) = (\log n)^2$
+\item $f(n) = n^2\cdot \log(n^2)$, $g(n) = n \cdot (\log n)^3$
+\item $f(n) = 2^{n\cdot \log n}$, $g(n) = 3^{n}$
+%\item $f(n) = n^{2.01} \cdot \log n^3$, $g(n) = n^2 \cdot (\log n)^2$
+\item $f(n) = (\log n)^{\log n}$, $g(n) = n^2$
+%\item $f(n) = (\log n)^{\log n}$, $g(n) = n^{\log\log n}$
+\item $f(n) = (n\cdot \log n)^{\log n}$, $g(n) = n^{(\log n)^2}$
+%\item $f(n) = n^2\cdot 2^n$, $g(n) = 3^n$
+%\item $f(n) = n!$, $g(n) = ({\log n})^n$
+\item $f(n) = n!$, $g(n) = n^n$.
+%\item $f(n) = \log(n!)$, $g(n) = \log n^n$.
+\item $f(n) = \sum_{k=1}^n (1/k)$, $g(n) = \log n$
+%\item $f(n) = \sum_{k=1}^n k^2$, $g(n) = n^2\cdot \log n$
+\end{exercises}
+
+\item
+Assume $f(n)$ and $g(n)$ are two functions with $f(n)>1$ and $g(n)>1$,
+and suppose $f(n)=O(g(n))$.
+For each of the following statements, decide if it is true or false and
+give a proof or counterexample.
+%\vspace{-\topsep}
+\begin{exercises}
+\item $f(n)^2 = O(g(n)^2)$.
+\item $2^{f(n)} = O(2^{g(n)})$.
+\item $ \ln f(n) = O(\ln g(n))$.
+\end{exercises}
+
+\end{exercises}
+
