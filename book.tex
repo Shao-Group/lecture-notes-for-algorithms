@@ -1,6 +1,6 @@
 \documentclass[
   11pt,
-  paper=7.5in:9.25in,
+  paper=7in:10in,
   twoside,
   openany,
   headings=big,
@@ -33,14 +33,14 @@
 % CLRS-inspired trim and text block.  The broad left margin is intentional:
 % it gives the page its characteristic open appearance and room for notes.
 \usepackage[
-  paperwidth=7.5in,
-  paperheight=9.25in,
-  inner=0.90in,
-  outer=0.70in,
-  top=0.70in,
-  bottom=0.85in,
+  paperwidth=7in,
+  paperheight=10in,
+  inner=0.95in,
+  outer=0.75in,
+  top=0.85in,
+  bottom=0.95in,
   headheight=14pt,
-  headsep=16pt
+  headsep=14pt
 ]{geometry}
 
 % Structure, mathematics, and figures
@@ -347,13 +347,23 @@ asymptotic notations, a convenient way of describing runtime of an algorithm.
 \IncludeChapter{introduction}
 \IncludeChapter{asymptotic-notations}
 
-%% \PartTitlePage{Divide and Conquer}{}
-%% \label{part:divide-and-conquer}
-%% \IncludeChapter{merge-sort}
-%% \IncludeChapter{counting-inversions}
-%% \IncludeChapter{selection}
-%% \IncludeChapter{closest-pairs}
-%% \IncludeChapter{fft}
+\PartTitlePage{Divide and Conquer}{
+A typical divide-and-conquer algorithm follows this framework:
+\begin{enumerate}
+\item partition the original problem into smaller problems;
+\item recursively solve all subproblems;
+\item combine the solutions of the subproblems to obtain the solution of the original problem.
+\end{enumerate}
+We will use this approach to solve several problems,
+   including sorting, counting inversions, and finding
+	   the closest pair in 2D plane.
+}
+\label{part:divide-and-conquer}
+\IncludeChapter{merge-sort}
+\IncludeChapter{counting-inversions}
+\IncludeChapter{selection}
+\IncludeChapter{closest-pairs}
+\IncludeChapter{fft}
 %% \IncludeChapter{convex-hull}
 %% \IncludeChapter{half-plane-intersection}
 %% 
